@@ -3,9 +3,12 @@
 SLDS = ball contest cup dra lattice mange mir orange piero1 piero2 planet \
 shuttle test test2 test3 tileball tron tsu tsu2 tsu3
 
-.PRECIOUS: %.cmp %.diff.gcc-GCC.ppm %.diff-ocamlopt-gcc.ppm %.mincaml.ppm %.gcc.ppm %.GCC.ppm %.ocamlopt.ppm
+.PRECIOUS: %.cmp %.diff.gcc-GCC.ppm %.diff.ocamlopt-gcc.ppm %.mincaml.ppm %.gcc.ppm %.GCC.ppm %.ocamlopt.ppm
 
 test: $(SLDS:%=%.cmp) $(SLDS:%=%.diff.ocamlopt-gcc.ppm) $(SLDS:%=%.diff.gcc-GCC.ppm)
+
+clean:
+	rm -f *.cmp *.ppm ppmdiff min-rt.min-caml min-rt.s raytrace RayTrace *.sld_ *.cmo *.cmx *.cmi *.o min-rt_b min-rt
 
 %.cmp: %.ocamlopt.ppm %.mincaml.ppm
 	diff $^ > $@
@@ -76,9 +79,3 @@ miniMLRuntime.cmx: miniMLRuntime.ml miniMLRuntime.cmi
 
 miniMLRuntime.cmo: miniMLRuntime.ml miniMLRuntime.cmi
 	ocamlc -g -c miniMLRuntime.ml
-
-rt: rt.cmx miniMLRuntime.cmx
-	ocamlopt -unsafe -inline 100 -o rt miniMLRuntime.cmx rt.cmx
-
-rt_b: rt.cmo miniMLRuntime.cmo
-	ocamlc -o rt_b miniMLRuntime.cmo rt.cmo

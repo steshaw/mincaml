@@ -1,6 +1,6 @@
 test: test-huffman
 clean:
-	rm -f *.min-caml *.ocamlopt *.gcc *.gcc-mflat
+	rm -f *.min-caml *.ocamlopt *.gcc *.gcc-mflat *.cmi *.cmx *.o *.out
 
 test-huffman: huffman.min-caml huffman.ocamlopt huffman.gcc huffman.gcc-mflat
 	time ./huffman.min-caml > huffman.min-caml.out < huffman.int
