@@ -97,6 +97,6 @@ and comment = parse
     { comment lexbuf;
       comment lexbuf }
 | eof
-    { Format.eprintf "warning: unterminated comment" }
+    { Format.eprintf "warning: unterminated comment@." }
 | _
     { comment lexbuf }
