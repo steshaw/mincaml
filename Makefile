@@ -55,8 +55,14 @@ min-caml.html: main.mli main.ml id.ml m.ml s.ml \
 	ocaml str.cma anchor.ml < min-caml.html > min-caml.tmp.html
 	mv min-caml.tmp.html min-caml.html
 
-release: LICENSE Makefile OCamlMakefile $(SOURCES) anchor.ml min-caml.html min-rt/Makefile min-rt/README.txt min-rt/*.ml* min-rt/*.s min-rt/*.sld min-rt/*.html min-rt/*.cc min-rt/*.cxx test/*.ml
-	tar cvzf min-caml.tar.gz $^
+release: min-caml.html
+	rm -fr tmp
+	mkdir tmp
+	cd tmp
+	cvs -d:pserver:anonymous@cvs.sf.net://cvsroot/min-caml export -Dtomorrow min-caml
+	tar cvzf ../min-caml.tar.gz min-caml
+	cd ..
+	rm -fr tmp
 	cp Makefile stub.c libmincaml.s min-caml.html min-caml.tar.gz ../htdocs/
 
 include OCamlMakefile
