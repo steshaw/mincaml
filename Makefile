@@ -55,4 +55,8 @@ min-caml.html: main.mli main.ml id.ml m.ml s.ml \
 	ocaml str.cma anchor.ml < min-caml.html > min-caml.tmp.html
 	mv min-caml.tmp.html min-caml.html
 
+release: LICENSE Makefile OCamlMakefile $(SOURCES) anchor.ml min-caml.html min-rt/Makefile min-rt/README.txt min-rt/*.ml* min-rt/*.s min-rt/*.sld min-rt/*.html min-rt/*.cc min-rt/*.cxx test/*.ml test/*.c
+	cp Makefile stub.c libmincaml.s min-caml.html ../htdocs/
+	tar cvzf min-caml.tar.gz $^
+
 include OCamlMakefile
