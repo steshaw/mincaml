@@ -3,13 +3,13 @@ open SparcAsm
 let rec g env = function (* Ì¿ÎáÎó¤Î13bitÂ¨ÃÍºÇÅ¬²½ (caml2html: simm13_g) *)
   | Ans(exp) -> Ans(g' env exp)
   | Let((x, t) as xt, Set(i), e) when (-4096 <= i) && (i < 4096) ->
-      Format.eprintf "found simm13 %s = %d@." x i;
+      (* Format.eprintf "found simm13 %s = %d@." x i; *)
       let e' = g (M.add x i env) e in
       if List.mem x (fv e') then Let(xt, Set(i), e') else
-      (Format.eprintf "erased redundant Set to %s@." x;
+      ((* Format.eprintf "erased redundant Set to %s@." x; *)
        e')
   | Let((x, t) as xt, SLL(y, C(i)), e) when M.mem y env -> (* for array access *)
-      Format.eprintf "erased redundant SLL on %s@." x;
+      (* Format.eprintf "erased redundant SLL on %s@." x; *)
       g env (Let(xt, Set((M.find y env) lsl i), e))
   | Let((x, t) as xt, exp, e) -> Let(xt, g' env exp, g env e)
   | Forget(x, e) -> Forget(x, g env e)

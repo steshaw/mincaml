@@ -69,31 +69,32 @@ let co_freg_table =
 let co_freg freg = Hashtbl.find co_freg_table freg (* "companion" freg *)
 
 (* super-tenuki *)
-let remove x ys = List.filter (fun y -> y <> x) ys
-let remove_list xs ys = List.filter (fun y -> not (List.mem y xs)) ys
-let add x ys = x :: remove x ys
-let add_list xs ys = xs @ remove_list xs ys
+let rec remove_and_uniq xs = function
+  | [] -> []
+  | x :: ys when S.mem x xs -> remove_and_uniq xs ys
+  | x :: ys -> x :: remove_and_uniq (S.add x xs) ys
 
 (* free variables in the order of use (for spilling) (caml2html: sparcasm_fv) *)
 let fv_id_or_imm = function V(x) -> [x] | _ -> []
-let rec fv_exp = function
-  | Nop | Set(_) | SetL(_) | Comment(_) | Restore(_) -> []
-  | Mov(x) | Neg(x) | FMovD(x) | FNegD(x) | Save(x, _) -> [x]
-  | Add(x, y') | Sub(x, y') | SLL(x, y') | Ld(x, y') | LdDF(x, y') -> add x (fv_id_or_imm y')
-  | St(x, y, z') | StDF(x, y, z') -> add x (add y (fv_id_or_imm z'))
-  | FAddD(x, y) | FSubD(x, y) | FMulD(x, y) | FDivD(x, y) -> [x; y]
-  | IfEq(x, y', e1, e2) | IfLE(x, y', e1, e2) | IfGE(x, y', e1, e2) -> add x (add_list (fv_id_or_imm y') (add_list (fv e1) (fv e2)))
-  | IfFEq(x, y, e1, e2) | IfFLE(x, y, e1, e2) -> add x (add y (add_list (fv e1) (fv e2)))
-  | CallCls(x, ys, zs) -> add x (add_list ys zs)
-  | CallDir(_, ys, zs) -> add_list ys zs
-and fv = function
-  | Ans(exp) -> fv_exp exp
-  | Let((x, t), exp, e) -> add_list (fv_exp exp) (remove x (fv e))
-  | Forget(x, e) -> remove x (fv e) (* Spillされた変数は、自由変数の計算から除外 (caml2html: sparcasm_exclude) *)
-    (* [XXX] (if y = z then (forget x; ...) else (forget x; ...)); x + x
-       のように、ifのthen節とelse節の両方でxがforgetされている場合は、
-       eの自由変数からxを除いても良いが、ここではそうしないことにする。
-       つまり、ifでは変数はforgetされない(かもしれない)と近似する。 *)
+let rec fv_exp cont = function
+  | Nop | Set(_) | SetL(_) | Comment(_) | Restore(_) -> cont
+  | Mov(x) | Neg(x) | FMovD(x) | FNegD(x) | Save(x, _) -> x :: cont
+  | Add(x, y') | Sub(x, y') | SLL(x, y') | Ld(x, y') | LdDF(x, y') -> x :: fv_id_or_imm y' @ cont
+  | St(x, y, z') | StDF(x, y, z') -> x :: y :: fv_id_or_imm z' @ cont
+  | FAddD(x, y) | FSubD(x, y) | FMulD(x, y) | FDivD(x, y) -> x :: y :: cont
+  | IfEq(x, y', e1, e2) | IfLE(x, y', e1, e2) | IfGE(x, y', e1, e2) -> x :: fv_id_or_imm y' @ remove_and_uniq S.empty (fv cont e1 @ fv cont e2) (* uniq here just for efficiency *)
+  | IfFEq(x, y, e1, e2) | IfFLE(x, y, e1, e2) -> x :: y :: remove_and_uniq S.empty (fv cont e1 @ fv cont e2) (* uniq here just for efficiency *)
+  | CallCls(x, ys, zs) -> x :: ys @ zs @ cont
+  | CallDir(_, ys, zs) -> ys @ zs @ cont
+and fv cont = function
+  | Ans(exp) -> fv_exp cont exp
+  | Let((x, t), exp, e) ->
+      let cont' = remove_and_uniq (S.singleton x) (fv cont e) in
+      fv_exp cont' exp
+  | Forget(x, e) -> remove_and_uniq (S.singleton x) (fv cont e) (* Spillされた変数は、自由変数の計算から除外 (caml2html: sparcasm_exclude) *)
+    (* (if y = z then (forget x; ...) else (forget x; ...)); x + x
+       のような場合のために、継続の自由変数contを引数とする *)
+let fv e = remove_and_uniq S.empty (fv [] e)
 
 let rec concat e1 xt e2 =
   match e1 with

@@ -8,7 +8,7 @@ shuttle test test2 test3 tileball tron tsu tsu2 tsu3
 test: $(SLDS:%=%.cmp) $(SLDS:%=%.diff.ocamlopt-gcc.ppm) $(SLDS:%=%.diff.gcc-GCC.ppm)
 
 clean:
-	rm -f *.cmp *.ppm ppmdiff min-rt.min-caml min-rt.s raytrace RayTrace *.sld_ *.cmo *.cmx *.cmi *.o min-rt_b min-rt
+	rm -f *.cmp *.ppm ppmdiff raytrace RayTrace *.sld_ *.cmo *.cmx *.cmi *.o min-rt_b min-rt min-rt.s min-rt.min-caml
 
 %.cmp: %.ocamlopt.ppm %.mincaml.ppm
 	diff $^ > $@
