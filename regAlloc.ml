@@ -145,7 +145,7 @@ and g'_and_unspill dest cont regenv exp = (* »ÈÍÑ¤µ¤ì¤ëÊÑ¿ô¤ò¥¹¥¿¥Ã¥¯¤«¤é¥ì¥¸¥¹¥
   try g' dest cont regenv exp
   with NoReg(x, t) ->
     ((* Format.eprintf "unspilling %s@." x; *)
-     let cont' = concat (Ans(exp)) dest cont in
+     let cont' = Let(dest, exp, cont) in
      let all =
        match t with
        | Type.Unit -> assert false
@@ -217,7 +217,6 @@ and g'_call dest cont regenv exp constr ys zs = (* ´Ø¿ô¸Æ¤Ó½Ğ¤·¤Î¥ì¥¸¥¹¥¿³ä¤êÅö¤
 			   (List.map (fun z -> find z Type.Float regenv) zs)),
 		     M.empty)
   | xs -> insert_forget xs exp (snd dest)
-
 and g_repeat dest cont regenv e = (* Spill¤¬¤Ê¤¯¤Ê¤ë¤Ş¤Çg¤ò·«¤êÊÖ¤¹ (caml2html: regalloc_repeat) *)
     match g dest cont regenv e with
     | NoSpill(e', regenv') -> (e', regenv')
