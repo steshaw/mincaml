@@ -9,7 +9,7 @@ clean:: nobackup
 RESULT = min-caml
 NCSUFFIX = .opt
 CC = gcc
-CFLAGS = -m32 -g -O2 -Wall
+CFLAGS = -g -O2 -Wall # -m32
 
 # ↓もし実装を改造したら、それに合わせて変える
 SOURCES = float.c type.ml id.ml m.ml s.ml \
