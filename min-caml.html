@@ -459,7 +459,7 @@ rule token = parse
     { comment lexbuf;
       comment lexbuf }
 <span style="color:#77aaaa">|</span> eof
-    { <span style="color:#0033cc">Format</span>.eprintf <span style="color:#aa4444">"warning: unterminated comment"</span> }
+    { <span style="color:#0033cc">Format</span>.eprintf <span style="color:#aa4444">"warning: unterminated comment@."</span> }
 <span style="color:#77aaaa">|</span> _
     { comment lexbuf }
 </pre>
@@ -1386,9 +1386,7 @@ rule token = parse
 <pre><span style="color:green">type</span> id_or_imm = <span style="color:#0033cc">V</span> <span style="color:green">of</span> <span style="color:#0033cc">Id</span>.t <span style="color:#77aaaa">|</span> <span style="color:#0033cc">C</span> <span style="color:green">of</span> int
 <span style="color:green">type</span> t =
   <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Ans</span> <span style="color:green">of</span> exp
-  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Seq</span> <span style="color:green">of</span> exp * t
-  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Let</span> <span style="color:green">of</span> <span style="color:#0033cc">Id</span>.t * exp * t
-  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">FLetD</span> <span style="color:green">of</span> <span style="color:#0033cc">Id</span>.t * exp * t
+  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Let</span> <span style="color:green">of</span> (<span style="color:#0033cc">Id</span>.t * <span style="color:#0033cc">Type</span>.t) * exp * t
   <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Forget</span> <span style="color:green">of</span> <span style="color:#0033cc">Id</span>.t * t <span style="color:#990000">(* virtual instruction *)</span>
 <span style="color:green">and</span> exp =
   <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Nop</span>
@@ -1424,6 +1422,9 @@ rule token = parse
 <span style="color:green">type</span> fundef = { name : <span style="color:#0033cc">Id</span>.l; args : <span style="color:#0033cc">Id</span>.t list; fargs : <span style="color:#0033cc">Id</span>.t list; body : t; ret : <span style="color:#0033cc">Type</span>.t }
 <span style="color:green">type</span> prog = <span style="color:#0033cc">Prog</span> <span style="color:green">of</span> (<span style="color:#0033cc">Id</span>.l * float) list * fundef list * t
 
+<span style="color:green">val</span> fletd : <span style="color:#0033cc">Id</span>.t * exp * t -&gt; t <span style="color:#990000">(* shorthand of Let for float *)</span>
+<span style="color:green">val</span> seq : exp * t -&gt; t <span style="color:#990000">(* shorthand of Let for unit *)</span>
+
 <span style="color:green">val</span> regs : <span style="color:#0033cc">Id</span>.t array
 <span style="color:green">val</span> fregs : <span style="color:#0033cc">Id</span>.t array
 <span style="color:green">val</span> allregs : <span style="color:#0033cc">Id</span>.t list
@@ -1449,11 +1450,9 @@ rule token = parse
 <a name="sparcasm_t"></a><pre><span style="color:#990000">(* SPARC assembly with a few virtual instructions *)</span>
 
 <span style="color:green">type</span> id_or_imm = <span style="color:#0033cc">V</span> <span style="color:green">of</span> <span style="color:#0033cc">Id</span>.t <span style="color:#77aaaa">|</span> <span style="color:#0033cc">C</span> <span style="color:green">of</span> int
-<span style="color:green">type</span> t = <span style="color:#990000">(* 命令の列 *)</span>
-  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Ans</span> <span style="color:green">of</span> exp
-<a name="sparcasm_forget"></a>  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Seq</span> <span style="color:green">of</span> exp * t
-<a name="sparcasm_exp"></a>  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Let</span> <span style="color:green">of</span> <span style="color:#0033cc">Id</span>.t * exp * t
-  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">FLetD</span> <span style="color:green">of</span> <span style="color:#0033cc">Id</span>.t * exp * t
+<a name="sparcasm_forget"></a><span style="color:green">type</span> t = <span style="color:#990000">(* 命令の列 *)</span>
+<a name="sparcasm_exp"></a>  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Ans</span> <span style="color:green">of</span> exp
+  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Let</span> <span style="color:green">of</span> (<span style="color:#0033cc">Id</span>.t * <span style="color:#0033cc">Type</span>.t) * exp * t
   <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Forget</span> <span style="color:green">of</span> <span style="color:#0033cc">Id</span>.t * t <span style="color:#990000">(* Spillされた変数を、自由変数の計算から除外するための仮想命令 *)</span>
 <span style="color:green">and</span> exp = <span style="color:#990000">(* 一つ一つの命令に対応する式 *)</span>
   <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Nop</span>
@@ -1489,6 +1488,9 @@ rule token = parse
 <span style="color:green">type</span> fundef = { name : <span style="color:#0033cc">Id</span>.l; args : <span style="color:#0033cc">Id</span>.t list; fargs : <span style="color:#0033cc">Id</span>.t list; body : t; ret : <span style="color:#0033cc">Type</span>.t }
 <span style="color:#990000">(* プログラム全体 = 浮動小数定数テーブル + トップレベル関数 + メインの式 *)</span>
 <span style="color:green">type</span> prog = <span style="color:#0033cc">Prog</span> <span style="color:green">of</span> (<span style="color:#0033cc">Id</span>.l * float) list * fundef list * t
+
+<span style="color:green">let</span> fletd(x, e1, e2) = <span style="color:#0033cc">Let</span>((x, <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Float</span>), e1, e2)
+<span style="color:green">let</span> seq(e1, e2) = <span style="color:#0033cc">Let</span>((<span style="color:#0033cc">Id</span>.gentmp <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Unit</span>, <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Unit</span>), e1, e2)
 
 <span style="color:green">let</span> regs = <span style="color:#990000">(* Array.init 16 (fun i -&gt; Printf.sprintf "%%r%d" i) *)</span>
   [| <span style="color:#aa4444">"%i2"</span>; <span style="color:#aa4444">"%i3"</span>; <span style="color:#aa4444">"%i4"</span>; <span style="color:#aa4444">"%i5"</span>;
@@ -1533,10 +1535,9 @@ rule token = parse
   <span style="color:#77aaaa">|</span> <span style="color:#0033cc">IfFEq</span>(x, y, e1, e2) <span style="color:#77aaaa">|</span> <span style="color:#0033cc">IfFLE</span>(x, y, e1, e2) -&gt; add x (add y (add_list (fv e1) (fv e2)))
   <span style="color:#77aaaa">|</span> <span style="color:#0033cc">CallCls</span>(x, ys, zs) -&gt; add x (add_list ys zs)
   <span style="color:#77aaaa">|</span> <span style="color:#0033cc">CallDir</span>(_, ys, zs) -&gt; add_list ys zs
-<span style="color:green">and</span> fv = <span style="color:green">function</span>
-<a name="sparcasm_exclude"></a>  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Ans</span>(exp) -&gt; fv_exp exp
-  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Seq</span>(exp, e) -&gt; add_list (fv_exp exp) (fv e)
-  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Let</span>(x, exp, e) <span style="color:#77aaaa">|</span> <span style="color:#0033cc">FLetD</span>(x, exp, e) -&gt; add_list (fv_exp exp) (remove x (fv e))
+<a name="sparcasm_exclude"></a><span style="color:green">and</span> fv = <span style="color:green">function</span>
+  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Ans</span>(exp) -&gt; fv_exp exp
+  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Let</span>((x, t), exp, e) -&gt; add_list (fv_exp exp) (remove x (fv e))
   <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Forget</span>(x, e) -&gt; remove x (fv e) <span style="color:#990000">(* Spillされた変数は、自由変数の計算から除外 *)</span>
     <span style="color:#990000">(* [XXX] (if y = z then (forget x; ...) else (forget x; ...)); x + x</span>
 <span style="color:#990000">       のように、ifのthen節とelse節の両方でxがforgetされている場合は、</span>
@@ -1545,14 +1546,8 @@ rule token = parse
 
 <span style="color:green">let</span> <span style="color:green">rec</span> concat e1 xt e2 =
   <span style="color:#77aaaa">match</span> e1 <span style="color:#77aaaa">with</span>
-  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Ans</span>(exp) -&gt;
-      (<span style="color:#77aaaa">match</span> snd xt <span style="color:#77aaaa">with</span>
-      <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Unit</span> -&gt; <span style="color:#0033cc">Seq</span>(exp, e2)
-      <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Float</span> -&gt; <span style="color:#0033cc">FLetD</span>(fst xt, exp, e2)
-      <span style="color:#77aaaa">|</span> _ -&gt; <span style="color:#0033cc">Let</span>(fst xt, exp, e2))
-  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Seq</span>(exp, e1') -&gt; <span style="color:#0033cc">Seq</span>(exp, concat e1' xt e2)
-  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Let</span>(y, exp, e1') -&gt; <span style="color:#0033cc">Let</span>(y, exp, concat e1' xt e2)
-  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">FLetD</span>(y, exp, e1') -&gt; <span style="color:#0033cc">FLetD</span>(y, exp, concat e1' xt e2)
+  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Ans</span>(exp) -&gt; <span style="color:#0033cc">Let</span>(xt, exp, e2)
+  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Let</span>(yt, exp, e1') -&gt; <span style="color:#0033cc">Let</span>(yt, exp, concat e1' xt e2)
   <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Forget</span>(y, e1') -&gt; <span style="color:#0033cc">Forget</span>(y, concat e1' xt e2)
 
 <span style="color:green">let</span> align i = (<span style="color:#77aaaa">if</span> i <span style="color:#808080">mod</span> 8 = 0 <span style="color:#77aaaa">then</span> i <span style="color:#77aaaa">else</span> i + 4)
@@ -1579,7 +1574,7 @@ rule token = parse
       <span style="color:#77aaaa">match</span> t <span style="color:#77aaaa">with</span>
       <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Unit</span> -&gt; acc
       <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Float</span> -&gt; addf acc x
-      <span style="color:#77aaaa">|</span> _ -&gt; addi acc x)
+      <span style="color:#77aaaa">|</span> _ -&gt; addi acc x t)
     ini
     xts
 
@@ -1588,7 +1583,7 @@ rule token = parse
     xts
     ([], [])
     (<span style="color:green">fun</span> (int, float) x -&gt; (int, float @ [x]))
-    (<span style="color:green">fun</span> (int, float) x -&gt; (int @ [x], float))
+    (<span style="color:green">fun</span> (int, float) x _ -&gt; (int @ [x], float))
 
 <span style="color:green">let</span> expand xts ini addf addi =
   classify
@@ -1597,8 +1592,8 @@ rule token = parse
     (<span style="color:green">fun</span> (offset, acc) x -&gt;
       <span style="color:green">let</span> offset = align offset  <span style="color:green">in</span>
       (offset + 8, addf x offset acc))
-<a name="virtual_g"></a>    (<span style="color:green">fun</span> (offset, acc) x -&gt;
-      (offset + 4, addi x offset acc))
+<a name="virtual_g"></a>    (<span style="color:green">fun</span> (offset, acc) x t -&gt;
+      (offset + 4, addi x t offset acc))
 
 <span style="color:green">let</span> <span style="color:green">rec</span> g env = <span style="color:green">function</span> <span style="color:#990000">(* 式の仮想マシンコード生成 *)</span>
   <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Closure</span>.<span style="color:#0033cc">Unit</span> -&gt; <span style="color:#0033cc">Ans</span>(<span style="color:#0033cc">Nop</span>)
@@ -1614,7 +1609,7 @@ rule token = parse
           data := (l, d) :: !data;
           l <span style="color:green">in</span>
       <span style="color:green">let</span> x = <span style="color:#0033cc">Id</span>.genid <span style="color:#aa4444">"l"</span> <span style="color:green">in</span>
-      <span style="color:#0033cc">Let</span>(x, <span style="color:#0033cc">SetL</span>(l), <span style="color:#0033cc">Ans</span>(<span style="color:#0033cc">LdDF</span>(x, <span style="color:#0033cc">C</span>(0))))
+      <span style="color:#0033cc">Let</span>((x, <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Int</span>), <span style="color:#0033cc">SetL</span>(l), <span style="color:#0033cc">Ans</span>(<span style="color:#0033cc">LdDF</span>(x, <span style="color:#0033cc">C</span>(0))))
   <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Closure</span>.<span style="color:#0033cc">Neg</span>(x) -&gt; <span style="color:#0033cc">Ans</span>(<span style="color:#0033cc">Neg</span>(x))
   <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Closure</span>.<span style="color:#0033cc">Add</span>(x, y) -&gt; <span style="color:#0033cc">Ans</span>(<span style="color:#0033cc">Add</span>(x, <span style="color:#0033cc">V</span>(y)))
   <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Closure</span>.<span style="color:#0033cc">Sub</span>(x, y) -&gt; <span style="color:#0033cc">Ans</span>(<span style="color:#0033cc">Sub</span>(x, <span style="color:#0033cc">V</span>(y)))
@@ -1656,23 +1651,23 @@ rule token = parse
                   (<span style="color:green">fun</span> y offset store_fv -&gt;
                     <span style="color:green">fun</span> e0 -&gt;
                       store_fv
-                        (<span style="color:#0033cc">Seq</span>(<span style="color:#0033cc">StDF</span>(y, x, <span style="color:#0033cc">C</span>(offset)),
+                        (seq(<span style="color:#0033cc">StDF</span>(y, x, <span style="color:#0033cc">C</span>(offset)),
                              e0)))
-                  (<span style="color:green">fun</span> y offset store_fv -&gt;
+                  (<span style="color:green">fun</span> y _ offset store_fv -&gt;
                     <span style="color:green">fun</span> e0 -&gt;
                       store_fv
-                        (<span style="color:#0033cc">Seq</span>(<span style="color:#0033cc">St</span>(y, x, <span style="color:#0033cc">C</span>(offset)),
+                        (seq(<span style="color:#0033cc">St</span>(y, x, <span style="color:#0033cc">C</span>(offset)),
                              e0))) <span style="color:green">in</span>
               ((<span style="color:green">fun</span> e0 -&gt;
                 set_addr
-                  (<span style="color:#0033cc">Let</span>(x, <span style="color:#0033cc">Mov</span>(reg_hp),
-                       <span style="color:#0033cc">Let</span>(reg_hp, <span style="color:#0033cc">Add</span>(reg_hp, <span style="color:#0033cc">C</span>(align offset)),
+                  (<span style="color:#0033cc">Let</span>((x, t), <span style="color:#0033cc">Mov</span>(reg_hp),
+                       <span style="color:#0033cc">Let</span>((reg_hp, <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Int</span>), <span style="color:#0033cc">Add</span>(reg_hp, <span style="color:#0033cc">C</span>(align offset)),
                            e0)))),
                <span style="color:green">let</span> z = <span style="color:#0033cc">Id</span>.genid <span style="color:#aa4444">"l"</span> <span style="color:green">in</span>
                (<span style="color:green">fun</span> e0 -&gt;
                  store_fv
-                   (<span style="color:#0033cc">Let</span>(z, <span style="color:#0033cc">SetL</span>(l),
-                        <span style="color:#0033cc">Seq</span>(<span style="color:#0033cc">St</span>(z, x, <span style="color:#0033cc">C</span>(0)),
+                   (<span style="color:#0033cc">Let</span>((z, <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Int</span>), <span style="color:#0033cc">SetL</span>(l),
+                        seq(<span style="color:#0033cc">St</span>(z, x, <span style="color:#0033cc">C</span>(0)),
                             e0))))))
           ((<span style="color:green">fun</span> e0 -&gt; e0), (<span style="color:green">fun</span> e0 -&gt; e0))
           bindings <span style="color:green">in</span>
@@ -1691,17 +1686,17 @@ rule token = parse
           (<span style="color:green">fun</span> x offset store -&gt;
             <span style="color:green">fun</span> e0 -&gt;
               store
-                (<span style="color:#0033cc">Seq</span>(<span style="color:#0033cc">StDF</span>(x, reg_hp, <span style="color:#0033cc">C</span>(offset)),
+                (seq(<span style="color:#0033cc">StDF</span>(x, reg_hp, <span style="color:#0033cc">C</span>(offset)),
                      e0)))
-          (<span style="color:green">fun</span> x offset store -&gt;
+          (<span style="color:green">fun</span> x _ offset store -&gt;
             <span style="color:green">fun</span> e0 -&gt;
               store
-                (<span style="color:#0033cc">Seq</span>(<span style="color:#0033cc">St</span>(x, reg_hp, <span style="color:#0033cc">C</span>(offset)),
+                (seq(<span style="color:#0033cc">St</span>(x, reg_hp, <span style="color:#0033cc">C</span>(offset)),
                      e0))) <span style="color:green">in</span>
       <span style="color:green">let</span> y = <span style="color:#0033cc">Id</span>.genid <span style="color:#aa4444">"t"</span> <span style="color:green">in</span>
       store
-        (<span style="color:#0033cc">Let</span>(y, <span style="color:#0033cc">Mov</span>(reg_hp),
-             <span style="color:#0033cc">Let</span>(reg_hp, <span style="color:#0033cc">Add</span>(reg_hp, <span style="color:#0033cc">C</span>(align offset)),
+        (<span style="color:#0033cc">Let</span>((y, <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Tuple</span>(<span style="color:#0033cc">List</span>.map (<span style="color:green">fun</span> x -&gt; <span style="color:#0033cc">M</span>.find x env) xs)), <span style="color:#0033cc">Mov</span>(reg_hp),
+             <span style="color:#0033cc">Let</span>((reg_hp, <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Int</span>), <span style="color:#0033cc">Add</span>(reg_hp, <span style="color:#0033cc">C</span>(align offset)),
                  <span style="color:#0033cc">Ans</span>(<span style="color:#0033cc">Mov</span>(y)))))
   <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Closure</span>.<span style="color:#0033cc">LetTuple</span>(xts, y, e2) -&gt;
       <span style="color:green">let</span> (offset, load) = <span style="color:#990000">(* コードを挿入する関数 *)</span>
@@ -1712,13 +1707,13 @@ rule token = parse
             <span style="color:#77aaaa">if</span> not (<span style="color:#0033cc">S</span>.mem x (<span style="color:#0033cc">Closure</span>.fv e2)) <span style="color:#77aaaa">then</span> load <span style="color:#77aaaa">else</span> <span style="color:#990000">(* [XX] a little ad hoc optimization *)</span>
             <span style="color:green">fun</span> e0 -&gt;
               load
-                (<span style="color:#0033cc">FLetD</span>(x, <span style="color:#0033cc">LdDF</span>(y, <span style="color:#0033cc">C</span>(offset)),
+                (fletd(x, <span style="color:#0033cc">LdDF</span>(y, <span style="color:#0033cc">C</span>(offset)),
                        e0)))
-          (<span style="color:green">fun</span> x offset load -&gt;
+          (<span style="color:green">fun</span> x t offset load -&gt;
             <span style="color:#77aaaa">if</span> not (<span style="color:#0033cc">S</span>.mem x (<span style="color:#0033cc">Closure</span>.fv e2)) <span style="color:#77aaaa">then</span> load <span style="color:#77aaaa">else</span> <span style="color:#990000">(* [XX] a little ad hoc optimization *)</span>
             <span style="color:green">fun</span> e0 -&gt;
               load
-<a name="virtual_get"></a>                (<span style="color:#0033cc">Let</span>(x, <span style="color:#0033cc">Ld</span>(y, <span style="color:#0033cc">C</span>(offset)),
+<a name="virtual_get"></a>                (<span style="color:#0033cc">Let</span>((x, t), <span style="color:#0033cc">Ld</span>(y, <span style="color:#0033cc">C</span>(offset)),
                      e0))) <span style="color:green">in</span>
       load (g (<span style="color:#0033cc">M</span>.add_list xts env) e2)
   <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Closure</span>.<span style="color:#0033cc">Get</span>(x, y) -&gt; <span style="color:#990000">(* 配列の読み出し *)</span>
@@ -1726,10 +1721,10 @@ rule token = parse
       (<span style="color:#77aaaa">match</span> <span style="color:#0033cc">M</span>.find x env <span style="color:#77aaaa">with</span>
       <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Array</span>(<span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Unit</span>) -&gt; <span style="color:#0033cc">Ans</span>(<span style="color:#0033cc">Nop</span>)
       <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Array</span>(<span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Float</span>) -&gt;
-          <span style="color:#0033cc">Let</span>(offset, <span style="color:#0033cc">SLL</span>(y, <span style="color:#0033cc">C</span>(3)),
+          <span style="color:#0033cc">Let</span>((offset, <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Int</span>), <span style="color:#0033cc">SLL</span>(y, <span style="color:#0033cc">C</span>(3)),
               <span style="color:#0033cc">Ans</span>(<span style="color:#0033cc">LdDF</span>(x, <span style="color:#0033cc">V</span>(offset))))
       <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Array</span>(_) -&gt;
-          <span style="color:#0033cc">Let</span>(offset, <span style="color:#0033cc">SLL</span>(y, <span style="color:#0033cc">C</span>(2)),
+          <span style="color:#0033cc">Let</span>((offset, <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Int</span>), <span style="color:#0033cc">SLL</span>(y, <span style="color:#0033cc">C</span>(2)),
               <span style="color:#0033cc">Ans</span>(<span style="color:#0033cc">Ld</span>(x, <span style="color:#0033cc">V</span>(offset))))
       <span style="color:#77aaaa">|</span> _ -&gt; <span style="color:#cc9900">assert</span> false)
   <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Closure</span>.<span style="color:#0033cc">Put</span>(x, y, z) -&gt;
@@ -1737,10 +1732,10 @@ rule token = parse
       (<span style="color:#77aaaa">match</span> <span style="color:#0033cc">M</span>.find x env <span style="color:#77aaaa">with</span>
       <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Array</span>(<span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Unit</span>) -&gt; <span style="color:#0033cc">Ans</span>(<span style="color:#0033cc">Nop</span>)
       <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Array</span>(<span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Float</span>) -&gt;
-          <span style="color:#0033cc">Let</span>(offset, <span style="color:#0033cc">SLL</span>(y, <span style="color:#0033cc">C</span>(3)),
+          <span style="color:#0033cc">Let</span>((offset, <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Int</span>), <span style="color:#0033cc">SLL</span>(y, <span style="color:#0033cc">C</span>(3)),
               <span style="color:#0033cc">Ans</span>(<span style="color:#0033cc">StDF</span>(z, x, <span style="color:#0033cc">V</span>(offset))))
       <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Array</span>(_) -&gt;
-          <span style="color:#0033cc">Let</span>(offset, <span style="color:#0033cc">SLL</span>(y, <span style="color:#0033cc">C</span>(2)),
+          <span style="color:#0033cc">Let</span>((offset, <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Int</span>), <span style="color:#0033cc">SLL</span>(y, <span style="color:#0033cc">C</span>(2)),
               <span style="color:#0033cc">Ans</span>(<span style="color:#0033cc">St</span>(z, x, <span style="color:#0033cc">V</span>(offset))))
 <a name="virtual_h"></a>      <span style="color:#77aaaa">|</span> _ -&gt; <span style="color:#cc9900">assert</span> false)
   <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Closure</span>.<span style="color:#0033cc">ExtArray</span>(<span style="color:#0033cc">Id</span>.<span style="color:#0033cc">L</span>(x)) -&gt; <span style="color:#0033cc">Ans</span>(<span style="color:#0033cc">SetL</span>(<span style="color:#0033cc">Id</span>.<span style="color:#0033cc">L</span>(<span style="color:#aa4444">"min_caml_"</span> ^ x)))
@@ -1755,12 +1750,12 @@ rule token = parse
       (<span style="color:green">fun</span> z offset load -&gt;
         <span style="color:green">fun</span> e0 -&gt;
           load
-            (<span style="color:#0033cc">Let</span>(z, <span style="color:#0033cc">LdDF</span>(reg_cl, <span style="color:#0033cc">C</span>(offset)),
-                 e0)))
-      (<span style="color:green">fun</span> z offset load -&gt;
+            (fletd(z, <span style="color:#0033cc">LdDF</span>(reg_cl, <span style="color:#0033cc">C</span>(offset)),
+                   e0)))
+      (<span style="color:green">fun</span> z t offset load -&gt;
         <span style="color:green">fun</span> e0 -&gt;
           load
-            (<span style="color:#0033cc">Let</span>(z, <span style="color:#0033cc">Ld</span>(reg_cl, <span style="color:#0033cc">C</span>(offset)),
+            (<span style="color:#0033cc">Let</span>((z, t), <span style="color:#0033cc">Ld</span>(reg_cl, <span style="color:#0033cc">C</span>(offset)),
                  e0))) <span style="color:green">in</span>
   <span style="color:green">let</span> e' = load (g (<span style="color:#0033cc">M</span>.add_list yts (<span style="color:#0033cc">M</span>.add_list zts <span style="color:#0033cc">M</span>.empty)) e) <span style="color:green">in</span>
   <span style="color:green">let</span> t2 =
@@ -1790,18 +1785,16 @@ rule token = parse
 
 <span style="color:green">let</span> <span style="color:green">rec</span> g env = <span style="color:green">function</span> <span style="color:#990000">(* 命令列の13bit即値最適化 *)</span>
   <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Ans</span>(exp) -&gt; <span style="color:#0033cc">Ans</span>(g' env exp)
-  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Let</span>(x, <span style="color:#0033cc">Set</span>(i), e) <span style="color:#77aaaa">when</span> (-4096 &lt;= i) &amp;&amp; (i &lt; 4096) -&gt;
+  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Let</span>((x, t) <span style="color:green">as</span> xt, <span style="color:#0033cc">Set</span>(i), e) <span style="color:#77aaaa">when</span> (-4096 &lt;= i) &amp;&amp; (i &lt; 4096) -&gt;
       <span style="color:#0033cc">Format</span>.eprintf <span style="color:#aa4444">"found simm13 %s = %d@."</span> x i;
       <span style="color:green">let</span> e' = g (<span style="color:#0033cc">M</span>.add x i env) e <span style="color:green">in</span>
-      <span style="color:#77aaaa">if</span> <span style="color:#0033cc">List</span>.mem x (fv e') <span style="color:#77aaaa">then</span> <span style="color:#0033cc">Let</span>(x, <span style="color:#0033cc">Set</span>(i), e') <span style="color:#77aaaa">else</span>
+      <span style="color:#77aaaa">if</span> <span style="color:#0033cc">List</span>.mem x (fv e') <span style="color:#77aaaa">then</span> <span style="color:#0033cc">Let</span>(xt, <span style="color:#0033cc">Set</span>(i), e') <span style="color:#77aaaa">else</span>
       (<span style="color:#0033cc">Format</span>.eprintf <span style="color:#aa4444">"erased redundant Set to %s@."</span> x;
        e')
-  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Let</span>(x, <span style="color:#0033cc">SLL</span>(y, <span style="color:#0033cc">C</span>(i)), e) <span style="color:#77aaaa">when</span> <span style="color:#0033cc">M</span>.mem y env -&gt; <span style="color:#990000">(* for array access *)</span>
+  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Let</span>((x, t) <span style="color:green">as</span> xt, <span style="color:#0033cc">SLL</span>(y, <span style="color:#0033cc">C</span>(i)), e) <span style="color:#77aaaa">when</span> <span style="color:#0033cc">M</span>.mem y env -&gt; <span style="color:#990000">(* for array access *)</span>
       <span style="color:#0033cc">Format</span>.eprintf <span style="color:#aa4444">"erased redundant SLL on %s@."</span> x;
-      g env (<span style="color:#0033cc">Let</span>(x, <span style="color:#0033cc">Set</span>((<span style="color:#0033cc">M</span>.find y env) <span style="color:#808080">lsl</span> i), e))
-  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Seq</span>(exp, e) -&gt; <span style="color:#0033cc">Seq</span>(g' env exp, g env e)
-<a name="simm13_gprime"></a>  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Let</span>(x, exp, e) -&gt; <span style="color:#0033cc">Let</span>(x, g' env exp, g env e)
-  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">FLetD</span>(x, exp, e) -&gt; <span style="color:#0033cc">FLetD</span>(x, g' env exp, g env e)
+<a name="simm13_gprime"></a>      g env (<span style="color:#0033cc">Let</span>(xt, <span style="color:#0033cc">Set</span>((<span style="color:#0033cc">M</span>.find y env) <span style="color:#808080">lsl</span> i), e))
+  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Let</span>((x, t) <span style="color:green">as</span> xt, exp, e) -&gt; <span style="color:#0033cc">Let</span>(xt, g' env exp, g env e)
   <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Forget</span>(x, e) -&gt; <span style="color:#0033cc">Forget</span>(x, g env e)
 <span style="color:green">and</span> g' env = <span style="color:green">function</span> <span style="color:#990000">(* 各命令の13bit即値最適化 *)</span>
   <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Add</span>(x, <span style="color:#0033cc">V</span>(y)) <span style="color:#77aaaa">when</span> <span style="color:#0033cc">M</span>.mem y env -&gt; <span style="color:#0033cc">Add</span>(x, <span style="color:#0033cc">C</span>(<span style="color:#0033cc">M</span>.find y env))
@@ -1869,14 +1862,8 @@ rule token = parse
   <span style="color:#77aaaa">|</span> _ -&gt; false, []
 <span style="color:green">and</span> target src dest = <span style="color:green">function</span> <span style="color:#990000">(* register targeting *)</span>
   <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Ans</span>(exp) -&gt; target' src dest exp
-  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Seq</span>(exp, e) -&gt; target src dest (<span style="color:#0033cc">Let</span>(<span style="color:#0033cc">Id</span>.gentmp <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Unit</span>, exp, e))
-  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Let</span>(x, exp, e) -&gt;
-      <span style="color:green">let</span> c1, rs1 = target' src (x, <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Int</span>) exp <span style="color:green">in</span>
-      <span style="color:#77aaaa">if</span> c1 <span style="color:#77aaaa">then</span> true, rs1 <span style="color:#77aaaa">else</span>
-      <span style="color:green">let</span> c2, rs2 = target src dest e <span style="color:green">in</span>
-      c2, rs1 @ rs2
-  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">FLetD</span>(x, exp, e) -&gt;
-      <span style="color:green">let</span> c1, rs1 = target' src (x, <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Float</span>) exp <span style="color:green">in</span>
+  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Let</span>(xt, exp, e) -&gt;
+      <span style="color:green">let</span> c1, rs1 = target' src xt exp <span style="color:green">in</span>
       <span style="color:#77aaaa">if</span> c1 <span style="color:#77aaaa">then</span> true, rs1 <span style="color:#77aaaa">else</span>
       <span style="color:green">let</span> c2, rs2 = target src dest e <span style="color:green">in</span>
       c2, rs1 @ rs2
@@ -1892,6 +1879,7 @@ rule token = parse
 <span style="color:green">let</span> <span style="color:green">rec</span> alloc_or_spill dest cont regenv all x =
   <span style="color:#990000">(* allocate a register or spill a variable *)</span>
   <span style="color:#cc9900">assert</span> (not (<span style="color:#0033cc">M</span>.mem x regenv));
+  <span style="color:#77aaaa">if</span> all = [<span style="color:#aa4444">"%g0"</span>] <span style="color:#77aaaa">then</span> <span style="color:#0033cc">Alloc</span>(<span style="color:#aa4444">"%g0"</span>) <span style="color:#77aaaa">else</span> <span style="color:#990000">(* [XX] ad hoc optimization *)</span>
   <span style="color:#77aaaa">if</span> is_reg x <span style="color:#77aaaa">then</span> <span style="color:#0033cc">Alloc</span>(x) <span style="color:#77aaaa">else</span>
   <span style="color:green">let</span> free = fv cont <span style="color:green">in</span>
   <span style="color:#77aaaa">try</span>
@@ -1925,8 +1913,12 @@ rule token = parse
 
 <span style="color:#990000">(* auxiliary function for g and g'_and_unspill *)</span>
 <span style="color:green">let</span> add x r regenv =
-  <span style="color:#77aaaa">if</span> is_reg x <span style="color:#77aaaa">then</span> (<span style="color:#cc9900">assert</span> (x = r); regenv) <span style="color:#77aaaa">else</span>
+<a name="regalloc_result"></a>  <span style="color:#77aaaa">if</span> is_reg x <span style="color:#77aaaa">then</span> (<span style="color:#cc9900">assert</span> (x = r); regenv) <span style="color:#77aaaa">else</span>
   <span style="color:#0033cc">M</span>.add x r regenv
+
+<span style="color:green">type</span> g_result = <span style="color:#990000">(* gやg'においてspillingがあったかどうかを表すデータ型 *)</span>
+  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">NoSpill</span> <span style="color:green">of</span> t * <span style="color:#0033cc">Id</span>.t <span style="color:#0033cc">M</span>.t <span style="color:#990000">(* new regenv *)</span>
+  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">ToSpill</span> <span style="color:green">of</span> t * <span style="color:#0033cc">Id</span>.t list <span style="color:#990000">(* spilled variables *)</span>
 
 <span style="color:#990000">(* auxiliary functions for g' *)</span>
 <span style="color:green">exception</span> <span style="color:#0033cc">NoReg</span> <span style="color:green">of</span> <span style="color:#0033cc">Id</span>.t * <span style="color:#0033cc">Type</span>.t
@@ -1941,57 +1933,43 @@ rule token = parse
 <span style="color:green">let</span> forget_list xs e =
   <span style="color:#0033cc">List</span>.fold_left
     (<span style="color:green">fun</span> e x -&gt; <span style="color:#0033cc">Forget</span>(x, e))
-<a name="regalloc_result"></a>    e
+    e
     xs
+<span style="color:green">let</span> insert_forget xs exp t =
+  <span style="color:green">let</span> constr =
+    <span style="color:#77aaaa">match</span> t <span style="color:#77aaaa">with</span>
+    <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Unit</span> -&gt; (<span style="color:green">fun</span> a -&gt; <span style="color:#0033cc">Nop</span>)
+    <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Float</span> -&gt; (<span style="color:green">fun</span> a -&gt; <span style="color:#0033cc">FMovD</span>(a))
+    <span style="color:#77aaaa">|</span> _ -&gt; (<span style="color:green">fun</span> a -&gt; <span style="color:#0033cc">Mov</span>(a)) <span style="color:green">in</span>
+  <span style="color:green">let</span> a = <span style="color:#0033cc">Id</span>.gentmp t <span style="color:green">in</span>
+  <span style="color:#0033cc">ToSpill</span>(<span style="color:#0033cc">Let</span>((a, t), exp,
+<a name="regalloc_g"></a>              forget_list xs (<span style="color:#0033cc">Ans</span>(constr a))),
+          xs)
 
-<a name="regalloc_g"></a><span style="color:green">type</span> g_result = <span style="color:#990000">(* gにおいてspillingがあったかどうかを表すデータ型 *)</span>
-  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">NoSpill</span> <span style="color:green">of</span> t * <span style="color:#0033cc">Id</span>.t <span style="color:#0033cc">M</span>.t <span style="color:#990000">(* new regenv *)</span>
-  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">ToSpill</span> <span style="color:green">of</span> t * <span style="color:#0033cc">Id</span>.t list <span style="color:#990000">(* spilled variables *)</span>
 <span style="color:green">let</span> <span style="color:green">rec</span> g dest cont regenv = <span style="color:green">function</span> <span style="color:#990000">(* 命令列のレジスタ割り当て *)</span>
   <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Ans</span>(exp) -&gt; g'_and_unspill dest cont regenv exp
-  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Seq</span>(exp, e) -&gt;
-      <span style="color:green">let</span> cont' = concat e dest cont <span style="color:green">in</span>
-      <span style="color:green">let</span> x = <span style="color:#0033cc">Id</span>.gentmp <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Unit</span> <span style="color:green">in</span>
-      (<span style="color:#77aaaa">match</span> g'_and_unspill (x, <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Unit</span>) cont' regenv exp <span style="color:#77aaaa">with</span>
-      <span style="color:#77aaaa">|</span> <span style="color:#0033cc">ToSpill</span>(e1, ys) -&gt; <span style="color:#0033cc">ToSpill</span>(concat e1 (x, <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Unit</span>) e, ys)
-      <span style="color:#77aaaa">|</span> <span style="color:#0033cc">NoSpill</span>(e1', regenv1) -&gt;
-          <span style="color:#77aaaa">match</span> g dest cont regenv1 e <span style="color:#77aaaa">with</span>
-          <span style="color:#77aaaa">|</span> <span style="color:#0033cc">ToSpill</span>(e2, ys) -&gt; <span style="color:#0033cc">ToSpill</span>(<span style="color:#0033cc">Seq</span>(exp, e2), ys)
-          <span style="color:#77aaaa">|</span> <span style="color:#0033cc">NoSpill</span>(e2', regenv2) -&gt; <span style="color:#0033cc">NoSpill</span>(concat e1' (x, <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Unit</span>) e2', regenv2))
-  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Let</span>(x, exp, e) -&gt;
+  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Let</span>((x, t) <span style="color:green">as</span> xt, exp, e) -&gt;
       <span style="color:#cc9900">assert</span> (not (<span style="color:#0033cc">M</span>.mem x regenv));
       <span style="color:green">let</span> cont' = concat e dest cont <span style="color:green">in</span>
-      (<span style="color:#77aaaa">match</span> g'_and_unspill (x, <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Int</span>) cont' regenv exp <span style="color:#77aaaa">with</span>
-      <span style="color:#77aaaa">|</span> <span style="color:#0033cc">ToSpill</span>(e1, ys) -&gt; <span style="color:#0033cc">ToSpill</span>(concat e1 (x, <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Int</span>) e, ys)
+      (<span style="color:#77aaaa">match</span> g'_and_unspill xt cont' regenv exp <span style="color:#77aaaa">with</span>
+      <span style="color:#77aaaa">|</span> <span style="color:#0033cc">ToSpill</span>(e1, ys) -&gt; <span style="color:#0033cc">ToSpill</span>(concat e1 xt e, ys)
       <span style="color:#77aaaa">|</span> <span style="color:#0033cc">NoSpill</span>(e1', regenv1) -&gt;
-          <span style="color:#77aaaa">match</span> alloc_or_spill dest cont' regenv1 allregs x <span style="color:#77aaaa">with</span>
-          <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Spill</span>(y) -&gt; <span style="color:#0033cc">ToSpill</span>(<span style="color:#0033cc">Let</span>(x, exp, <span style="color:#0033cc">Forget</span>(y, e)), [y])
+          <span style="color:green">let</span> all =
+            <span style="color:#77aaaa">match</span> t <span style="color:#77aaaa">with</span>
+            <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Unit</span> -&gt; [<span style="color:#aa4444">"%g0"</span>] <span style="color:#990000">(* dummy *)</span>
+            <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Float</span> -&gt; allfregs
+            <span style="color:#77aaaa">|</span> _ -&gt; allregs <span style="color:green">in</span>
+          (<span style="color:#77aaaa">match</span> alloc_or_spill dest cont' regenv1 all x <span style="color:#77aaaa">with</span>
+          <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Spill</span>(y) -&gt; <span style="color:#0033cc">ToSpill</span>(<span style="color:#0033cc">Let</span>(xt, exp, <span style="color:#0033cc">Forget</span>(y, e)), [y])
           <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Alloc</span>(r) -&gt;
               <span style="color:#77aaaa">match</span> g dest cont (add x r regenv1) e <span style="color:#77aaaa">with</span>
               <span style="color:#77aaaa">|</span> <span style="color:#0033cc">ToSpill</span>(e2, ys) <span style="color:#77aaaa">when</span> <span style="color:#0033cc">List</span>.mem x ys -&gt;
-                  <span style="color:green">let</span> x_saved = <span style="color:#0033cc">Let</span>(x, exp, <span style="color:#0033cc">Seq</span>(<span style="color:#0033cc">Save</span>(x, x), e2)) <span style="color:green">in</span>
+                  <span style="color:green">let</span> x_saved = <span style="color:#0033cc">Let</span>(xt, exp, seq(<span style="color:#0033cc">Save</span>(x, x), e2)) <span style="color:green">in</span>
                   (<span style="color:#77aaaa">match</span> <span style="color:#0033cc">List</span>.filter (<span style="color:green">fun</span> y -&gt; y &lt;&gt; x) ys <span style="color:#77aaaa">with</span>
                   <span style="color:#77aaaa">|</span> [] -&gt; g dest cont regenv x_saved
                   <span style="color:#77aaaa">|</span> ys_left -&gt; <span style="color:#0033cc">ToSpill</span>(x_saved, ys_left))
-              <span style="color:#77aaaa">|</span> <span style="color:#0033cc">ToSpill</span>(e2, ys) -&gt; <span style="color:#0033cc">ToSpill</span>(<span style="color:#0033cc">Let</span>(x, exp, e2), ys)
-              <span style="color:#77aaaa">|</span> <span style="color:#0033cc">NoSpill</span>(e2', regenv2) -&gt; <span style="color:#0033cc">NoSpill</span>(concat e1' (r, <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Int</span>) e2', regenv2))
-  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">FLetD</span>(x, exp, e) -&gt;
-      <span style="color:#cc9900">assert</span> (not (<span style="color:#0033cc">M</span>.mem x regenv));
-      <span style="color:green">let</span> cont' = concat e dest cont <span style="color:green">in</span>
-      (<span style="color:#77aaaa">match</span> g'_and_unspill (x, <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Float</span>) cont' regenv exp <span style="color:#77aaaa">with</span>
-      <span style="color:#77aaaa">|</span> <span style="color:#0033cc">ToSpill</span>(e1, ys) -&gt; <span style="color:#0033cc">ToSpill</span>(concat e1 (x, <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Float</span>) e, ys)
-      <span style="color:#77aaaa">|</span> <span style="color:#0033cc">NoSpill</span>(e1', regenv1) -&gt;
-          <span style="color:#77aaaa">match</span> alloc_or_spill dest cont' regenv1 allfregs x <span style="color:#77aaaa">with</span>
-          <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Spill</span>(y) -&gt; <span style="color:#0033cc">ToSpill</span>(<span style="color:#0033cc">FLetD</span>(x, exp, <span style="color:#0033cc">Forget</span>(y, e)), [y])
-          <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Alloc</span>(r) -&gt;
-              <span style="color:#77aaaa">match</span> g dest cont (add x r regenv1) e <span style="color:#77aaaa">with</span>
-              <span style="color:#77aaaa">|</span> <span style="color:#0033cc">ToSpill</span>(e2, ys) <span style="color:#77aaaa">when</span> <span style="color:#0033cc">List</span>.mem x ys -&gt;
-                  <span style="color:green">let</span> x_saved = <span style="color:#0033cc">FLetD</span>(x, exp, <span style="color:#0033cc">Seq</span>(<span style="color:#0033cc">Save</span>(x, x), e2)) <span style="color:green">in</span>
-                  (<span style="color:#77aaaa">match</span> <span style="color:#0033cc">List</span>.filter (<span style="color:green">fun</span> y -&gt; y &lt;&gt; x) ys <span style="color:#77aaaa">with</span>
-                  <span style="color:#77aaaa">|</span> [] -&gt; g dest cont regenv x_saved
-                  <span style="color:#77aaaa">|</span> ys_left -&gt; <span style="color:#0033cc">ToSpill</span>(x_saved, ys_left))
-              <span style="color:#77aaaa">|</span> <span style="color:#0033cc">ToSpill</span>(e2, ys) -&gt; <span style="color:#0033cc">ToSpill</span>(<span style="color:#0033cc">FLetD</span>(x, exp, e2), ys)
-              <span style="color:#77aaaa">|</span> <span style="color:#0033cc">NoSpill</span>(e2', regenv2) -&gt; <span style="color:#0033cc">NoSpill</span>(concat e1' (r, <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Float</span>) e2', regenv2))
+              <span style="color:#77aaaa">|</span> <span style="color:#0033cc">ToSpill</span>(e2, ys) -&gt; <span style="color:#0033cc">ToSpill</span>(<span style="color:#0033cc">Let</span>(xt, exp, e2), ys)
+              <span style="color:#77aaaa">|</span> <span style="color:#0033cc">NoSpill</span>(e2', regenv2) -&gt; <span style="color:#0033cc">NoSpill</span>(concat e1' (r, t) e2', regenv2)))
   <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Forget</span>(x, e) -&gt;
       (<span style="color:#77aaaa">match</span> g dest cont (<span style="color:#0033cc">M</span>.remove x regenv) e <span style="color:#77aaaa">with</span>
       <span style="color:#77aaaa">|</span> <span style="color:#0033cc">ToSpill</span>(e1, ys) -&gt;
@@ -2002,8 +1980,7 @@ rule token = parse
       <span style="color:#77aaaa">|</span> <span style="color:#0033cc">NoSpill</span>(e1', regenv1) -&gt; <span style="color:#0033cc">NoSpill</span>(e1', regenv1))
 <span style="color:green">and</span> g'_and_unspill dest cont regenv exp = <span style="color:#990000">(* 使用される変数をスタックからレジスタへRestore *)</span>
   <span style="color:#77aaaa">try</span> g' dest cont regenv exp
-  <span style="color:#77aaaa">with</span>
-  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">NoReg</span>(x, t) -&gt;
+  <span style="color:#77aaaa">with</span> <span style="color:#0033cc">NoReg</span>(x, t) -&gt;
     (<span style="color:#0033cc">Format</span>.eprintf <span style="color:#aa4444">"unspilling %s@."</span> x;
      <span style="color:green">let</span> cont' = concat (<span style="color:#0033cc">Ans</span>(exp)) dest cont <span style="color:green">in</span>
      <span style="color:green">let</span> all =
@@ -2014,15 +1991,9 @@ rule token = parse
      <span style="color:#77aaaa">match</span> alloc_or_spill dest cont' regenv all x <span style="color:#77aaaa">with</span>
      <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Spill</span>(z) -&gt; <span style="color:#0033cc">ToSpill</span>(<span style="color:#0033cc">Forget</span>(z, <span style="color:#0033cc">Ans</span>(exp)), [z])
      <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Alloc</span>(r) -&gt;
-         <span style="color:#77aaaa">match</span> g'_and_unspill dest cont (add x r regenv) exp <span style="color:#77aaaa">with</span>
+<a name="regalloc_gprime"></a>         <span style="color:#77aaaa">match</span> g'_and_unspill dest cont (add x r regenv) exp <span style="color:#77aaaa">with</span>
          <span style="color:#77aaaa">|</span> <span style="color:#0033cc">ToSpill</span>(e1, zs) -&gt; <span style="color:#0033cc">ToSpill</span>(e1, zs)
-         <span style="color:#77aaaa">|</span> <span style="color:#0033cc">NoSpill</span>(e1', regenv1) -&gt;
-             <span style="color:green">let</span> e =
-               <span style="color:#77aaaa">match</span> t <span style="color:#77aaaa">with</span>
-               <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Unit</span> -&gt; <span style="color:#cc9900">assert</span> false
-<a name="regalloc_gprime"></a>               <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Float</span> -&gt; <span style="color:#0033cc">FLetD</span>(r, <span style="color:#0033cc">Restore</span>(x), e1')
-               <span style="color:#77aaaa">|</span> _ -&gt; <span style="color:#0033cc">Let</span>(r, <span style="color:#0033cc">Restore</span>(x), e1') <span style="color:green">in</span>
-             <span style="color:#0033cc">NoSpill</span>(e, regenv1))
+         <span style="color:#77aaaa">|</span> <span style="color:#0033cc">NoSpill</span>(e1', regenv1) -&gt; <span style="color:#0033cc">NoSpill</span>(<span style="color:#0033cc">Let</span>((r, t), <span style="color:#0033cc">Restore</span>(x), e1'), regenv1))
 <span style="color:green">and</span> g' dest cont regenv = <span style="color:green">function</span> <span style="color:#990000">(* 各命令のレジスタ割り当て *)</span>
   <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Nop</span> <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Set</span> _ <span style="color:#77aaaa">|</span> <span style="color:#0033cc">SetL</span> _ <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Comment</span> _ <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Restore</span> _ <span style="color:green">as</span> exp -&gt; <span style="color:#0033cc">NoSpill</span>(<span style="color:#0033cc">Ans</span>(exp), regenv)
   <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Mov</span>(x) -&gt; <span style="color:#0033cc">NoSpill</span>(<span style="color:#0033cc">Ans</span>(<span style="color:#0033cc">Mov</span>(find x <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Int</span> regenv)), regenv)
@@ -2070,19 +2041,9 @@ rule token = parse
   <span style="color:#77aaaa">match</span>
     <span style="color:#0033cc">List</span>.filter
       (<span style="color:green">fun</span> x -&gt; not (is_reg x) &amp;&amp; not (<span style="color:#0033cc">M</span>.mem x regenv') &amp;&amp; x &lt;&gt; fst dest)
-      (fv cont)
+<a name="regalloc_call"></a>      (fv cont)
   <span style="color:#77aaaa">with</span> [] -&gt; <span style="color:#0033cc">NoSpill</span>(<span style="color:#0033cc">Ans</span>(constr e1' e2'), regenv')
-  <span style="color:#77aaaa">|</span> xs -&gt; <span style="color:#990000">(* そうでない変数は分岐以前にセーブ *)</span>
-      <span style="color:green">let</span> e =
-        <span style="color:#77aaaa">match</span> snd dest <span style="color:#77aaaa">with</span>
-        <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Unit</span> -&gt; <span style="color:#0033cc">Seq</span>(exp, forget_list xs (<span style="color:#0033cc">Ans</span>(<span style="color:#0033cc">Nop</span>)))
-        <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Float</span> -&gt;
-            <span style="color:green">let</span> y = <span style="color:#0033cc">Id</span>.gentmp <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Float</span> <span style="color:green">in</span>
-            <span style="color:#0033cc">FLetD</span>(y, exp, forget_list xs (<span style="color:#0033cc">Ans</span>(<span style="color:#0033cc">FMovD</span>(y))))
-        <span style="color:#77aaaa">|</span> t -&gt;
-<a name="regalloc_call"></a>            <span style="color:green">let</span> y = <span style="color:#0033cc">Id</span>.gentmp t <span style="color:green">in</span>
-            <span style="color:#0033cc">Let</span>(y, exp, forget_list xs (<span style="color:#0033cc">Ans</span>(<span style="color:#0033cc">Mov</span>(y)))) <span style="color:green">in</span>
-      <span style="color:#0033cc">ToSpill</span>(e, xs)
+  <span style="color:#77aaaa">|</span> xs -&gt; insert_forget xs exp (snd dest) <span style="color:#990000">(* そうでない変数は分岐以前にセーブ *)</span>
 <span style="color:green">and</span> g'_call dest cont regenv exp constr ys zs = <span style="color:#990000">(* 関数呼び出しのレジスタ割り当て *)</span>
   <span style="color:#77aaaa">match</span>
     <span style="color:#0033cc">List</span>.filter <span style="color:#990000">(* セーブすべきレジスタ変数を探す *)</span>
@@ -2091,18 +2052,8 @@ rule token = parse
   <span style="color:#77aaaa">with</span> [] -&gt; <span style="color:#0033cc">NoSpill</span>(<span style="color:#0033cc">Ans</span>(constr
                            (<span style="color:#0033cc">List</span>.map (<span style="color:green">fun</span> y -&gt; find y <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Int</span> regenv) ys)
                            (<span style="color:#0033cc">List</span>.map (<span style="color:green">fun</span> z -&gt; find z <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Float</span> regenv) zs)),
-                     <span style="color:#0033cc">M</span>.empty)
-  <span style="color:#77aaaa">|</span> xs -&gt;
-      <span style="color:green">let</span> e =
-        <span style="color:#77aaaa">match</span> snd dest <span style="color:#77aaaa">with</span>
-        <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Unit</span> -&gt; <span style="color:#0033cc">Seq</span>(exp, forget_list xs (<span style="color:#0033cc">Ans</span>(<span style="color:#0033cc">Nop</span>)))
-        <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Float</span> -&gt;
-            <span style="color:green">let</span> b = <span style="color:#0033cc">Id</span>.gentmp <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Float</span> <span style="color:green">in</span>
-            <span style="color:#0033cc">FLetD</span>(b, exp, forget_list xs (<span style="color:#0033cc">Ans</span>(<span style="color:#0033cc">FMovD</span>(b))))
-        <span style="color:#77aaaa">|</span> t -&gt;
-            <span style="color:green">let</span> b = <span style="color:#0033cc">Id</span>.gentmp t <span style="color:green">in</span>
-<a name="regalloc_repeat"></a>            <span style="color:#0033cc">Let</span>(b, exp, forget_list xs (<span style="color:#0033cc">Ans</span>(<span style="color:#0033cc">Mov</span>(b)))) <span style="color:green">in</span>
-      <span style="color:#0033cc">ToSpill</span>(e, xs)
+<a name="regalloc_repeat"></a>                     <span style="color:#0033cc">M</span>.empty)
+  <span style="color:#77aaaa">|</span> xs -&gt; insert_forget xs exp (snd dest)
 
 <span style="color:green">and</span> g_repeat dest cont regenv e = <span style="color:#990000">(* Spillがなくなるまでgを繰り返す *)</span>
     <span style="color:#77aaaa">match</span> g dest cont regenv e <span style="color:#77aaaa">with</span>
@@ -2110,7 +2061,7 @@ rule token = parse
     <span style="color:#77aaaa">|</span> <span style="color:#0033cc">ToSpill</span>(e, xs) -&gt;
         g_repeat dest cont regenv
           (<span style="color:#0033cc">List</span>.fold_left
-             (<span style="color:green">fun</span> e x -&gt; <span style="color:#0033cc">Seq</span>(<span style="color:#0033cc">Save</span>(x, x), e))
+             (<span style="color:green">fun</span> e x -&gt; seq(<span style="color:#0033cc">Save</span>(x, x), e))
 <a name="regalloc_h"></a>             e
              xs)
 
@@ -2213,13 +2164,7 @@ rule token = parse
 <span style="color:green">type</span> dest = <span style="color:#0033cc">Tail</span> <span style="color:#77aaaa">|</span> <span style="color:#0033cc">NonTail</span> <span style="color:green">of</span> <span style="color:#0033cc">Id</span>.t <span style="color:#990000">(* 末尾かどうかを表すデータ型 *)</span>
 <span style="color:green">let</span> <span style="color:green">rec</span> g oc = <span style="color:green">function</span> <span style="color:#990000">(* 命令列のアセンブリ生成 *)</span>
   <span style="color:#77aaaa">|</span> dest, <span style="color:#0033cc">Ans</span>(exp) -&gt; g' oc (dest, exp)
-  <span style="color:#77aaaa">|</span> dest, <span style="color:#0033cc">Seq</span>(exp, e) -&gt;
-      g' oc (<span style="color:#0033cc">NonTail</span>(<span style="color:#0033cc">Id</span>.gentmp <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Unit</span>), exp);
-      g oc (dest, e)
-  <span style="color:#77aaaa">|</span> dest, <span style="color:#0033cc">Let</span>(x, exp, e) -&gt;
-      g' oc (<span style="color:#0033cc">NonTail</span>(x), exp);
-      g oc (dest, e)
-  <span style="color:#77aaaa">|</span> dest, <span style="color:#0033cc">FLetD</span>(x, exp, e) -&gt;
+  <span style="color:#77aaaa">|</span> dest, <span style="color:#0033cc">Let</span>((x, t), exp, e) -&gt;
 <a name="emit_gprime"></a>      g' oc (<span style="color:#0033cc">NonTail</span>(x), exp);
 <a name="emit_nontail"></a>      g oc (dest, e)
   <span style="color:#77aaaa">|</span> _, <span style="color:#0033cc">Forget</span> _ -&gt; <span style="color:#cc9900">assert</span> false
