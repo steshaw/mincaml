@@ -38,6 +38,7 @@ int main ()
 	  putchar('1');
 
 	cont:
+	  ;
         }
     }
 

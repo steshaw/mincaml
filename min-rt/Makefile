@@ -22,7 +22,7 @@ ppmdiff: ppm.ml diff.ml
 %.mincaml.ppm: %.sld min-rt.min-caml
 	time ./min-rt.min-caml < $< > $@
 min-rt.min-caml: min-rt.s globals.s ../libmincaml.s ../stub.c
-	gcc -g -O2 -Wall $^ -lm -o min-rt.min-caml
+	gcc -m32 -g -O2 -Wall $^ -lm -o min-rt.min-caml
 min-rt.s: min-rt.ml ../min-caml.opt
 	../min-caml.opt -inline 100 min-rt
 
@@ -30,14 +30,13 @@ min-rt.s: min-rt.ml ../min-caml.opt
 	echo 768 > $<_
 	cat $< >> $<_
 	time ./raytrace < $<_ > $@
-	rm -f $<_
-raytrace: raytrace.cc
-	gcc -Wall -O3 raytrace.cc -lm -o raytrace
+raytrace: raytrace.c
+	gcc -m32 -Wall -O3 raytrace.c -lm -o raytrace
 
 %.GCC.ppm: %.sld RayTrace
 	time ./RayTrace -s -w 768 -h 768 < $< > $@
 RayTrace: RayTrace.cxx
-	gcc -Wall -O3 RayTrace.cxx -lm -o RayTrace
+	g++ -m32 -Wall -O3 RayTrace.cxx -lm -o RayTrace
 
 %.ocamlopt.ppm: %.sld min-rt
 	time ./min-rt < $< > $@

@@ -12,7 +12,7 @@
 
 #define NULL 0
 
-static const double pi = 3.14159265358979323846;
+#define pi 3.14159265358979323846
 
 #define fabs __builtin_fabs
 
@@ -34,7 +34,7 @@ extern "C" {
 #include <string.h>
 #include <math.h>
 
-static const double pi = M_PI;
+#define pi M_PI
 
 static double sio_sync_read_double (void) {
   double d;
@@ -86,7 +86,7 @@ static int read_int (void) {
   return (int) read_double ();
 }
 
-static const unsigned write_queue_size = 256; // サイズ
+#define write_queue_size 256 // サイズ
 static unsigned write_queue_num = 0; // 現在の数
 static int write_queue [write_queue_size]; // キュー
 static int * write_queue_head = NULL; // 先頭
@@ -220,17 +220,17 @@ typedef double rad_t; // 角度（ラジアン）
 
 typedef double dist_t;
 
-static const dist_t dist_max = 1e+15; // 最大の長さとして用いる初期値
-static const dist_t dist_far = 1e+14; // 無視できるほどの遠さ
-static const dist_t dist_back = -0.1; // 後方かどうかの判定基準
-static const dist_t dist_delta = 0.01; // 誤差を回避するための微調整
+#define dist_max 1e+15 // 最大の長さとして用いる初期値
+#define dist_far 1e+14 // 無視できるほどの遠さ
+#define dist_back -0.1 // 後方かどうかの判定基準
+#define dist_delta 0.01 // 誤差を回避するための微調整
 
 // 画素の明るさ
 
 typedef double hil_t;
 
-static const hil_t hil_min = 0.0;
-static const hil_t hil_max = 256.0;
+#define hil_min 0.0
+#define hil_max 256.0
 
 // 三角関数の値で表現された角度
 
@@ -286,11 +286,12 @@ typedef struct {
 
 // スクリーンに関する情報
 
+#define screen_size 128.0 // 一辺の長さ
+#define screen_orig_view_z -200.0 // 変換前の視点（z軸上に固定）
+
 typedef struct {
-  static const dist_t size = 128.0; // 一辺の長さ
   vec_t pos; // 位置
   rot2_t dir; // 向き
-  static const dist_t orig_view_z = -200.0; // 変換前の視点（z軸上に固定）
   vec_t rot_view; // 回転後の視点
   vec_t trans_view; // 回転・平行移動後の視点
 } screen_t;
@@ -338,7 +339,7 @@ typedef bool_t pol_t;
 
 // プリミティブ
 
-static const card_t max_prim = 64; // プリミティブの数の最大値
+#define max_prim 64 // プリミティブの数の最大値
 
 typedef struct {
   type_t type; // 種類
@@ -363,7 +364,7 @@ static prim_t * const noprim = NULL;
 
 // ANDプリミティブ
 
-static const card_t max_andprim = 32; // ANDプリミティブの数の最大値
+#define max_andprim 32 // ANDプリミティブの数の最大値
 
 typedef struct {
   prim_t * prims [max_prim];
@@ -373,7 +374,7 @@ static andprim_t * const noandprim = NULL;
 
 // ORプリミティブ
 
-static const card_t max_orprim = 32; // ORプリミティブの数の最大値
+#define max_orprim 32 // ORプリミティブの数の最大値
 
 typedef struct {
   prim_t * range;
@@ -398,7 +399,7 @@ typedef enum {
 
 // 排他的論理和
 
-inline bool_t xor (bool_t x, bool_t y) {
+inline bool_t my_xor (bool_t x, bool_t y) {
   return (x && ! y) || (! x && y);
 }
 
@@ -649,7 +650,7 @@ static void rotate_prim_1 (double r [3] [3],
 
 // 2次曲面の回転において、クロスタームを計算
 
-static void rotate_prim_2 (const double r [3] [3],
+static void rotate_prim_2 (double r [3] [3],
 			   const vec_t * param,
 			   vec_t * cross) {
   cross -> x = param -> x * r [0] [1] * r [0] [2];
@@ -668,7 +669,7 @@ static void rotate_prim_2 (const double r [3] [3],
 
 // 2次曲面の回転において、2乗の項の係数を計算
 
-static void rotate_prim_3 (const double r [3] [3],
+static void rotate_prim_3 (double r [3] [3],
 			   vec_t * param) {
   double x, y, z;
 
@@ -823,16 +824,16 @@ static void read_screen (screen_t * s) {
   read_vec (& s -> pos);
   read_rot2 (& s -> dir);
 
-  s -> rot_view . x = s -> orig_view_z
+  s -> rot_view . x = screen_orig_view_z
                     * s -> dir . tx . cos
                     * s -> dir . ty . sin;
   s -> trans_view . x = s -> rot_view . x
                       + s -> pos . x;
-  s -> rot_view . y = - s -> orig_view_z
+  s -> rot_view . y = - screen_orig_view_z
                     * s -> dir . tx . sin;
   s -> trans_view . y = s -> rot_view . y
                       + s -> pos . y;
-  s -> rot_view . z = s -> orig_view_z
+  s -> rot_view . z = screen_orig_view_z
                     * s -> dir . tx . cos
                     * s -> dir . ty . cos;
   s -> trans_view . z = s -> rot_view . z
@@ -876,7 +877,7 @@ static bool_t read_prim (prim_t * prim) {
   unsigned tmp;
 
   tmp = read_int ();
-  if (! cont (tmp)) return false;
+  if (! cont (tmp)) return 0;
   prim -> tex = (tex_t) tmp;
 
   prim -> type = (type_t) read_int ();
@@ -897,7 +898,7 @@ static bool_t read_prim (prim_t * prim) {
   if (prim -> type == type_plane) {
     if (prim -> pol) {
       neg_vec (& prim -> param);
-      prim -> pol = false;
+      prim -> pol = 0;
     }
   }
 
@@ -908,7 +909,7 @@ static bool_t read_prim (prim_t * prim) {
     rotate_prim (prim);
   }
 
-  return true;
+  return 1;
 }
 
 // ANDプリミティブを読み込む
@@ -918,14 +919,14 @@ static bool_t read_andprim (andprim_t * andprim) {
   unsigned tmp;
 
   tmp = read_int ();
-  if (! cont (tmp)) return false;
+  if (! cont (tmp)) return 0;
   andprim -> prims [i ++] = & prims [tmp];
 
-  while (true) {
+  while (1) {
     tmp = read_int ();
     if (! cont (tmp)) {
       andprim -> prims [i] = noprim;
-      return true;
+      return 1;
     }
     andprim -> prims [i ++] = & prims [tmp];
   }
@@ -938,14 +939,14 @@ static bool_t read_orprim (orprim_t * orprim) {
   unsigned tmp;
 
   tmp = read_int ();
-  if (! cont (tmp)) return false;
+  if (! cont (tmp)) return 0;
   orprim -> range = (tmp == 99) ? noprim : (& prims [tmp]);
 
-  while (true) {
+  while (1) {
     tmp = read_int ();
     if (! cont (tmp)) {
       orprim -> andprims [i] = noandprim;
-      return true;
+      return 1;
     }
     orprim -> andprims [i ++] = & andprims [tmp];
   }
@@ -962,7 +963,7 @@ static void read_data (void) {
 
   // プリミティブを読み込む
 
-  while (true) {
+  while (1) {
     bool_t tmp;
     tmp = read_prim (& prims [num_prims]);
     if (! tmp) break;
@@ -971,7 +972,7 @@ static void read_data (void) {
 
   // ANDプリミティブを読み込む
 
-  while (true) {
+  while (1) {
     bool_t tmp;
     tmp = read_andprim (& andprims [num_andprims]);
     if (! tmp) break;
@@ -980,14 +981,14 @@ static void read_data (void) {
 
   // ORプリミティブを読み込む
 
-  while (true) {
+  while (1) {
     bool_t tmp;
     tmp = read_orprim (& orprims [num_orprims]);
     if (! tmp) break;
     num_orprims ++;
   }
 
-  dot = screen . size / (dist_t) (int) output . size;
+  dot = screen_size / (dist_t) (int) output . size;
 }
 
 /*********************************************************************
@@ -1082,7 +1083,7 @@ static bool_t interior (const prim_t * prim) {
   switch (prim -> type) {
   case type_rect:
     {
-      return xor (fabs (is . x) > prim -> param . x ||
+      return my_xor (fabs (is . x) > prim -> param . x ||
 		  fabs (is . y) > prim -> param . y ||
 		  fabs (is . z) > prim -> param . z,
 		  prim -> pol);
@@ -1106,11 +1107,11 @@ static bool_t interior (const prim_t * prim) {
 	tmp -= 1.0;
       }
 
-      return xor (tmp > 0.0, prim -> pol);
+      return my_xor (tmp > 0.0, prim -> pol);
     }
   default:
     {
-      return false; // コンパイラの警告を回避
+      return 0; // コンパイラの警告を回避
     }
   }
 }
@@ -1123,12 +1124,12 @@ static bool_t intersect_rect (const vec_t * vp,
 			      rectsurf_t * rectsurf) {
   dist_t d;
 
-  // [BUG?] distが負のときにtrueが返る可能性
+  // [BUG?] distが負のときに1が返る可能性
 
   if (sightline . x != 0.0) {
     // yz平面に平行な面に関して調べる
 
-    d = xor (prim -> pol, sightline . x > 0.0)
+    d = my_xor (prim -> pol, sightline . x > 0.0)
         ? (prim -> param . x)
 	: (- prim -> param . x);
     d -= vp -> x;
@@ -1138,14 +1139,14 @@ static bool_t intersect_rect (const vec_t * vp,
 	fabs (vp -> z + sightline . z * d) <= prim -> param . z) {
       * rectsurf = rectsurf_x;
       * dist = d;
-      return true; // 交わった
+      return 1; // 交わった
     }
   }
 
   if (sightline . y != 0.0) {
     // zx平面に平行な面に関して調べる
 
-    d = xor (prim -> pol, sightline . y > 0.0)
+    d = my_xor (prim -> pol, sightline . y > 0.0)
         ? (prim -> param . y)
 	: (- prim -> param . y);
     d -= vp -> y;
@@ -1155,14 +1156,14 @@ static bool_t intersect_rect (const vec_t * vp,
 	fabs (vp -> x + sightline . x * d) <= prim -> param . x) {
       * rectsurf = rectsurf_y;
       * dist = d;
-      return true; // 交わった
+      return 1; // 交わった
     }
   }
 
   if (sightline . z != 0.0) {
     // xy平面に平行な面に関して調べる
 
-    d = xor (prim -> pol, sightline . z > 0.0)
+    d = my_xor (prim -> pol, sightline . z > 0.0)
         ? (prim -> param . z)
 	: (- prim -> param . z);
     d -= vp -> z;
@@ -1172,11 +1173,11 @@ static bool_t intersect_rect (const vec_t * vp,
 	fabs (vp -> y + sightline . y * d) <= prim -> param . y) {
       * rectsurf = rectsurf_z;
       * dist = d;
-      return true; // 交わった
+      return 1; // 交わった
     }
   }
 
-  return false; // 交わらなかった
+  return 0; // 交わらなかった
 }
 
 static bool_t intersect_plane (const vec_t * vp,
@@ -1187,12 +1188,12 @@ static bool_t intersect_plane (const vec_t * vp,
   d = inprod_vec (& sightline, & prim -> param); // 平面は極性が負
 
   if (d <= 0.0) {
-    return false; // 平行、あるいは向きが逆
+    return 0; // 平行、あるいは向きが逆
   }
 
   * dist = - inprod_vec (vp, & prim -> param) / d;
 
-  return true; // 交わった
+  return 1; // 交わった
 }
 
 static bool_t intersect_quad (const vec_t * vp,
@@ -1225,14 +1226,14 @@ static bool_t intersect_quad (const vec_t * vp,
   }
 
   if (a == 0.0) {
-    return false;
+    return 0;
   }
 
   {
     double d = fsq (b) - a * c; // 判別式
 
     if (d < 0.0) {
-      return false;
+      return 0;
     }
 
     * dist = - b;
@@ -1248,7 +1249,7 @@ static bool_t intersect_quad (const vec_t * vp,
     * dist /= a;
   }
 
-  return true; // 交わった
+  return 1; // 交わった
 }
 
 static bool_t intersect (const prim_t * prim,
@@ -1267,7 +1268,7 @@ static bool_t intersect (const prim_t * prim,
   case type_cone:
     return intersect_quad (& vp, prim, dist);
   default:
-    return false; // コンパイラの警告を回避
+    return 0; // コンパイラの警告を回避
   }
 }
 
@@ -1279,7 +1280,8 @@ static bool_t trace (void) {
 
   // すべてのORプリミティブ定義を順に調べていく
 
-  for (card_t id_orprim = 0;
+  card_t id_orprim;
+  for (id_orprim = 0;
        id_orprim < num_orprims;
        id_orprim ++) {
     const orprim_t * orprim = & orprims [id_orprim];
@@ -1299,7 +1301,8 @@ static bool_t trace (void) {
 
     // ORされているANDプリミティブを順に見ていく
 
-    for (card_t id_andprim = 0;
+    card_t id_andprim;
+    for (id_andprim = 0;
 	 orprim -> andprims [id_andprim] != noandprim;
 	 id_andprim ++) {
       const andprim_t * andprim = orprim -> andprims [id_andprim];
@@ -1309,7 +1312,8 @@ static bool_t trace (void) {
       rectsurf_t rectsurf;
       dist_t d;
 
-      for (card_t id_prim = 0;
+      card_t id_prim;
+      for (id_prim = 0;
 	   andprim -> prims [id_prim] != noprim;
 	   id_prim ++) {
 	const prim_t * prim = andprim -> prims [id_prim];
@@ -1399,7 +1403,8 @@ static bool_t shadow (void) {
 
   // すべてのORプリミティブ定義を順に調べていく
 
-  for (card_t id_orprim = 0;
+  card_t id_orprim;
+  for (id_orprim = 0;
        id_orprim < num_orprims;
        id_orprim ++) {
     const orprim_t * orprim = & orprims [id_orprim];
@@ -1419,7 +1424,8 @@ static bool_t shadow (void) {
 
     // ORされているANDプリミティブを順に見ていく
 
-    for (card_t id_andprim = 0;
+    card_t id_andprim;
+    for (id_andprim = 0;
 	 orprim -> andprims [id_andprim] != noandprim;
 	 id_andprim ++) {
       const andprim_t * andprim = orprim -> andprims [id_andprim];
@@ -1429,7 +1435,8 @@ static bool_t shadow (void) {
       rectsurf_t rectsurf;
       dist_t d;
 
-      for (card_t id_prim = 0;
+      card_t id_prim;
+      for (id_prim = 0;
 	   andprim -> prims [id_prim] != noprim;
 	   id_prim ++) {
 	const prim_t * prim = andprim -> prims [id_prim];
@@ -1483,7 +1490,7 @@ static bool_t shadow (void) {
 	// 審査合格
 
 	swap_vec (& sightline, & light . vec);
-	return true; // 影になっている
+	return 1; // 影になっている
 
       continue2:
 	;
@@ -1492,7 +1499,7 @@ static bool_t shadow (void) {
   }
 
   swap_vec (& sightline, & light . vec);
-  return false; // 影になっていない
+  return 0; // 影になっていない
 }
 
 // 物体表面の明るさを計算
@@ -1527,7 +1534,7 @@ static void texture (void) {
 
       mod_z = fmod20 (intsec_point . z - intsec_prim -> offset . z);
       mod_x = fmod20 (intsec_point . x - intsec_prim -> offset . x);
-      tmp = xor (mod_z > 10.0, mod_x > 10.0);
+      tmp = my_xor (mod_z > 10.0, mod_x > 10.0);
 
       p . g = tmp ? hil_min : hil_max;
 
@@ -1622,12 +1629,12 @@ static bool_t reflect (void) {
       pixel . b += tmp;
     }
 
-    return false;
+    return 0;
   }
 
   energy *= 1.0 - intsec_prim -> ref;
 
-  return true;
+  return 1;
 }
 
 // 出力画像の一点を生成
@@ -1637,7 +1644,7 @@ static void render (void) {
 
   energy = 1.0;
 
-  while (true) {
+  while (1) {
     write_flush ();
 
     // 視線が物体と交わるか調べる
@@ -1744,7 +1751,7 @@ static void scan_y (void) {
       d_orig_y * screen . dir . tx . sin * screen . dir . ty . cos };
 
   while (y < output . size) {
-    dist_t len0 = fsq (screen . orig_view_z) + fsq (orig_y); // v0の長さの2乗
+    dist_t len0 = fsq (screen_orig_view_z) + fsq (orig_y); // v0の長さの2乗
 
     scan_x (& v0, len0);
 
