@@ -1,0 +1,84 @@
+# added by Sumii
+
+SLDS = ball contest cup dra lattice mange mir orange piero1 piero2 planet \
+shuttle test test2 test3 tileball tron tsu tsu2 tsu3
+
+.PRECIOUS: %.cmp %.diff.gcc-GCC.ppm %.diff-ocamlopt-gcc.ppm %.mincaml.ppm %.gcc.ppm %.GCC.ppm %.ocamlopt.ppm
+
+test: $(SLDS:%=%.cmp) $(SLDS:%=%.diff.ocamlopt-gcc.ppm) $(SLDS:%=%.diff.gcc-GCC.ppm)
+
+%.cmp: %.ocamlopt.ppm %.mincaml.ppm
+	diff $^ > $@
+%.diff.gcc-GCC.ppm: ppmdiff %.gcc.ppm %.GCC.ppm
+	./$^ $@
+%.diff.ocamlopt-gcc.ppm: ppmdiff %.ocamlopt.ppm %.gcc.ppm
+	./$^ $@
+ppmdiff: ppm.ml diff.ml
+	ocamlopt $^ -o $@
+
+%.mincaml.ppm: %.sld min-rt.min-caml
+	time ./min-rt.min-caml < $< > $@
+min-rt.min-caml: min-rt.s globals.s min-caml/libmincaml.s min-caml/stub.c
+	gcc -g -O2 -Wall $^ -lm -o min-rt.min-caml
+min-rt.s: min-rt.ml min-caml/min-caml.opt
+	min-caml/min-caml.opt -inline 100 min-rt
+
+%.gcc.ppm: %.sld raytrace
+	echo 768 > $<_
+	cat $< >> $<_
+	time ./raytrace < $<_ > $@
+	rm -f $<_
+raytrace: raytrace.cc
+	gcc -Wall -O3 raytrace.cc -lm -o raytrace
+
+%.GCC.ppm: %.sld RayTrace
+	time ./RayTrace -s -w 768 -h 768 < $< > $@
+RayTrace: RayTrace.cxx
+	gcc -Wall -O3 RayTrace.cxx -lm -o RayTrace
+
+%.ocamlopt.ppm: %.sld min-rt
+	time ./min-rt < $< > $@
+
+######################################################################
+
+# original by Oiwa follows
+
+native: min-rt
+bytecode: min-rt_b
+
+.SUFFIXES: .ml .mli .cmo .cmi .cmx
+
+.ml.cmo:
+	ocamlc -g -c -pp ./preprocess.sh $<
+
+.ml.cmx:
+	ocamlopt -unsafe -inline 10 -c -pp ./preprocess.sh $<
+
+.mli.cmi:
+	ocamlc -g -c $<
+
+min-rt.cmx: globals.cmx miniMLRuntime.cmx
+min-rt.cmo: globals.cmo miniMLRuntime.cmi
+globals.cmx: miniMLRuntime.cmx
+globals.cmo: miniMLRuntime.cmi
+
+min-rt_b: min-rt.cmo globals.cmo miniMLRuntime.cmo
+	ocamlc -g -o min-rt_b miniMLRuntime.cmo globals.cmo min-rt.cmo 
+
+min-rt: min-rt.cmx globals.cmx miniMLRuntime.cmx
+	ocamlopt -unsafe -inline 10 -o min-rt miniMLRuntime.cmx globals.cmx min-rt.cmx 
+
+miniMLRuntime.cmi: miniMLRuntime.mli
+	ocamlc -c miniMLRuntime.mli
+
+miniMLRuntime.cmx: miniMLRuntime.ml miniMLRuntime.cmi
+	ocamlopt -unsafe -inline 10 -c miniMLRuntime.ml
+
+miniMLRuntime.cmo: miniMLRuntime.ml miniMLRuntime.cmi
+	ocamlc -g -c miniMLRuntime.ml
+
+rt: rt.cmx miniMLRuntime.cmx
+	ocamlopt -unsafe -inline 10 -o rt miniMLRuntime.cmx rt.cmx
+
+rt_b: rt.cmo miniMLRuntime.cmo
+	ocamlc -o rt_b miniMLRuntime.cmo rt.cmo

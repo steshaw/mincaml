@@ -1,0 +1,208 @@
+(* translation into SPARC assembly with infinite number of virtual registers *)
+
+open SparcAsm
+
+let data = ref [] (* 浮動小数の定数テーブル (caml2html: virtual_data) *)
+
+let classify xts ini addf addi =
+  List.fold_left
+    (fun acc (x, t) ->
+      match t with
+      | Type.Unit -> acc
+      | Type.Float -> addf acc x
+      | _ -> addi acc x)
+    ini
+    xts
+
+let separate xts =
+  classify
+    xts
+    ([], [])
+    (fun (int, float) x -> (int, float @ [x]))
+    (fun (int, float) x -> (int @ [x], float))
+
+let expand xts ini addf addi =
+  classify
+    xts
+    ini
+    (fun (offset, acc) x ->
+      let offset = align offset  in
+      (offset + 8, addf x offset acc))
+    (fun (offset, acc) x ->
+      (offset + 4, addi x offset acc))
+
+let rec g env = function (* 式の仮想マシンコード生成 (caml2html: virtual_g) *)
+  | Closure.Unit -> Ans(Nop)
+  | Closure.Int(i) -> Ans(Set(i))
+  | Closure.Float(d) ->
+      let l =
+	try
+	  (* すでに定数テーブルにあったら再利用 *)
+	  let (l, _) = List.find (fun (_, d') -> d = d') !data in
+	  l
+	with Not_found ->
+	  let l = Id.L(Id.genid "l") in
+	  data := (l, d) :: !data;
+	  l in
+      let x = Id.genid "l" in
+      Let(x, SetL(l), Ans(LdDF(x, C(0))))
+  | Closure.Neg(x) -> Ans(Neg(x))
+  | Closure.Add(x, y) -> Ans(Add(x, V(y)))
+  | Closure.Sub(x, y) -> Ans(Sub(x, V(y)))
+  | Closure.FNeg(x) -> Ans(FNegD(x))
+  | Closure.FAdd(x, y) -> Ans(FAddD(x, y))
+  | Closure.FSub(x, y) -> Ans(FSubD(x, y))
+  | Closure.FMul(x, y) -> Ans(FMulD(x, y))
+  | Closure.FDiv(x, y) -> Ans(FDivD(x, y))
+  | Closure.IfEq(x, y, e1, e2) ->
+      (match M.find x env with
+      | Type.Bool | Type.Int -> Ans(IfEq(x, V(y), g env e1, g env e2))
+      | Type.Float -> Ans(IfFEq(x, y, g env e1, g env e2))
+      | _ -> failwith "equality supported only for bool, int, and float")
+  | Closure.IfLE(x, y, e1, e2) ->
+      (match M.find x env with
+      | Type.Bool | Type.Int -> Ans(IfLE(x, V(y), g env e1, g env e2))
+      | Type.Float -> Ans(IfFLE(x, y, g env e1, g env e2))
+      | _ -> failwith "inequality supported only for bool, int and float")
+  | Closure.Let((x, t1), e1, e2) ->
+      let e1' = g env e1 in
+      let e2' = g (M.add x t1 env) e2 in
+      concat e1' (x, t1) e2'
+  | Closure.Var(x) ->
+      (match M.find x env with
+      | Type.Unit -> Ans(Nop)
+      | Type.Float -> Ans(FMovD(x))
+      | _ -> Ans(Mov(x)))
+  | Closure.MakeCls(bindings, e2) -> (* クロージャの生成 (caml2html: virtual_makecls) *)
+      (* Closureのアドレスをセットしてから、自由変数の値をストア *)
+      let env' = M.add_list (List.map fst bindings) env in
+      let (set_addr, store_fv) = (* コードを挿入する関数たち *)
+	List.fold_left
+	  (fun (set_addr, store_fv) ->
+	    fun ((x, t), { Closure.entry = l; Closure.actual_fv = ys }) ->
+	      let (offset, store_fv) =
+		expand
+		  (List.map (fun y -> (y, M.find y env')) ys)
+		  (4, store_fv)
+		  (fun y offset store_fv ->
+		    fun e0 ->
+		      store_fv
+			(Seq(StDF(y, x, C(offset)),
+			     e0)))
+		  (fun y offset store_fv ->
+		    fun e0 ->
+		      store_fv
+			(Seq(St(y, x, C(offset)),
+			     e0))) in
+	      ((fun e0 ->
+		set_addr
+		  (Let(x, Mov(reg_hp),
+		       Let(reg_hp, Add(reg_hp, C(align offset)),
+			   e0)))),
+	       let z = Id.genid "l" in
+	       (fun e0 ->
+		 store_fv
+		   (Let(z, SetL(l),
+			Seq(St(z, x, C(0)),
+			    e0))))))
+	  ((fun e0 -> e0), (fun e0 -> e0))
+	  bindings in
+      set_addr (store_fv (g env' e2))
+  | Closure.AppCls(x, ys) ->
+      let (int, float) = separate (List.map (fun y -> (y, M.find y env)) ys) in
+      Ans(CallCls(x, int, float))
+  | Closure.AppDir(Id.L(x), ys) ->
+      let (int, float) = separate (List.map (fun y -> (y, M.find y env)) ys) in
+      Ans(CallDir(Id.L(x), int, float))
+  | Closure.Tuple(xs) -> (* 組の生成 (caml2html: virtual_tuple) *)
+      let (offset, store) = (* コードを挿入する関数 *)
+	expand
+	  (List.map (fun x -> (x, M.find x env)) xs)
+	  (0, (fun e0 -> e0))
+	  (fun x offset store ->
+	    fun e0 ->
+	      store
+		(Seq(StDF(x, reg_hp, C(offset)),
+		     e0)))
+	  (fun x offset store ->
+	    fun e0 ->
+	      store
+		(Seq(St(x, reg_hp, C(offset)),
+		     e0))) in
+      let y = Id.genid "t" in
+      store
+	(Let(y, Mov(reg_hp),
+	     Let(reg_hp, Add(reg_hp, C(align offset)),
+		 Ans(Mov(y)))))
+  | Closure.LetTuple(xts, y, e2) ->
+      let (offset, load) = (* コードを挿入する関数 *)
+	expand
+	  xts
+	  (0, (fun e0 -> e0))
+	  (fun x offset load ->
+	    if not (S.mem x (Closure.fv e2)) then load else (* [XX] a little ad hoc optimization *)
+	    fun e0 ->
+	      load
+		(FLetD(x, LdDF(y, C(offset)),
+		       e0)))
+	  (fun x offset load ->
+	    if not (S.mem x (Closure.fv e2)) then load else (* [XX] a little ad hoc optimization *)
+	    fun e0 ->
+	      load
+		(Let(x, Ld(y, C(offset)),
+		     e0))) in
+      load (g (M.add_list xts env) e2)
+  | Closure.Get(x, y) -> (* 配列の読み出し (caml2html: virtual_get) *)
+      let offset = Id.genid "o" in
+      (match M.find x env with
+      | Type.Array(Type.Unit) -> Ans(Nop)
+      | Type.Array(Type.Float) ->
+	  Let(offset, SLL(y, C(3)),
+	      Ans(LdDF(x, V(offset))))
+      | Type.Array(_) ->
+	  Let(offset, SLL(y, C(2)),
+	      Ans(Ld(x, V(offset))))
+      | _ -> assert false)
+  | Closure.Put(x, y, z) ->
+      let offset = Id.genid "o" in
+      (match M.find x env with
+      | Type.Array(Type.Unit) -> Ans(Nop)
+      | Type.Array(Type.Float) ->
+	  Let(offset, SLL(y, C(3)),
+	      Ans(StDF(z, x, V(offset))))
+      | Type.Array(_) ->
+	  Let(offset, SLL(y, C(2)),
+	      Ans(St(z, x, V(offset))))
+      | _ -> assert false)
+  | Closure.ExtArray(Id.L(x)) -> Ans(SetL(Id.L("min_caml_" ^ x)))
+
+(* 関数の仮想マシンコード生成 (caml2html: virtual_h) *)
+let h { Closure.name = (Id.L(x), t); Closure.args = yts; Closure.formal_fv = zts; Closure.body = e } =
+  let (int, float) = separate yts in
+  let (offset, load) = (* コードを挿入する関数 *)
+    expand
+      zts
+      (4, (fun e0 -> e0))
+      (fun z offset load ->
+	fun e0 ->
+	  load
+	    (Let(z, LdDF(reg_cl, C(offset)),
+		 e0)))
+      (fun z offset load ->
+	fun e0 ->
+	  load
+	    (Let(z, Ld(reg_cl, C(offset)),
+		 e0))) in
+  let e' = load (g (M.add_list yts (M.add_list zts M.empty)) e) in
+  let t2 =
+    match t with
+    | Type.Fun(_, t2) -> t2
+    | _ -> assert false in
+  { name = Id.L(x); args = int; fargs = float; body = e'; ret = t2 }
+
+(* プログラム全体の仮想マシンコード生成 (caml2html: virtual_f) *)
+let f (Closure.Prog(fundefs, e)) =
+  data := [];
+  let fundefs = List.map h fundefs in
+  let e = g M.empty e in
+  Prog(!data, fundefs, e)

@@ -1,0 +1,86 @@
+head	1.1;
+access;
+symbols;
+locks
+	sumii:1.1; strict;
+comment	@; @;
+
+
+1.1
+date	2001.10.14.13.55.41;	author sumii;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@open KNormal
+
+let rec effect = function
+  | Let(x, e1, e2) -> effect e1 || effect e2
+  | LetRec(_, e) -> effect e
+  | IfLEInt(_, _, e1, e2) -> effect e1 || effect e2
+  | App(_, _) -> true
+  | _ -> false (* [XXX] error-prone *)
+
+let rec used x = function
+  | Let(_, e1, e2) -> used x e1 || used x e2
+  | Var(y) -> x = y
+  | LetRec(fundefs, e2) ->
+      List.exists
+	(fun { name = _; args = _; body = e1 } -> used x e1)
+	fundefs ||
+      used x e2
+  | App(y, zs) ->
+      x = y ||
+      List.exists
+	(fun z -> x = z)
+	zs
+  | NegInt(y) -> Ident(x) = y
+  | SubInt(y, z) -> x = y || Ident(x) = z
+  | IfLEInt(y, z, e1, e2) -> x = y || Ident(x) = z || used x e1 || used x e2
+  | Imm(_) -> false
+
+let rec f = function
+  | Let(x, e1, e2) ->
+      let e1' = f e1 in
+      let e2' = f e2 in
+      if effect e1 || used x e2 then Let(x, e1', e2') else begin
+        Format.eprintf "eliminating %s@@." (Syntax.ppI x);
+        e2'
+      end
+  | LetRec(fundefs, e2) ->
+      let marked = ref FinSet.empty in
+      let unmarked = ref (FinSet.from_list fundefs) in
+      let change = ref true in
+      while !change do
+	change := false;
+	FinSet.iter
+	  (fun { name = x; args = ys; body = e1 } ->
+	    if used x e2 ||
+	       FinSet.exists
+	         (fun { name = _; args = _; body = e1' } -> used x e1')
+	         !marked then begin
+	      change := true;
+	      marked := FinSet.add { name = x; args = ys; body = f e1 } !marked;
+	      unmarked := FinSet.remove { name = x; args = ys; body = e1 } !unmarked
+	    end)
+	  !unmarked
+      done;
+      FinSet.iter
+	(fun { name = x; args = _; body = _ } ->
+          Format.eprintf "eliminating %s@@." (Syntax.ppI x);)
+	!unmarked;
+      (match FinSet.to_list !marked with
+      | [] -> f e2
+      | fundefs' -> LetRec(fundefs', f e2))
+  | IfLEInt(x, y, e1, e2) -> IfLEInt(x, y, f e1, f e2)
+  | e -> e (* [XXX] error-prone *)
+@

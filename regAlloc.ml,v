@@ -1,0 +1,1171 @@
+head	1.7;
+access;
+symbols;
+locks
+	sumii:1.7; strict;
+comment	@; @;
+
+
+1.7
+date	2005.01.31.22.25.33;	author sumii;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2005.01.29.23.26.20;	author sumii;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2005.01.29.16.14.50;	author sumii;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2005.01.29.02.37.36;	author sumii;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2005.01.27.21.55.08;	author sumii;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2005.01.27.20.19.19;	author sumii;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2005.01.26.22.16.54;	author sumii;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.7
+log
+@*** empty log message ***
+@
+text
+@open SparcAsm
+
+(* for register coalescing *)
+(* [XX] Callがあったら、そこから先は無意味というか逆効果なので追わない。
+        そのために「Callがあったかどうか」を返り値の第1要素に含める。 *)
+let rec target' src (dest, t) = function
+  | Mov(x) when x = src && is_reg dest ->
+      assert (t <> Type.Unit);
+      assert (t <> Type.Float);
+      false, [dest]
+  | FMovD(x) when x = src && is_reg dest ->
+      assert (t = Type.Float);
+      false, [dest]
+  | IfEq(e1, e2) | IfLE(e1, e2) | IfGE(e1, e2) | IfFLE(e1, e2) | IfFGE(e1, e2) ->
+      let c1, rs1 = target src (dest, t) e1 in
+      let c2, rs2 = target src (dest, t) e2 in
+      c1 && c2, rs1 @@ rs2
+  | CallCls(x, ys, zs) ->
+      true, (target_args src regs 0 ys @@
+	     target_args src fregs 0 zs @@
+             if x = src then [reg_cl] else [])
+  | CallDir(_, ys, zs) ->
+      true, (target_args src regs 0 ys @@
+	     target_args src fregs 0 zs)
+  | _ -> false, [] (* [X] error-prone *)
+and target src dest = function
+  | Ans(exp) -> target' src dest exp
+  | Seq(exp, e) -> target src dest (Let(Id.gentmp Type.Unit, exp, e))
+  | Let(x, exp, e) ->
+      let c1, rs1 = target' src (x, Type.Int) exp in
+      if c1 then true, rs1 else
+      let c2, rs2 = target src dest e in
+      c2, rs1 @@ rs2
+  | FLetD(x, exp, e) ->
+      let c1, rs1 = target' src (x, Type.Float) exp in
+      if c1 then true, rs1 else
+      let c2, rs2 = target src dest e in
+      c2, rs1 @@ rs2
+  | Forget(x, e) -> target src dest e
+and target_args src all n = function (* auxiliary function for Call *)
+  | [] -> []
+  | y :: ys when src = y -> all.(n) :: target_args src all (n + 1) ys
+  | _ :: ys -> target_args src all (n + 1) ys
+
+type alloc_result =
+  | Alloc of Id.t (* allocated register *)
+  | Spill of Id.t (* spilled variable *)
+let rec alloc_or_spill dest cont regenv all x =
+  (* allocate a register or spill a variable *)
+  assert (not (M.mem x regenv));
+  if is_reg x then Alloc(x) else
+  let free = fv cont in
+  try
+    Format.eprintf "allocating %s@@." x;
+    let (c, prefer) = target x dest cont in
+    let live = (* 生きているレジスタ *)
+      List.fold_left
+        (fun live y ->
+	  if is_reg y then S.add y live else
+          try S.add (M.find y regenv) live
+          with Not_found -> live)
+        S.empty
+        free in
+    let r = (* そうでないレジスタを探す *)
+      List.find
+        (fun r -> not (S.mem r live))
+        (prefer @@ all) in
+    Format.eprintf "allocated %s to %s@@." x r;
+    Alloc(r)
+  with Not_found ->
+    Format.eprintf "register allocation failed for %s@@." x;
+    let y = (* 型の合うレジスタ変数を探す *)
+      List.find
+        (fun y ->
+	  not (is_reg y) &&
+          try List.mem (M.find y regenv) all
+          with Not_found -> false)
+        (List.rev free) in
+    Format.eprintf "spilling %s from %s@@." y (M.find y regenv);
+    Spill(y)
+
+(* auxiliary function for g and g'_and_unspill *)
+let add x r regenv =
+  if is_reg x then (assert (x = r); regenv) else
+  M.add x r regenv
+
+(* auxiliary functions for g' *)
+exception NoReg of Id.t * Type.t
+let find x t regenv =
+  if is_reg x then x else
+  try M.find x regenv
+  with Not_found -> raise (NoReg(x, t))
+let find' x' regenv =
+  match x' with
+  | V(x) -> V(find x Type.Int regenv)
+  | c -> c
+
+type g_result =
+  | NoSpill of t * Id.t M.t (* new regenv *)
+  | ToSpill of t * Id.t (* spilled variable *)
+let rec g dest cont regenv = function
+  | Ans(exp) -> g'_and_unspill dest cont regenv exp
+  | Seq(exp, e) ->
+      let cont' = concat e dest cont in
+      let x = Id.gentmp Type.Unit in
+      (match g'_and_unspill (x, Type.Unit) cont' regenv exp with
+      | ToSpill(e1, y) -> ToSpill(concat e1 (x, Type.Unit) e, y)
+      | NoSpill(e1', regenv1) ->
+	  match g dest cont regenv1 e with
+	  | ToSpill(e2, y) -> ToSpill(Seq(exp, e2), y)
+	  | NoSpill(e2', regenv2) -> NoSpill(concat e1' (x, Type.Unit) e2', regenv2))
+  | Let(x, exp, e) ->
+      let cont' = concat e dest cont in
+      (match g'_and_unspill (x, Type.Int) cont' regenv exp with
+      | ToSpill(e1, y) -> ToSpill(concat e1 (x, Type.Int) e, y)
+      | NoSpill(e1', regenv1) ->
+	  match alloc_or_spill dest cont' regenv1 allregs x with
+	  | Spill(y) -> ToSpill(Let(x, exp, Forget(y, e)), y)
+	  | Alloc(r) ->
+	      match g dest cont (add x r regenv1) e with
+	      | ToSpill(e2, y) when x = y -> g dest cont regenv (Let(x, exp, Seq(Save(x, x), e2)))
+	      | ToSpill(e2, y) -> ToSpill(Let(x, exp, e2), y)
+	      | NoSpill(e2', regenv2) -> NoSpill(concat e1' (r, Type.Int) e2', regenv2))
+  | FLetD(x, exp, e) ->
+      let cont' = concat e dest cont in
+      (match g'_and_unspill (x, Type.Float) cont' regenv exp with
+      | ToSpill(e1, y) -> ToSpill(concat e1 (x, Type.Float) e, y)
+      | NoSpill(e1', regenv1) ->
+	  match alloc_or_spill dest cont' regenv1 allfregs x with
+	  | Spill(y) -> ToSpill(FLetD(x, exp, Forget(y, e)), y)
+	  | Alloc(r) ->
+	      match g dest cont (add x r regenv1) e with
+	      | ToSpill(e2, y) when x = y -> g dest cont regenv (FLetD(x, exp, Seq(Save(x, x), e2)))
+	      | ToSpill(e2, y) -> ToSpill(FLetD(x, exp, e2), y)
+	      | NoSpill(e2', regenv2) -> NoSpill(concat e1' (r, Type.Float) e2', regenv2))
+  | Forget(x, e) ->
+      (match g dest cont (M.remove x regenv) e with
+      | ToSpill(e1, y) -> ToSpill(Forget(x, e1), y)
+      | NoSpill(e1', regenv1) -> NoSpill(e1', regenv1))
+and g'_and_unspill dest cont regenv exp =
+  try g' dest cont regenv exp
+  with
+  | NoReg(x, t) ->
+    (Format.eprintf "unspilling %s@@." x;
+     let cont' = concat (Ans(exp)) dest cont in
+     let all =
+       match t with
+       | Type.Unit -> assert false
+       | Type.Float -> allfregs
+       | _ -> allregs in
+     match alloc_or_spill dest cont' regenv all x with
+     | Spill(z) -> ToSpill(Forget(z, Ans(exp)), z)
+     | Alloc(r) ->
+	 match g'_and_unspill dest cont (add x r regenv) exp with
+	 | ToSpill(e1, z) -> ToSpill(Forget(z, e1), z)
+	 | NoSpill(e1', regenv1) ->
+	     let e =
+	       match t with
+	       | Type.Unit -> assert false
+	       | Type.Float -> FLetD(r, Restore(x), e1')
+	       | _ -> Let(r, Restore(x), e1') in
+	     NoSpill(e, regenv1))
+and g' dest cont regenv = function
+  | Nop | Set _ | SetL _ | Comment _ | Restore _ as exp -> NoSpill(Ans(exp), regenv)
+  | Mov(x) -> NoSpill(Ans(Mov(find x Type.Int regenv)), regenv)
+  | Neg(x) -> NoSpill(Ans(Neg(find x Type.Int regenv)), regenv)
+  | Add(x, y') -> NoSpill(Ans(Add(find x Type.Int regenv, find' y' regenv)), regenv)
+  | Sub(x, y') -> NoSpill(Ans(Sub(find x Type.Int regenv, find' y' regenv)), regenv)
+  | SLL(x, y') -> NoSpill(Ans(SLL(find x Type.Int regenv, find' y' regenv)), regenv)
+  | Cmp(x, y') -> NoSpill(Ans(Cmp(find x Type.Int regenv, find' y' regenv)), regenv)
+  | Ld(x, y') -> NoSpill(Ans(Ld(find x Type.Int regenv, find' y' regenv)), regenv)
+  | St(x, y, z') -> NoSpill(Ans(St(find x Type.Int regenv, find y Type.Int regenv, find' z' regenv)), regenv)
+  | FMovD(x) -> NoSpill(Ans(FMovD(find x Type.Float regenv)), regenv)
+  | FNegD(x) -> NoSpill(Ans(FNegD(find x Type.Float regenv)), regenv)
+  | FAddD(x, y) -> NoSpill(Ans(FAddD(find x Type.Float regenv, find y Type.Float regenv)), regenv)
+  | FSubD(x, y) -> NoSpill(Ans(FSubD(find x Type.Float regenv, find y Type.Float regenv)), regenv)
+  | FMulD(x, y) -> NoSpill(Ans(FMulD(find x Type.Float regenv, find y Type.Float regenv)), regenv)
+  | FDivD(x, y) -> NoSpill(Ans(FDivD(find x Type.Float regenv, find y Type.Float regenv)), regenv)
+  | FCmpD(x, y) -> NoSpill(Ans(FCmpD(find x Type.Float regenv, find y Type.Float regenv)), regenv)
+  | LdDF(x, y') -> NoSpill(Ans(LdDF(find x Type.Int regenv, find' y' regenv)), regenv)
+  | StDF(x, y, z') -> NoSpill(Ans(StDF(find x Type.Float regenv, find y Type.Int regenv, find' z' regenv)), regenv)
+  | IfEq(e1, e2) as exp -> g'_if dest cont regenv exp (fun e1' e2' -> IfEq(e1', e2')) e1 e2
+  | IfLE(e1, e2) as exp -> g'_if dest cont regenv exp (fun e1' e2' -> IfLE(e1', e2')) e1 e2
+  | IfGE(e1, e2) as exp -> g'_if dest cont regenv exp (fun e1' e2' -> IfGE(e1', e2')) e1 e2
+  | IfFLE(e1, e2) as exp -> g'_if dest cont regenv exp (fun e1' e2' -> IfFLE(e1', e2')) e1 e2
+  | IfFGE(e1, e2) as exp -> g'_if dest cont regenv exp (fun e1' e2' -> IfFGE(e1', e2')) e1 e2
+  | CallCls(x, ys, zs) as exp -> g'_call dest cont regenv exp (fun ys zs -> CallCls(find x Type.Int regenv, ys, zs)) ys zs
+  | CallDir(l, ys, zs) as exp -> g'_call dest cont regenv exp (fun ys zs -> CallDir(l, ys, zs)) ys zs
+  | Save(x, y) ->
+      assert (x = y);
+      assert (not (is_reg x));
+      try NoSpill(Ans(Save(M.find x regenv, x)), regenv)
+      with Not_found -> NoSpill(Ans(Nop), regenv) (* must have already been saved *)
+and g'_if dest cont regenv exp constr e1 e2 =
+  let (e1', regenv1) = g_repeat dest cont regenv e1 in
+  let (e2', regenv2) = g_repeat dest cont regenv e2 in
+  let regenv' = (* 両方に共通のレジスタ変数だけ利用 *)
+    List.fold_left
+      (fun regenv' x ->
+        try
+	  if is_reg x then regenv' else
+          let r1 = M.find x regenv1 in
+          let r2 = M.find x regenv2 in
+          if r1 <> r2 then regenv' else
+	  M.add x r1 regenv'
+        with Not_found -> regenv')
+      M.empty
+      (fv cont) in
+  try
+    let x = (* そうでない変数は分岐以前にセーブ *)
+      List.find
+	(fun x -> not (is_reg x) && not (M.mem x regenv') && x <> fst dest)
+	(fv cont) in
+    match snd dest with
+    | Type.Unit ->
+	ToSpill(Seq(exp, Forget(x, Ans(Nop))), x)
+    | Type.Float ->
+	let y = Id.gentmp Type.Float in
+	ToSpill(FLetD(y, exp, Forget(x, Ans(FMovD(y)))), x)
+    | t ->
+	let y = Id.gentmp t in
+	ToSpill(Let(y, exp, Forget(x, Ans(Mov(y)))), x)
+  with Not_found ->
+    NoSpill(Ans(constr e1' e2'), regenv')
+and g'_call dest cont regenv exp constr ys zs =
+  try
+    let a = (* セーブすべきレジスタ変数を探す *)
+      List.find
+        (fun a -> not (is_reg a) && a <> fst dest)
+	(fv cont) in
+    match snd dest with
+    | Type.Unit ->
+	ToSpill(Seq(exp, Forget(a, Ans(Nop))), a)
+    | Type.Float ->
+	let b = Id.gentmp Type.Float in
+	ToSpill(FLetD(b, exp, Forget(a, Ans(FMovD(b)))), a)
+    | t ->
+	let b = Id.gentmp t in
+	ToSpill(Let(b, exp, Forget(a, Ans(Mov(b)))), a)
+  with Not_found ->
+    NoSpill(Ans(constr
+		  (List.map (fun y -> find y Type.Int regenv) ys)
+		  (List.map (fun z -> find z Type.Float regenv) zs)),
+	    M.empty)
+and g_repeat dest cont regenv e =
+    match g dest cont regenv e with
+    | NoSpill(e', regenv') -> (e', regenv')
+    | ToSpill(e, x) -> g_repeat dest cont regenv (Seq(Save(x, x), e))
+
+let h { name = l; args = xs; fargs = ys; body = e; ret = t } =
+  let (i, arg_regs, regenv) =
+    List.fold_left
+      (fun (i, arg_regs, regenv) x ->
+        let r = regs.(i) in
+        (i + 1,
+	 arg_regs @@ [r],
+	 (assert (not (is_reg x));
+	  M.add x r regenv)))
+      (0, [], M.empty)
+      xs in
+  let (d, farg_regs, regenv) =
+    List.fold_left
+      (fun (d, farg_regs, regenv) y ->
+        let fr = fregs.(d) in
+        (d + 1,
+	 farg_regs @@ [fr],
+	 (assert (not (is_reg y));
+	  M.add y fr regenv)))
+      (0, [], regenv)
+      ys in
+  let z =
+    match t with
+    | Type.Unit -> Id.gentmp Type.Unit
+    | Type.Float -> fregs.(0)
+    | _ -> regs.(0) in
+  let (e', regenv') = g_repeat (z, t) (Ans(Nop)) regenv e in
+  { name = l; args = arg_regs; fargs = farg_regs; body = e'; ret = t }
+
+let f (Prog(data, fundefs, e)) =
+  let fundefs' = List.map h fundefs in
+  let e' =
+    match g (Id.gentmp Type.Unit, Type.Unit) (Ans(Nop)) M.empty e with
+    | ToSpill _ -> assert false
+    | NoSpill(e', regenv') -> e' in
+  Prog(data, fundefs', e')
+@
+
+
+1.6
+log
+@*** empty log message ***
+@
+text
+@a2 36
+let debug = ref []
+
+let regenv = ref M.empty
+exception NoReg of Id.t
+let find x =
+  if is_reg x then x else
+  try M.find x !regenv
+  with Not_found -> raise (NoReg(x))
+let find' x' = match x' with V(x) -> V(find x) | c -> c
+
+let stackmap = ref [] (* もしspillされていたら、スタックのどこにあるか *)
+let spilled = ref S.empty
+let to_spill = ref S.empty
+let locate x =
+  let rec loc = function
+    | [] -> []
+    | y :: zs when x = y -> 0 :: List.map succ (loc zs)
+    | y :: zs -> List.map succ (loc zs) in
+  loc !stackmap
+let spill x =
+  assert (not (is_reg x));
+  assert (M.mem x !regenv);
+  if not (List.mem x !stackmap) then
+    stackmap := !stackmap @@ [x];
+  spilled := S.add x !spilled;
+  to_spill := S.add x !to_spill
+let spillf x =
+  assert (not (is_reg x));
+  assert (M.mem x !regenv);
+  if not (List.mem x !stackmap) then
+    (let pad =
+      if List.length !stackmap mod 2 = 0 then [] else [Id.gentmp Type.Int] in
+    stackmap := !stackmap @@ pad @@ [x; x]);
+  spilled := S.add x !spilled;
+  to_spill := S.add x !to_spill
+
+d4 2
+a5 2
+(* [XX] Callがあったら、そこから先は無意味というか逆効果なので追わない *)
+(* 「Callがあったかどうか」を返り値の第1要素に含める *)
+d14 1
+a14 1
+  | IfEq(e1, e2) | IfLE(e1, e2) | IfFLE(e1, e2) ->
+d18 7
+a24 3
+  | CallCls(x, ys, zs) -> true, (args src regs 0 ys @@ args src fregs 0 zs @@
+                                 if x = src then [reg_cl] else [])
+  | CallDir(_, ys, zs) -> true, (args src regs 0 ys @@ args src fregs 0 zs)
+d39 2
+a40 1
+and args src rs n = function (* auxiliary function for Call *)
+d42 2
+a43 2
+  | y :: ys when src = y -> rs.(n) :: args src rs (n + 1) ys
+  | _ :: ys -> args src rs (n + 1) ys
+d45 7
+a51 4
+let rec alloc_spill dest cont all x =
+  (* allocate a register with spilling if necessary *)
+  assert (not (M.mem x !regenv));
+  if is_reg x then x else
+d55 2
+a56 2
+    let prefer = snd (target x dest cont) in
+    let live = (* 生きている(まだ使われる)レジスタ *)
+d59 3
+a61 2
+          try S.add (find y) live
+          with NoReg(_) -> live)
+d64 1
+a64 1
+    let r = (* もう使われないレジスタを探す *)
+d69 1
+a69 2
+    regenv := M.add x r !regenv;
+    r
+d74 3
+a76 2
+        (fun y -> 
+          try List.mem (M.find y !regenv) all
+d79 2
+a80 6
+    Format.eprintf "spilling %s from %s@@." y (M.find y !regenv);
+    if not (S.mem y !spilled) then
+      if all == allregs then spill y else (* allocating int *)
+      (assert (all == allfregs); spillf y); (* allocating float *)
+    regenv := M.remove y !regenv;
+    alloc_spill dest cont all x (* should always succeed *)
+d82 21
+a102 2
+let rec g dest cont = function
+  | Ans(exp) -> g'_unspill dest cont exp
+a103 1
+      (* be careful of the evaluation order! *)
+d106 6
+a111 3
+      let e1 = g'_unspill (x, Type.Unit) cont' exp in
+      let e2 = g dest cont e in
+      concat e1 (x, Type.Unit) e2
+d114 10
+a123 9
+      let e1 = g'_unspill (x, Type.Int) cont' exp in
+      let r = alloc_spill dest cont' allregs x in
+      let e2 = g dest cont e in
+      concat e1 (r, Type.Int)
+        (if not (S.mem x !to_spill) then e2 else
+        (to_spill := S.remove x !to_spill;
+         match locate x with
+         | [i] -> Seq(St(r, reg_sp, C(i)), e2)
+         | _ -> assert false))
+d126 18
+a143 12
+      let e1 = g'_unspill (x, Type.Float) cont' exp in
+      let r = alloc_spill dest cont' allfregs x in
+      let e2 = g dest cont e in
+      concat e1 (r, Type.Float)
+        (if not (S.mem x !to_spill) then e2 else
+        (to_spill := S.remove x !to_spill;
+         match locate x with
+         | [i; j] when i + 1 = j -> Seq(StDF(r, reg_sp, C(i)), e2)
+         | _ -> assert false))
+and g'_unspill dest cont exp =
+  try g' dest cont exp
+  with NoReg(x) ->
+d145 53
+a197 83
+     let cont' =
+       match dest with
+       | (y, Type.Unit) -> Seq(exp, cont)
+       | (y, Type.Float) -> FLetD(y, exp, cont)
+       | (y, _) -> Let(y, exp, cont) in
+     match locate x with
+     | [i] ->
+         let r = alloc_spill dest cont' allregs x in
+         Let(r, Ld(reg_sp, C(i)), g'_unspill dest cont exp)
+     | [i; j] when i + 1 = j ->
+         let r = alloc_spill dest cont' allfregs x in
+         FLetD(r, LdDF(reg_sp, C(i)), g'_unspill dest cont exp)
+     | _ -> assert false)
+and g' dest cont = function
+  | Nop | Set _ | SetL _ | Comment _ as exp -> Ans(exp)
+  | Mov(x) -> Ans(Mov(find x))
+  | Neg(x) -> Ans(Neg(find x))
+  | Add(x, y') -> Ans(Add(find x, find' y'))
+  | Sub(x, y') -> Ans(Sub(find x, find' y'))
+  | SLL(x, y') -> Ans(SLL(find x, find' y'))
+  | Cmp(x, y') -> Ans(Cmp(find x, find' y'))
+  | Ld(x, y') -> Ans(Ld(find x, find' y'))
+  | St(x, y, z') -> Ans(St(find x, find y, find' z'))
+  | FMovD(x) -> Ans(FMovD(find x))
+  | FNegD(x) -> Ans(FNegD(find x))
+  | FAddD(x, y) -> Ans(FAddD(find x, find y))
+  | FSubD(x, y) -> Ans(FSubD(find x, find y))
+  | FMulD(x, y) -> Ans(FMulD(find x, find y))
+  | FDivD(x, y) -> Ans(FDivD(find x, find y))
+  | FCmpD(x, y) -> Ans(FCmpD(find x, find y))
+  | LdDF(x, y') -> Ans(LdDF(find x, find' y'))
+  | StDF(x, y, z') -> Ans(StDF(find x, find y, find' z'))
+  | IfEq(e1, e2) -> let (e1', e2') = branch dest cont e1 e2 in Ans(IfEq(e1', e2'))
+  | IfLE(e1, e2) -> let (e1', e2') = branch dest cont e1 e2 in Ans(IfLE(e1', e2'))
+  | IfFLE(e1, e2) -> let (e1', e2') = branch dest cont e1 e2 in Ans(IfFLE(e1', e2'))
+  | CallCls(x, ys, zs) ->
+      let exp = CallCls(find x, List.map find ys, List.map find zs) in
+      List.iter
+        (fun a ->
+          if is_reg a || a = fst dest || S.mem a !spilled then () else
+          (assert (M.mem a !regenv);
+           let r = M.find a !regenv in
+           if List.mem r allregs then spill a
+           else (assert (List.mem r allfregs); spillf a)))
+        (fv cont);
+      regenv := M.empty;
+      Ans(exp)
+  | CallDir(l, ys, zs) ->
+      let exp = CallDir(l, List.map find ys, List.map find zs) in
+      List.iter
+        (fun a ->
+          if is_reg a || a = fst dest || S.mem a !spilled then () else
+          (Format.eprintf "[DEBUG] %s@@." a;
+	   assert (M.mem a !regenv);
+           let r = M.find a !regenv in
+           if List.mem r allregs then spill a
+           else (assert (List.mem r allfregs); spillf a)))
+        (fv cont);
+      regenv := M.empty;
+      Ans(exp)
+and branch dest cont e1 e2 =
+  let regenv_back = !regenv in
+  let spilled_back = !spilled in
+  let to_spill_back = !to_spill in
+
+  let e1' = g dest cont e1 in
+
+  let regenv1 = !regenv in
+  let spilled1 = !spilled in
+  let to_spill1 = !to_spill in
+
+  regenv := regenv_back;
+  spilled := spilled_back;
+  to_spill := to_spill_back;
+
+  let e2' = g dest cont e2 in
+
+  let regenv2 = !regenv in
+  let spilled2 = !spilled in
+  let to_spill2 = !to_spill in
+
+  let free = fv cont in
+  regenv := (* 両方に共通するレジスタ変数だけ利用 *)
+d199 1
+a199 1
+      (fun regenv_new x ->
+d201 1
+d204 3
+a206 2
+          if r1 = r2 then M.add x r1 regenv_new else regenv_new
+        with Not_found -> regenv_new)
+d208 41
+a248 14
+      free;
+  (* それ以外はスタック変数とする *)
+  spilled := S.union spilled1 spilled2;
+  to_spill := S.inter to_spill1 to_spill2;
+  let gen_spill ts e =
+    S.fold
+      (fun x e ->
+        match locate x with
+        | [i] -> Seq(St(M.find x regenv_back, reg_sp, C(i)), e)
+        | [i; j] when i + 1 = j -> Seq(StDF(M.find x regenv_back, reg_sp, C(i)), e)
+        | _ -> assert false)
+      (S.diff ts !to_spill)
+      e in
+  (gen_spill to_spill1 e1', gen_spill to_spill2 e2')
+d250 2
+a251 8
+let h { name = l; args = xs; fargs = ys;
+        body = e; stacksize = s; ret = z } =
+  assert(s = 0);
+  regenv := M.empty;
+  stackmap := [];
+  spilled := S.empty;
+  to_spill := S.empty;
+  let (i, rs) =
+d253 1
+a253 1
+      (fun (i, rs) x ->
+d255 5
+a259 3
+        regenv := M.add x r !regenv;
+        (i + 1, rs @@ [r]))
+      (0, [])
+d261 1
+a261 1
+  let (d, frs) =
+d263 1
+a263 1
+      (fun (d, frs) y ->
+d265 5
+a269 3
+        regenv := M.add y fr !regenv;
+        (d + 1, frs @@ [fr]))
+      (0, [])
+d271 7
+a277 19
+  let regenv_ini = !regenv in
+  let t =
+    if List.mem z allregs then Type.Int
+    else if List.mem z allfregs then Type.Float
+    else Type.Unit in
+  (* eval order! *)
+  let e' = g (z, t) (Ans(Nop)) e in
+  let e' =
+    S.fold
+      (fun a e' ->
+        match locate a with
+        | [i] -> Seq(St(M.find a regenv_ini, reg_sp, C(i)), e')
+        | [i; j] when i + 1 = j -> Seq(StDF(M.find a regenv_ini, reg_sp, C(i)), e')
+        | _ -> assert false)
+      !to_spill
+      e' in
+  let s' = List.length !stackmap in
+  { name = l; args = rs; fargs = frs;
+    body = e'; stacksize = s'; ret = z }
+d281 4
+a284 4
+  regenv := M.empty;
+  spilled := S.empty;
+  stackmap := [];
+  let e' = g (Id.gentmp Type.Unit, Type.Unit) (Ans(Nop)) e in
+@
+
+
+1.5
+log
+@*** empty log message ***
+@
+text
+@d14 2
+a15 2
+let spilled = ref S.empty (* spillされた変数 *)
+let to_spill = ref S.empty (* spillすべき変数 *)
+d40 1
+a40 1
+(* Callがあったら、そこから先は無意味というか逆効果なので追わない *)
+d42 8
+a49 2
+let rec target' src dest = function
+  | Mov(x) | FMovD(x) when x = src && is_reg dest -> false, [dest]
+d51 2
+a52 2
+      let c1, rs1 = target src dest e1 in
+      let c2, rs2 = target src dest e2 in
+d55 1
+a55 1
+				 if x = src then [reg_cl] else [])
+d61 7
+a67 2
+  | Let(x, exp, e) | FLetD(x, exp, e) ->
+      let c1, rs1 = target' src x exp in
+d76 3
+a78 2
+exception AllocFail
+let alloc dest cont all x =
+d80 1
+d82 10
+a91 4
+    assert (not (M.mem x !regenv));
+    Format.eprintf "allocating %s...@@." x;
+    let (_, prefer) = target x dest cont in
+    let r =
+d93 3
+a95 9
+	(fun r ->
+          List.for_all
+            (fun y ->
+              y = x ||
+              try find y <> r
+              with NoReg(_) -> true)
+            (fv cont))
+	(prefer @@ all) in
+    Format.eprintf "allocated %s to %s...@@." x r;
+d99 2
+a100 7
+    failwith (Printf.sprintf "register allocation failed for %s" x);
+    raise AllocFail
+let alloc_spill (dest, t) cont all x =
+  (* allocate a register with spilling if necessary *)
+  try alloc dest cont all x
+  with AllocFail ->
+    let y =
+d102 4
+a105 4
+	(fun z ->
+	  M.mem z !regenv &&
+	  List.mem (M.find z !regenv) all)
+	(List.rev (fv cont)) in
+d107 3
+a109 3
+    if S.mem y !spilled then ()
+    else if all == allregs then spill y (* allocating int *)
+    else (assert (all == allfregs); spillf y); (* allocating float *)
+d111 1
+a111 1
+    alloc dest cont all x (* should always succeed *)
+d124 2
+a125 2
+      let r = alloc_spill dest cont' allregs x in (* [XXXXX] 間違い!!! 後でregenvが変わる*)
+      let e1 = g'_unspill (r, Type.Int) cont' exp in
+d127 6
+a132 1
+      concat e1 (r, Type.Int) e2
+d135 1
+a136 1
+      let e1 = g'_unspill (r, Type.Float) cont' exp in
+d138 6
+a143 1
+      concat e1 (r, Type.Float) e2
+d155 2
+a156 2
+	 let r = alloc_spill dest cont' allregs x in
+	 Let(r, Ld(reg_sp, C(i)), g'_unspill dest cont exp)
+d158 2
+a159 2
+	 let r = alloc_spill dest cont' allfregs x in
+	 FLetD(r, LdDF(reg_sp, C(i)), g'_unspill dest cont exp)
+d186 7
+a192 7
+	(fun a ->
+	  if is_reg a || S.mem a !spilled then () else
+	  (assert (M.mem a !regenv);
+	   let r = M.find a !regenv in
+	   if List.mem r allregs then spill a
+	   else (assert (List.mem r allfregs); spillf a)))
+	(fv cont);
+d198 8
+a205 7
+	(fun a ->
+	  if is_reg a || S.mem a !spilled then () else
+	  (assert (M.mem a !regenv);
+	   let r = M.find a !regenv in
+	   if List.mem r allregs then spill a
+	   else (assert (List.mem r allfregs); spillf a)))
+	(fv cont);
+d211 2
+d214 1
+d217 2
+d221 2
+d224 1
+d227 3
+a229 1
+  let live = fv cont in
+d234 3
+a236 4
+	  let r1 = M.find x regenv1 in
+	  let r2 = M.find x regenv2 in
+	  if r1 <> r2 then regenv_new else
+	  M.add x r1 regenv_new
+d239 1
+a239 1
+      live;
+d241 3
+a243 2
+  spilled := S.inter (S.of_list live) (S.union spilled1 spilled2);
+  let gen_store ss =
+d245 8
+a252 11
+      (fun x store1 ->
+	match locate x with
+	| [i] -> (fun e0 -> store1 (Seq(St(x, reg_sp, C(i)), e0)))
+	| [i; j] when i + 1 = j -> (fun e0 -> store1 (Seq(StDF(x, reg_sp, C(i)), e0)))
+	| _ -> assert false)
+      (S.diff !spilled ss)
+      (fun e0 -> e0) in
+  let store1 = gen_store spilled1 in (* then節で足りないスタック変数を補う *)
+  let store2 = gen_store spilled2 in (* else節で足りないスタック変数を補う *)
+  (* then節やelse節の後ろではなく前にstoreを挿入することになるが問題はない *)
+  (store1 e1', store2 e2')
+d255 1
+a255 1
+	body = e; stacksize = s; ret = z } =
+d258 1
+d260 1
+a260 1
+  stackmap := [];
+d264 3
+a266 3
+	let r = regs.(i) in
+	regenv := M.add x r !regenv;
+	(i + 1, rs @@ [r]))
+d272 3
+a274 3
+	let fr = fregs.(d) in
+	regenv := M.add y fr !regenv;
+	(d + 1, frs @@ [fr]))
+d277 1
+d284 9
+@
+
+
+1.4
+log
+@*** empty log message ***
+@
+text
+@a4 4
+let allregs = Array.to_list regs
+let allfregs = Array.to_list fregs
+let is_reg x = (x.[0] = '%') (* List.mem x allregs || List.mem x allfregs *)
+
+d13 3
+a15 2
+let stackset = ref S.empty (* 変数がスタックにあるかどうか *)
+let stackmap = ref [] (* もしあるなら、どこにあるか *)
+d22 1
+a22 1
+let spill x = (* spillを挿入する関数を返す *)
+d27 3
+a29 4
+  let store = St(M.find x !regenv, reg_sp, C(List.hd(locate x))) in
+  stackset := S.add x !stackset;
+  (fun e0 -> Seq(store, e0))
+let spillf x = (* spillを挿入する関数を返す *)
+d36 2
+a37 3
+  let store = StDF(M.find x !regenv, reg_sp, C(List.hd(locate x))) in
+  stackset := S.add x !stackset;
+  (fun e0 -> Seq(store, e0))
+d89 2
+a90 2
+  (* returns a register with a function to insert spilling *)
+  try (fun e0 -> e0), alloc dest cont all x
+d92 1
+a92 1
+    let spilled =
+d94 3
+a96 4
+	(fun y ->
+	  not (is_reg y) &&
+	  M.mem y !regenv &&
+	  List.mem (M.find y !regenv) all)
+d98 6
+a103 7
+    Format.eprintf "spilling %s from %s@@." spilled (M.find spilled !regenv);
+    let spiller =
+      if S.mem spilled !stackset then (fun e0 -> e0)
+      else if all == allregs then spill spilled (* allocating int *)
+      else (assert (all == allfregs); spillf spilled) (* allocating float *) in
+    regenv := M.remove spilled !regenv;
+    spiller, alloc dest cont all x (* should always succeed *)
+d116 1
+a116 1
+      let spiller, r = alloc_spill dest cont' allregs x in
+d119 1
+a119 1
+      spiller (concat e1 (r, Type.Int) e2)
+d122 1
+a122 1
+      let spiller, r = alloc_spill dest cont' allfregs x in
+d125 1
+a125 1
+      spiller (concat e1 (r, Type.Float) e2)
+a126 1
+  debug := (dest, cont, exp) :: !debug;
+d137 2
+a138 2
+	 let spiller, r = alloc_spill dest cont' allregs x in
+	 spiller (Let(r, Ld(reg_sp, C(i)), g'_unspill dest cont exp))
+d140 2
+a141 2
+	 let spiller, r = alloc_spill dest cont' allfregs x in
+	 spiller (FLetD(r, LdDF(reg_sp, C(i)), g'_unspill dest cont exp))
+d167 8
+a174 11
+      let store =
+	List.fold_left
+	  (fun store a ->
+	    if is_reg a || S.mem a !stackset then store else
+	    (assert (M.mem a !regenv);
+	     let r = M.find a !regenv in
+	     if List.mem r allregs then spill a
+	     else if List.mem r allfregs then spillf a
+	     else (fun e0 -> e0)))
+	  (fun e0 -> e0)
+	  (fv cont) in
+d176 1
+a176 1
+      store (Ans(exp))
+d179 8
+a186 11
+      let store =
+	List.fold_left
+	  (fun store a ->
+	    if is_reg a || S.mem a !stackset then store else
+	    (assert (M.mem a !regenv);
+	     let r = M.find a !regenv in
+	     if List.mem r allregs then spill a
+	     else if List.mem r allfregs then spillf a
+	     else (fun e0 -> e0)))
+	  (fun e0 -> e0)
+	  (fv cont) in
+d188 1
+a188 1
+      store (Ans(exp))
+d191 1
+a191 1
+  let stackset_back = !stackset in
+d194 1
+a194 1
+  let stackset1 = !stackset in
+d196 1
+a196 1
+  stackset := stackset_back;
+d199 1
+a199 1
+  let stackset2 = !stackset in
+d213 1
+a213 1
+  stackset := S.inter (S.of_list live) (S.union stackset1 stackset2);
+d221 1
+a221 1
+      (S.diff !stackset ss)
+d223 2
+a224 2
+  let store1 = gen_store stackset1 in (* then節で足りないスタック変数を補う *)
+  let store2 = gen_store stackset2 in (* else節で足りないスタック変数を補う *)
+d232 1
+a232 1
+  stackset := S.empty;
+d263 1
+a263 1
+  stackset := S.empty;
+@
+
+
+1.3
+log
+@*** empty log message ***
+@
+text
+@d3 2
+a4 1
+let regenv = ref M.empty
+d7 8
+a14 2
+let is_reg x = (x.[0] == '%')
+let find x = if is_reg x then x else M.find x !regenv
+d17 26
+a42 4
+let rec pos src regs n = function
+  | [] -> []
+  | y :: ys when src = y -> regs.(n) :: pos src regs (n + 1) ys
+  | _ :: ys -> pos src regs (n + 1) ys
+d46 3
+a48 5
+(* call : Callがあった(先を追わない)場合の継続 *)
+(* nocall : Callがなかった(先を追う)場合の継続 *)
+let rec target_exp src dest exp call nocall =
+  match exp with
+  | Mov(x) | FMovD(x) when x = src -> [dest]
+d50 223
+a272 39
+      target src dest e1
+	(fun rs1 ->
+	  target src dest e2
+	    (fun rs2 -> call (rs1 @@ rs2)) (* どちらにもcallがあったら先を追わない *)
+	    (fun rs2 -> nocall (rs1 @@ rs2))) (* どちらかにcallがなければ先を追う *)
+	(fun rs1 ->
+	  target src dest e2
+	    (fun rs2 -> nocall (rs1 @@ rs2)) (* どちらかにcallがなければ先を追う *)
+	    (fun rs2 -> nocall (rs1 @@ rs2))) (* どちらかにcallがなければ先を追う *)
+  | CallCls(x, ys, zs) -> call (pos src regs 1 ys @@ pos src fregs 0 zs @@
+				if x = src then [regs.(0)] else [])
+  | CallDir(_, ys, zs) -> call (pos src regs 1 ys @@ pos src fregs 0 zs)
+  | _ -> nocall [] (* [X] error-prone *)
+and target src dest e call nocall =
+  match e with
+  | LetS([], ans) -> target_exp src dest ans (fun rs -> rs) (fun rs -> rs)
+  | LetS((x, exp) :: s, ans) ->
+      target_exp src x exp
+	(fun rs1 -> call rs1)
+	(fun rs1 ->
+	  target src dest (LetS(s, ans))
+	    (fun rs2 -> call (rs1 @@ rs2))
+	    (fun rs2 -> nocall (rs1 @@ rs2)))
+
+let alloc x dest cont =
+  List.find
+    (fun r ->
+      List.for_all
+	(fun y -> x <> y && r <> find y)
+	(fv cont))
+    (target x dest cont (fun rs -> rs) (fun rs -> rs) @@ allregs)
+
+let rec g dest = function
+  | LetS([], ans) -> LetS([], ans)
+  | LetS((x, Nop) :: s, ans) -> g dest (LetS(s, ans))
+  | LetS((x, Set(i)) :: s, ans) ->
+      let r = alloc x dest (LetS(s, ans)) in
+      let LetS(s', ans') = g dest (LetS(s, ans)) in
+      LetS((r, Set(i)) :: s', ans')
+d274 2
+a275 1
+let h { name = l; body = e } =
+d277 4
+a280 2
+  { name = l; body = g (assert false) e }
+let f (Prog(data, fundefs, e)) = Prog(data, List.map h fundefs, g (assert false) e)
+@
+
+
+1.2
+log
+@*** empty log message ***
+@
+text
+@d3 3
+a5 5
+let inter = ref []
+let reg_env = ref M.empty
+
+let all_regs = Array.to_list regs
+let all_fregs = Array.to_list fregs
+d7 2
+d10 1
+a10 4
+let find x = if is_reg x then x else M.find x !reg_env
+let find' x' = match x' with V(x) -> V(find x !reg_env) | c -> c
+
+let rec target x = function
+d12 2
+a13 2
+  | (Mov(y, z) | FMovD(y, z)) :: e when x = y && is_reg z -> z :: target x e
+  | _ :: e -> target x e
+d15 47
+a61 100
+let not_interfere env live x r =
+  List.for_all
+    (fun y -> y <> x && r <> find y env)
+    live
+
+let alloc cont env all x =
+  let r =
+    List.find
+      (not_interfere env (fv cont) x)
+      (target x cont @@ all) in
+  Format.eprintf "allocated %s for %s@@." r x;
+  M.add x r env
+
+let rec g = function
+  | [] -> []
+  | (Mov(x, y) | FMovD(x, y)) :: e
+    when not (is_reg y) && not_interfere env (fv (e @@ cont)) y (find x env) ->
+	let env = M.add y (find x env) env in
+	Format.eprintf "allocated %s for %s@@." (find x env) y;
+	Format.eprintf "eliminated redundant move from %s to %s@@." x y;
+	g cont env e
+  | (Mov(x, y) | FMovD(x, y)) :: e
+    when is_reg y && find x env = y ->
+      Format.eprintf "eliminated redundant move from %s to %s@@." x y;
+      g cont env e
+  | Set(i, x) :: e ->
+      let env = alloc (e @@ cont) env all_regs x in
+      Set(i, find x env) :: g cont env e
+  | Mov(x, y) :: e ->
+      let env = alloc (e @@ cont) env all_regs y in
+      Mov(find x env, find y env) :: g cont env e
+  | Neg(x, y) :: e ->
+      let env = alloc (e @@ cont) env all_regs y in
+      Neg(find x env, find y env) :: g cont env e
+  | Add(x, y', z) :: e ->
+      let env = alloc (e @@ cont) env all_regs z in
+      Add(find x env, find' y' env, find z env) :: g cont env e
+  | Sub(x, y', z) :: e ->
+      let env = alloc (e @@ cont) env all_regs z in
+      Sub(find x env, find' y' env, find z env) :: g cont env e
+  | SLL(x, y', z) :: e ->
+      let env = alloc (e @@ cont) env all_regs z in
+      SLL(find x env, find' y' env, find z env) :: g cont env e
+  | Cmp(x, y') :: e ->
+      Cmp(find x env, find' y' env) :: g cont env e
+  | Ld(x, y', z) :: e ->
+      let env = alloc (e @@ cont) env all_regs z in
+      Ld(find x env, find' y' env, find z env) :: g cont env e
+  | St(x, y, z') :: e ->
+      St(find x env, find y env, find' z' env) :: g cont env e
+  | FMovD(x, y) :: e ->
+      let env = alloc (e @@ cont) env all_fregs y in
+      FMovD(find x env, find y env) :: g cont env e
+  | FNegD(x, y) :: e ->
+      let env = alloc (e @@ cont) env all_fregs y in
+      FNegD(find x env, find y env) :: g cont env e
+  | FAddD(x, y, z) :: e ->
+      let env = alloc (e @@ cont) env all_fregs z in
+      FAddD(find x env, find y env, find z env) :: g cont env e
+  | FSubD(x, y, z) :: e ->
+      let env = alloc (e @@ cont) env all_fregs z in
+      FSubD(find x env, find y env, find z env) :: g cont env e
+  | FMulD(x, y, z) :: e ->
+      let env = alloc (e @@ cont) env all_fregs z in
+      FMulD(find x env, find y env, find z env) :: g cont env e
+  | FDivD(x, y, z) :: e ->
+      let env = alloc (e @@ cont) env all_fregs z in
+      FDivD(find x env, find y env, find z env) :: g cont env e
+  | FCmpD(x, y) :: e ->
+      FCmpD(find x env, find y env) :: g cont env e
+  | LdDF(x, y', z) :: e ->
+      let env = alloc (e @@ cont) env all_fregs z in
+      LdDF(find x env, find' y' env, find z env) :: g cont env e
+  | StDF(x, y, z') :: e ->
+      StDF(find x env, find y env, find' z' env) :: g cont env e
+  | SetL(i, x) :: e ->
+      let env = alloc (e @@ cont) env all_regs x in
+      SetL(i, find x env) :: g cont env e
+  | Jmp(x) :: e ->
+      Jmp(find x env) :: g cont env e
+  | IfEq(e1, e2) :: e ->
+      let cont' = e @@ cont in
+      IfEq(g cont' env e1, g cont' env e2)
+  | (BE(_) | BLE(_) | FBE(_) | FLBE(_) | Label(_) | B(_) | Comment(_) as inst) :: e ->
+      inst :: g cont env e
+
+let rec build_inter cont = function
+  | [] -> ()
+  | (Nop | Cmp _ | St _ | FCmpD _ | StDF _ | Jmp _ | Comment _ | CallCls _ | CallDir _ | Ret | Save _) :: e ->
+      build_inter cont e
+  | (Set(_, x) | SetL(_, x) | Mov(_, x) | Neg(_, x) | Add(_, _, x) | Sub(_, _, x) | SLL(_, _, x) | Ld(_, _, x) |
+    FMovD(_, x) | FNegD(_, x) | FAddD(_, _, x) | FSubD(_, _, x) | FMulD(_, _, x) | FDivD(_, _, x) | LdDF(_, _, x) |
+    Restore(x)) :: e ->
+      List.iter
+	(fun y -> if x <> y then inter := (x, y) :: !inter)
+	(fv (e @@ cont))
+  | (IfEq(e1, e2) | IfLE(e1, e2) | IfFLE(e1, e2)) :: e ->
+      build_inter (e @@ cont) e1;
+      build_inter (e @@ cont) e2;
+      build_inter cont e
+d64 3
+a66 6
+  inter := [];
+  build_inter [] e;
+  { name = l; body = g e }
+
+let f (Prog(data, fundefs, e)) =
+  Prog(data, List.map h fundefs, g e)
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d3 3
+d10 2
+a11 2
+let find x env = if is_reg x then x else M.find x env
+let find' x' env = match x' with V(x) -> V(find x env) | c -> c
+d31 1
+a31 1
+let rec g cont env = function
+d104 22
+a125 2
+let h { name = l; body = e } = { name = l; body = g [] M.empty e }
+let f (Prog(data, fundefs, e)) = Prog(data, List.map h fundefs, g [] M.empty e)
+@

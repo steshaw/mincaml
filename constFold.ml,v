@@ -1,0 +1,160 @@
+head	1.2;
+access;
+symbols;
+locks
+	sumii:1.2; strict;
+comment	@; @;
+
+
+1.2
+date	2005.01.27.23.01.56;	author sumii;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.10.16.23.18.02;	author sumii;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@*** empty log message ***
+@
+text
+@open KNormal
+
+let find x env = try Some(M.find x env) with Not_found -> None
+
+let rec g env = function
+  | Var(x) when M.mem x env -> Int(M.find x env)
+  | Neg(x) as e ->
+      (match find x env with
+      |	Some(Int(i)) -> Int(-i)
+      |	_ -> e)
+  | Add(x, y) as e ->
+      (match find x env, find y env with
+      |	Some(Int(i)), Some(Int(j)) -> Int(i + j)
+      |	_ -> e)
+  | Sub(x, y) as e ->
+      (match find x env, find y env with
+      |	Some(Int(i)), Some(Int(j)) -> Int(i - j)
+      |	_ -> e)
+  | FNeg(x) as e ->
+      (match find x env with
+      |	Some(Float(d)) -> Float(-.d)
+      |	_ -> e)
+  | FAdd(x, y) as e ->
+      (match find x env, find y env with
+      |	Some(Float(d1)), Some(Float(d2)) -> Float(d1 +. d2)
+      |	_ -> e)
+  | FSub(x, y) as e ->
+      (match find x env, find y env with
+      |	Some(Float(d1)), Some(Float(d2)) -> Float(d1 -. d2)
+      |	_ -> e)
+  | FMul(x, y) as e ->
+      (match find x env, find y env with
+      |	Some(Float(d1)), Some(Float(d2)) -> Float(d1 *. d2)
+      |	_ -> e)
+  | FDiv(x, y) as e ->
+      (match find x env, find y env with
+      |	Some(Float(d1)), Some(Float(d2)) -> Float(d1 /. d2)
+      |	_ -> e)
+  | IfEq(x, y, e1, e2) ->
+      (match find x env, find y env with
+      |	Some(Int(i)), Some(Int(j)) -> if i = j then g env e1 else g env e2
+      |	Some(Float(d1)), Some(Float(d2)) -> if d1 = d2 then g env e1 else g env e2
+      |	_ -> IfEq(x, y, g env e1, g env e2))
+  | IfLE(x, y, e1, e2) ->
+      (match find x env, find y env with
+      |	Some(Int(i)), Some(Int(j)) -> if i <= j then g env e1 else g env e2
+      |	Some(Float(d1)), Some(Float(d2)) -> if d1 <= d2 then g env e1 else g env e2
+      |	_ -> IfLE(x, y, g env e1, g env e2))
+  | Let((x, t), e1, e2) ->
+      let e1' = g env e1 in
+      let e2' = g (M.add x e1' env) e2 in
+      Let((x, t), e1', e2')
+  | LetRec(bindings, e2) ->
+      LetRec(List.map
+	       (fun { name = x; args = ys; body = e1 } ->
+		 { name = x; args = ys; body = g env e1 })
+	       bindings,
+	     g env e2)
+  | LetTuple(xts, y, e) ->
+      (match find y env with
+      | Some(Tuple(zs)) ->
+	  List.fold_left2
+	    (fun e' xt z -> Let(xt, Var(z), e'))
+	    (g env e) xts zs
+      | _ -> LetTuple(xts, y, g env e))
+  | e -> e (* [X] error-prone *)
+
+let f = g M.empty
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@a0 1
+open Syntax
+d3 1
+a3 3
+let lookup env x =
+  try Some(FinMap.lookup x env)
+  with FinMap.Undefined(_) -> None
+d5 33
+a37 12
+let lookup' env = function
+  | Ident(x) -> lookup env x
+  | SInt(i) -> Some(Int(i))
+
+let rec f env = function
+  | Let(x, e1, e2) ->
+      (match f env e1 with
+      | Imm(i) -> Let(x, Imm(i), f (FinMap.extend x i env) e2)
+      | e1' -> Let(x, e1', f env e2))
+  | Var(x) as e ->
+      (match lookup env x with
+      |	Some(i) -> Imm(i)
+d39 14
+d56 1
+a56 1
+		 { name = x; args = ys; body = f env e1 })
+d58 9
+a66 27
+	     f env e2)
+  | App(x, ys) as e -> e
+  | NegInt(x) as e ->
+      (match lookup' env x with
+      |	Some(Int(i)) -> Imm(Int(-i))
+      |	_ -> e)
+  | SubInt(x, y) as e ->
+      (match lookup env x with
+      |	Some(Int(i)) ->
+	  (match lookup' env y with
+	  | Some(Int(j)) -> Imm(Int(i - j))
+	  | _ -> e)
+      |	_ ->
+	  (match lookup' env y with
+	  | Some(Int(j)) when sint j -> SubInt(x, SInt(j))
+	  | _ -> e))
+  | IfLEInt(x, y, e1, e2) as e ->
+      (match lookup env x with
+      |	Some(Int(i)) ->
+	  (match lookup' env y with
+	  | Some(Int(j)) -> if i <= j then f env e1 else f env e2
+	  | _ -> e)
+      |	_ ->
+	  (match lookup' env y with
+	  | Some(Int(j)) when sint j -> IfLEInt(x, SInt(j), f env e1, f env e2)
+	  | _ -> e))
+  | Imm(i) -> Imm(i)
+d68 1
+@

@@ -1,0 +1,21 @@
+Index: min-rt.ml
+===================================================================
+RCS file: /home/users/oiwa/private/CVSROOT/compiler-enshu/min-rt.ml,v
+retrieving revision 1.16
+retrieving revision 1.17
+diff -u -r1.16 -r1.17
+--- min-rt.ml	2001/12/21 08:32:57	1.16
++++ min-rt.ml	2002/01/10 09:12:59	1.17
+@@ -284,9 +284,9 @@
+       let rotation = create_array 3 0.0 in
+       if isrot_p <> 0 then
+ 	(
+-	 rotation.(0) <- read_float ();
+-	 rotation.(1) <- read_float ();
+-	 rotation.(2) <- read_float () (* 18 *)
++	 rotation.(0) <- rad (read_float ());
++	 rotation.(1) <- rad (read_float ());
++	 rotation.(2) <- rad (read_float ()) (* 18 *)
+ 	) 
+       else ();
+ 

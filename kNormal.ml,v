@@ -1,0 +1,913 @@
+head	1.7;
+access;
+symbols;
+locks
+	sumii:1.7; strict;
+comment	@; @;
+
+
+1.7
+date	2002.12.06.04.23.57;	author sumii;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2002.12.04.03.58.06;	author sumii;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2001.12.20.06.22.31;	author sumii;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2001.12.01.02.16.56;	author sumii;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2001.11.23.06.55.00;	author sumii;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2001.10.24.03.29.44;	author sumii;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.10.16.23.17.46;	author sumii;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.7
+log
+@*** empty log message ***
+@
+text
+@(* naming intermediate values (translation into K-normal form) *)
+(* could be fused with typing *)
+
+(* identifiers themselves have types (like registers do) *)
+type ident = Syntax.ident * Type.t
+type ident' = V of ident | C of int
+
+(* [XXX] keys/elements include references - maybe dangerous *)
+module M = FinMap.Make (struct type t = ident end)
+module S = FinSet.Make (struct type t = ident end)
+
+let rec pp_idents = function
+  | [] -> ""
+  | [x] -> fst x
+  | x :: xs -> fst x ^ " " ^ pp_idents xs
+
+let gentmp x t = (Fresh.f ("T" ^ x), t)
+let genid (x, t) = (Fresh.f x, t)
+
+type t =
+  | Var of ident
+  | Global of ident
+  | NegInt of ident
+  | AddInt of ident * ident'
+  | SubInt of ident * ident'
+  | IfEqInt of ident * ident' * t * t
+  | IfLEInt of ident * ident' * t * t
+  | Tuple of ident list
+  | LetTuple of ident list * ident * t
+  | Put of ident * ident' * ident
+  | Get of ident * ident'
+  | Let of ident * t * t
+  | LetRec of fundef list * t
+  | App of ident * ident list
+  | Int of int
+  | Float of float
+  | Unit
+and fundef = { name : ident; args : ident list; body : t }
+
+let fv' = function V(x) -> S.singleton x | _ -> S.empty
+let rec fv = function
+  | Let(x, e1, e2) -> S.union (fv e1) (S.remove x (fv e2))
+  | LetRec(fundefs, e2) ->
+      let (xs, zs) =
+	List.fold_left
+	  (fun (xs, zs) { name = x; args = ys; body = e1 } ->
+	    (S.add x xs, S.union zs (S.diff (fv e1) (S.of_list ys))))
+	  (S.empty, S.empty)
+	  fundefs in
+      S.diff (S.union zs (fv e2)) xs
+  | Var(x) -> S.singleton x
+  | Global(x) -> S.empty
+  | App(x, ys) -> S.of_list (x :: ys)
+  | NegInt(x) -> S.singleton x
+  | AddInt(x, y) -> S.union (S.singleton x) (fv' y)
+  | SubInt(x, y) -> S.union (S.singleton x) (fv' y)
+  | IfEqInt(x, y, e1, e2) ->
+      S.add x (S.union (fv' y) (S.union (fv e1) (fv e2)))
+  | IfLEInt(x, y, e1, e2) ->
+      S.add x (S.union (fv' y) (S.union (fv e1) (fv e2)))
+  | Tuple(xs) -> S.of_list xs
+  | LetTuple(xs, y, e) -> S.add y (S.diff (fv e) (S.of_list xs))
+  | Put(x, y, z) -> S.add x (S.add z (fv' y))
+  | Get(x, y) -> S.add x (fv' y)
+  | Int(_) -> S.empty
+  | Float(_) -> S.empty
+  | Unit -> S.empty
+
+let rec id_of_typ = function
+  | Type.Var(_) -> assert false
+  | Type.Int -> "i"
+  | Type.Float -> "f"
+  | Type.Unit -> "u"
+  | Type.Tuple(_) -> "t"
+  | Type.Array(_) -> "a"
+  | Type.Fun(_) -> "f"
+
+let insert_let e t k =
+  match e with
+  | Var(x) -> k x
+  | _ ->
+    let x = gentmp (id_of_typ t) t in
+    let e', t = k x in
+    Let(x, e, e'), t
+
+let rec g env = function
+  | Syntax.Var(x) when Syntax.M.mem x !Typing.initenv ->
+      (match Syntax.M.find x env with
+      | Type.Array(_) as t -> Global(x, t), t
+      | _ ->
+	  Format.eprintf "%s does not have an array type@@." x;
+	  failwith "unsupported: global variable of non-array type")
+  | Syntax.Var(x) ->
+      let t = Syntax.M.find x env in
+      Var(x, t), t
+  | Syntax.NegInt(e) ->
+      let e', t = g env e in
+      insert_let e' t
+	(fun x -> NegInt(x), Type.Int)
+  | Syntax.AddInt(e1, e2) ->
+      let e1', t1 = g env e1 in
+      let e2', t2 = g env e2 in
+      insert_let e1' t1
+	(fun x -> insert_let e2' t2
+	    (fun y -> AddInt(x, V(y)), Type.Int))
+  | Syntax.SubInt(e1, e2) ->
+      let e1', t1 = g env e1 in
+      let e2', t2 = g env e2 in
+      insert_let e1' t1
+	(fun x -> insert_let e2' t2
+	    (fun y -> SubInt(x, V(y)), Type.Int))
+  | Syntax.IfEqInt(e1, e2, e3, e4) ->
+      let e1', t1 = g env e1 in
+      let e2', t2 = g env e2 in
+      let e3', t3 = g env e3 in
+      let e4', t4 = g env e4 in
+      insert_let e1' t1
+	(fun x -> insert_let e2' t2
+	    (fun y -> IfEqInt(x, V(y), e3', e4'), t3))
+  | Syntax.IfLEInt(e1, e2, e3, e4) ->
+      let e1', t1 = g env e1 in
+      let e2', t2 = g env e2 in
+      let e3', t3 = g env e3 in
+      let e4', t4 = g env e4 in
+      insert_let e1' t1
+	(fun x -> insert_let e2' t2
+	    (fun y -> IfLEInt(x, V(y), e3', e4'), t3))
+  | Syntax.Tuple(es) ->
+      let rec bind xs = function
+        (* "xs" are identifiers for the elements *)
+	| [] -> Tuple(xs), Type.Tuple(List.map snd xs)
+	| e :: es ->
+	    let e', t = g env e in
+	    insert_let e' t
+	      (fun x ->
+		let es', ts = bind (xs @@ [x]) es in
+		es', ts) in
+      bind [] es
+  | Syntax.LetTuple(xs, e1, e2) ->
+      let e1', t1 = g env e1 in
+      let e2', t2 = g (Syntax.M.adds xs env) e2 in
+      insert_let e1' t1
+	(fun y -> LetTuple(xs, y, e2'), t2)
+  | Syntax.Put(e1, e2, e3) ->
+      let e1', t1 = g env e1 in
+      let e2', t2 = g env e2 in
+      let e3', t3 = g env e3 in
+      insert_let e1' t1
+	(fun x -> insert_let e2' t2
+	    (fun y -> insert_let e3' t3
+		(fun z -> Put(x, V(y), z), Type.Unit)))
+  | Syntax.Get(e1, e2) ->
+      let e1', t1 = g env e1 in
+      let e2', t2 = g env e2 in
+      insert_let e1' t1
+	(fun x -> insert_let e2' t2
+	    (fun y -> Get(x, V(y)), Type.elt t1))
+  | Syntax.Let(x, e1, e2) ->
+      let e1', t1 = g env e1 in
+      let e2', t2 = g (Syntax.M.add (fst x) (snd x) env) e2 in
+      Let(x, e1', e2'), t2
+  | Syntax.LetRec(fundefs, e2) ->
+      let env' =
+	Syntax.M.adds
+	  (List.map (fun fundef -> fundef.Syntax.name) fundefs)
+	  env in
+      let e2', t2 = g env' e2 in
+      LetRec(List.map
+	       (fun { Syntax.name = f; Syntax.args = xs; Syntax.body = e1 } ->
+		 let e1', t1 = g (Syntax.M.adds xs env') e1 in
+		 { name = f; args = xs; body = e1' })
+	       fundefs,
+	     e2'), t2
+  | Syntax.App(Syntax.Var("create_array"), [e1; e2]) ->
+      (* [XXX] ad hoc workaround for "polymorphic" typing *)
+      let e1', t1 = g env e1 in
+      let e2', t2 = g env e2 in
+      insert_let e1' t1
+	(fun x -> insert_let e2' t2
+	    (fun y ->
+	      App(("create_array", Type.Fun([Type.Int; t2], Type.Array(t2))),
+		  [x; y]), Type.Array(t2)))
+  | Syntax.App(Syntax.Var(f), e2s) ->
+      (* [XXX] ad hoc support for direct calls to external functions *)
+      let t1 = Syntax.M.find f env in
+      let rec bind xs = function
+	(* "xs" are identifiers for the arguments *)
+	| [] -> App((f, t1), xs), snd (Type.dom_codom t1)
+	| e2 :: e2s ->
+	    let e2', t2 = g env e2 in
+	    insert_let e2' t2
+	      (fun x ->
+		let e2s', t2s = bind (xs @@ [x]) e2s in
+		e2s', t2s) in
+      let e2s', t2s = bind [] e2s (* left-to-right evaluation *) in
+      e2s', t2s
+  | Syntax.App(e1, e2s) ->
+      let e1', t1 = g env e1 in
+      insert_let e1' t1
+	(fun f ->
+	  let rec bind xs = function
+	    (* "xs" are identifiers for the arguments *)
+	    | [] -> App(f, xs), snd (Type.dom_codom t1)
+	    | e2 :: e2s ->
+		let e2', t2 = g env e2 in
+		insert_let e2' t2
+		  (fun x ->
+		    let e2s', t2s = bind (xs @@ [x]) e2s in
+		    e2s', t2s) in
+	  let e2s', t2s = bind [] e2s (* left-to-right evaluation *) in
+	  e2s', t2s)
+  | Syntax.Int(i) -> Int(i), Type.Int
+  | Syntax.Float(d) -> Float(d), Type.Float
+  | Syntax.Unit -> Unit, Type.Unit
+
+let f e = fst (g !Typing.initenv e)
+@
+
+
+1.6
+log
+@*** empty log message ***
+@
+text
+@d5 2
+a6 1
+type ident = string * Type.t
+d17 1
+a17 1
+let gentmp x t = (Fresh.f ("T_" ^ x), t)
+d24 4
+a27 5
+  | AddInt of ident * ident
+  | SubInt of ident * ident
+  | AddConst of ident * int
+  | IfEqInt of ident * ident * t * t
+  | IfLEInt of ident * ident * t * t
+d30 2
+a31 2
+  | Put of ident * ident * ident
+  | Get of ident * ident
+d40 1
+d51 1
+a51 1
+  | Var(x) -> S.of_list [x]
+d54 7
+a60 6
+  | NegInt(x) -> S.of_list [x]
+  | AddInt(x, y) -> S.of_list [x; y]
+  | SubInt(x, y) -> S.of_list [x; y]
+  | AddConst(x, _) -> S.of_list [x]
+  | IfEqInt(x, y, e1, e2) -> S.add x (S.add y (S.union (fv e1) (fv e2)))
+  | IfLEInt(x, y, e1, e2) -> S.add x (S.add y (S.union (fv e1) (fv e2)))
+d63 2
+a64 2
+  | Put(x, y, z) -> S.of_list [x; y; z]
+  | Get(x, y) -> S.of_list [x; y]
+d70 1
+a70 2
+  | Type.Var({contents = None}) -> "i"
+  | Type.Var({contents = Some(t)}) -> id_of_typ t
+d89 1
+a89 1
+      | (Type.Array(_) | Type.Fun(_) as t) -> Global(x, t), t
+d91 2
+a92 2
+	  Format.eprintf "%s does not have a reference type@@." x;
+	  failwith "unsupported: global variable of value type")
+d105 1
+a105 1
+	    (fun y -> AddInt(x, y), Type.Int))
+d111 1
+a111 1
+	    (fun y -> SubInt(x, y), Type.Int))
+d119 1
+a119 1
+	    (fun y -> IfEqInt(x, y, e3', e4'), t3))
+d127 1
+a127 1
+	    (fun y -> IfLEInt(x, y, e3', e4'), t3))
+d151 1
+a151 1
+		(fun z -> Put(x, y, z), Type.Unit)))
+d157 1
+a157 1
+	    (fun y -> Get(x, y), Type.elt t1))
+d183 14
+d216 1
+a216 4
+let f e =
+  match g !Typing.initenv e with
+  | e', Type.Int -> e'
+  | _ -> assert false
+@
+
+
+1.5
+log
+@*** empty log message ***
+@
+text
+@d1 2
+a2 1
+(* name intermediate values (translation into K-normal form) *)
+d4 14
+a17 1
+open Type
+a18 5
+(* identifiers themselves have types (as registers do) *)
+type ident = Syntax.ident * typ
+type id_or_simm =
+  | Id of ident
+  | SImm of int
+d21 7
+a27 5
+  | NegInt of id_or_simm
+  | AddInt of ident * id_or_simm
+  | SubInt of ident * id_or_simm
+  | IfEqInt of ident * id_or_simm * t * t
+  | IfLEInt of ident * id_or_simm * t * t
+d30 2
+a31 2
+  | Put of ident * id_or_simm * ident
+  | Get of ident * id_or_simm
+d33 1
+a33 1
+  | LetRec of fundef list * t (* mutually recursive functions *)
+a39 16
+(* [XXX] these keys include references - maybe dangerous *)
+module M = FinMap.Make(struct type t = ident end)
+module S = FinSet.Make(struct type t = ident end)
+
+let ppI x = Syntax.ppI (fst x)
+let ppIS = function
+  | Id(x) -> ppI x
+  | SImm(i) -> string_of_int i
+let rec ppIs = function
+  | [] -> ""
+  | [x] -> ppI x
+  | x :: xs -> ppI x ^ " " ^ ppIs xs
+
+let simm13 i = -4096 < i && i < 4095
+let simm11 i = -1024 < i && i < 1023
+
+d47 2
+a48 1
+	  (S.empty, S.empty) fundefs in
+d51 1
+d53 6
+a58 10
+  | NegInt(Id(x)) -> S.of_list [x]
+  | NegInt(SImm(_)) -> S.empty
+  | AddInt(x, Id(y)) -> S.of_list [x; y]
+  | AddInt(x, SImm(_)) -> S.of_list [x]
+  | SubInt(x, Id(y)) -> S.of_list [x; y]
+  | SubInt(x, SImm(_)) -> S.of_list [x]
+  | IfEqInt(x, Id(y), e1, e2) -> S.add x (S.add y (S.union (fv e1) (fv e2)))
+  | IfEqInt(x, SImm(_), e1, e2) -> S.add x (S.union (fv e1) (fv e2))
+  | IfLEInt(x, Id(y), e1, e2) -> S.add x (S.add y (S.union (fv e1) (fv e2)))
+  | IfLEInt(x, SImm(_), e1, e2) -> S.add x (S.union (fv e1) (fv e2))
+d61 2
+a62 4
+  | Put(x, Id(y), z) -> S.of_list [x; y; z]
+  | Put(x, SImm(_), z) -> S.of_list [x; z]
+  | Get(x, Id(y)) -> S.of_list [x; y]
+  | Get(x, SImm(_)) -> S.of_list [x]
+d67 17
+a83 2
+let gentmp x t = (Syntax.I(Fresh.gensym ("_" ^ x)), t)
+let genid (Syntax.I(x), t) = (Syntax.I(Fresh.gensym x), t)
+d86 6
+d97 2
+a98 2
+      let x = gentmp "i" t in
+      Let(x, e', NegInt(Id(x))), TInt
+d102 3
+a104 3
+      let x = gentmp "i" t1 in
+      let y = gentmp "j" t2 in
+      Let(x, e1', Let(y, e2', AddInt(x, Id(y)))), TInt
+d108 3
+a110 3
+      let x = gentmp "i" t1 in
+      let y = gentmp "j" t2 in
+      Let(x, e1', Let(y, e2', SubInt(x, Id(y)))), TInt
+d116 3
+a118 3
+      let x = gentmp "i" t1 in
+      let y = gentmp "j" t2 in
+      Let(x, e1', Let(y, e2', IfEqInt(x, Id(y), e3', e4'))), t3
+d124 3
+a126 3
+      let x = gentmp "i" t1 in
+      let y = gentmp "j" t2 in
+      Let(x, e1', Let(y, e2', IfLEInt(x, Id(y), e3', e4'))), t3
+d130 1
+a130 1
+	| [] -> Tuple(xs), TTuple(List.map snd xs)
+d133 4
+a136 3
+	    let x = gentmp "e" t in
+	    let es', ts = bind (xs @@ [x]) es in
+	    Let(x, e', es'), ts in
+d141 2
+a142 2
+      let y = gentmp "p" t1 in
+      Let(y, e1', LetTuple(xs, y, e2')), t2
+d147 4
+a150 4
+      let x = gentmp "a" t1 in
+      let y = gentmp "i" t2 in
+      let z = gentmp "e" t3 in
+      Let(x, e1', Let(y, e2', Let(z, e3', Put(x, Id(y), z)))), TUnit
+d154 3
+a156 3
+      let x = gentmp "a" t1 in
+      let y = gentmp "i" t2 in
+      Let(x, e1', Let(y, e2', Get(x, Id(y)))), elt t1
+d164 1
+a164 1
+	  (List.map (fun { Syntax.name = f } -> f) fundefs)
+d173 2
+a174 2
+  | Syntax.App(Syntax.Var(Syntax.I("create_array")), [e1; e2]) ->
+      (* [XXX] ad hoc workaround *)
+d177 5
+a181 8
+      let x = gentmp "i" t1 in
+      let y = gentmp "e" t2 in
+      Let(x, e1',
+	  Let(y, e2',
+	      App((Syntax.I("create_array"),
+		   TFun([TInt; t2], TArray(t2))),
+		  [x; y]))),
+      TArray(t2)
+d184 16
+a199 14
+      let f = gentmp "f" t1 in
+      let rec bind xs = function
+	(* "xs" are identifiers for the arguments *)
+	| [] -> App(f, xs), snd (dom_codom t1)
+	| e2 :: e2s ->
+	    let e2', t2 = g env e2 in
+	    let x = gentmp "a" t2 in
+	    let e2s', t2s = bind (x :: xs) e2s in
+	    Let(x, e2', e2s'), t2s in
+      let e2s', t2s = bind [] (List.rev e2s) (* evaluate left-to-right *) in
+      Let(f, e1', e2s'), t2s
+  | Syntax.Int(i) -> Int(i), TInt
+  | Syntax.Float(d) -> Float(d), TFloat
+  | Syntax.Unit -> Unit, TUnit
+d202 3
+a204 2
+  let e', t = g !Typing.initenv e in
+  e'
+@
+
+
+1.4
+log
+@*** empty log message ***
+@
+text
+@d3 7
+a9 4
+type ident = Syntax.ident
+type ident_or_sint =
+  | Ident of ident
+  | SInt of int
+d12 5
+a16 5
+  | NegInt of ident_or_sint
+  | AddInt of ident * ident_or_sint
+  | SubInt of ident * ident_or_sint
+  | IfEqInt of ident * ident_or_sint * t * t
+  | IfLEInt of ident * ident_or_sint * t * t
+d19 2
+a20 2
+  | Put of ident * ident * ident * t
+  | Get of ident * ident
+d26 1
+d29 3
+a31 1
+let sint i = -4096 < i & i < 4095
+d33 1
+a33 1
+let ppI = Syntax.ppI
+d35 2
+a36 2
+  | Ident(x) -> ppI x
+  | SInt(i) -> string_of_int i
+d42 2
+a43 1
+module S = Syntax.IdSet
+d51 2
+a52 4
+	    (S.add x xs,
+	     S.union zs (S.diff (fv e1) (S.from_list ys))))
+	  (S.empty, S.empty)
+	  fundefs in
+d54 18
+a71 20
+  | Var(x) -> S.from_list [x]
+  | App(x, ys) -> S.from_list (x :: ys)
+  | NegInt(Ident(x)) -> S.from_list [x]
+  | NegInt(SInt(_)) -> S.empty
+  | AddInt(x, Ident(y)) -> S.from_list [x; y]
+  | AddInt(x, SInt(_)) -> S.from_list [x]
+  | SubInt(x, Ident(y)) -> S.from_list [x; y]
+  | SubInt(x, SInt(_)) -> S.from_list [x]
+  | IfEqInt(x, Ident(y), e1, e2) ->
+      S.add x (S.add y (S.union (fv e1) (fv e2)))
+  | IfEqInt(x, SInt(_), e1, e2) ->
+      S.add x (S.union (fv e1) (fv e2))
+  | IfLEInt(x, Ident(y), e1, e2) ->
+      S.add x (S.add y (S.union (fv e1) (fv e2)))
+  | IfLEInt(x, SInt(_), e1, e2) ->
+      S.add x (S.union (fv e1) (fv e2))
+  | Tuple(xs) -> S.from_list xs
+  | LetTuple(xs, y, e) -> S.add y (S.diff (fv e) (S.from_list xs))
+  | Put(x, y, z, e) -> S.union (S.from_list [x; y; z]) (fv e)
+  | Get(x, y) -> S.from_list [x; y]
+d74 1
+d76 2
+a77 1
+let gentmp x = Syntax.I(Fresh.gensym ("_" ^ x))
+d79 4
+a82 2
+let rec f = function
+  | Syntax.Var(x) -> Var(x)
+d84 3
+a86 2
+      let x = gentmp "i" in
+      Let(x, f e, NegInt(Ident(x)))
+d88 5
+a92 3
+      let x = gentmp "i" in
+      let y = gentmp "j" in
+      Let(x, f e1, Let(y, f e2, AddInt(x, Ident(y))))
+d94 5
+a98 3
+      let x = gentmp "i" in
+      let y = gentmp "j" in
+      Let(x, f e1, Let(y, f e2, SubInt(x, Ident(y))))
+d100 7
+a106 3
+      let x = gentmp "i" in
+      let y = gentmp "j" in
+      Let(x, f e1, Let(y, f e2, IfEqInt(x, Ident(y), f e3, f e4)))
+d108 7
+a114 3
+      let x = gentmp "i" in
+      let y = gentmp "j" in
+      Let(x, f e1, Let(y, f e2, IfLEInt(x, Ident(y), f e3, f e4)))
+d116 1
+a116 1
+      let rec bindargs xs = function
+d118 1
+a118 1
+	| [] -> Tuple(xs)
+d120 5
+a124 3
+	    let x = gentmp "e" in
+	    Let(x, f e, bindargs (xs @@ [x]) es) in
+      bindargs [] es
+d126 12
+a137 7
+      let y = gentmp "p" in
+      Let(y, f e1, LetTuple(xs, y, f e2))
+  | Syntax.Put(e1, e2, e3, e4) ->
+      let x = gentmp "a" in
+      let y = gentmp "i" in
+      let z = gentmp "e" in
+      Let(x, f e1, Let(y, f e2, Let(z, f e3, Put(x, y, z, f e4))))
+d139 9
+a147 4
+      let x = gentmp "a" in
+      let y = gentmp "i" in
+      Let(x, f e1, Let(y, f e2, Get(x, y)))
+  | Syntax.Let(x, e1, e2) -> Let(x, f e1, f e2)
+d149 5
+d155 3
+a157 4
+	       (fun { Syntax.name = x;
+		      Syntax.args = ys;
+		      Syntax.body = e1 } ->
+		 { name = x; args = ys; body = f e1 } )
+d159 13
+a171 1
+	     f e2)
+d173 19
+a191 11
+      let x = gentmp "f" in
+      Let(x, f e1,
+	  let rec bindargs ys = function
+            (* "ys" are identifiers for the arguments *)
+	    | [] -> App(x, ys)
+	    | e :: es ->
+		let y = gentmp "a" in
+		Let(y, f e, bindargs (ys @@ [y]) es) in
+	  bindargs [] e2s)
+  | Syntax.Int(i) -> Int(i)
+  | Syntax.Float(d) -> Float(d)
+@
+
+
+1.3
+log
+@going to remove pp
+@
+text
+@d10 1
+d12 1
+d14 4
+d21 2
+a22 1
+  | Imm of Syntax.imm
+a34 16
+let rec pp_fundef { name = x; args = ys; body = e1 } =
+  Printf.sprintf "%s %s =\n%s" (ppI x) (ppIs ys) (pp e1)  
+and pp_fundefs = function
+  | [] -> ""
+  | [fundef] -> pp_fundef fundef
+  | fundef :: fundefs -> pp_fundef fundef ^ "\nand " ^ pp_fundefs fundefs
+and pp = function
+  | Let(x, e1, e2) -> Printf.sprintf "let %s = %s in\n%s" (ppI x) (pp e1) (pp e2)
+  | Var(x) -> ppI x
+  | LetRec(fundefs, e2) -> Printf.sprintf "let rec %s in\n%s" (pp_fundefs fundefs) (pp e2)
+  | App(x, ys) -> Printf.sprintf "%s %s" (ppI x) (ppIs ys)
+  | NegInt(x) -> Printf.sprintf "-%s" (ppIS x)
+  | SubInt(x, y) -> Printf.sprintf "%s - %s" (ppI x) (ppIS y)
+  | IfLEInt(x, y, e1, e2) -> Printf.sprintf "if %s <= %s then %s else\n%s" (ppI x) (ppIS y) (pp e1) (pp e2)
+  | Imm(Syntax.Int(i)) -> string_of_int i
+  | Imm(Syntax.Float(f)) -> string_of_float f
+d53 2
+d57 4
+d65 6
+a70 1
+  | Imm(_) -> S.empty
+d79 4
+d87 4
+d95 20
+d134 2
+a135 1
+  | Syntax.Imm(m) -> Imm(m)
+@
+
+
+1.2
+log
+@going to remove "beta-reduction in advance"
+@
+text
+@d7 1
+a7 3
+type fundef = { name : ident; args : ident list; body : t }
+and t =
+  | Let of ident * t * t
+a8 2
+  | LetRec of fundef list * t (* mutually recursive functions *)
+  | App of ident * ident list
+d12 3
+d16 1
+d20 2
+a21 1
+let ppIS ppI = function
+d24 1
+a24 13
+
+let pp_ident x =
+(*
+  let s = String.copy (Syntax.ppI x) in
+  for i = 0 to String.length s - 1 do
+    if String.get s i = '.' then
+      String.set s i '_'
+  done;
+  s
+*)
+  Syntax.ppI x
+
+let rec pp_idents = function
+d26 2
+a27 2
+  | [x] -> pp_ident x
+  | x :: xs -> pp_ident x ^ " " ^ pp_idents xs
+d29 1
+a29 1
+  Printf.sprintf "%s %s =\n%s" (pp_ident x) (pp_idents ys) (pp e1)  
+d35 7
+a41 14
+  | Let(x, e1, e2) ->
+      Printf.sprintf "let %s = %s in\n%s" (pp_ident x) (pp e1) (pp e2)
+  | Var(x) -> pp_ident x
+  | LetRec(fundefs, e2) ->
+      Printf.sprintf "let rec %s in\n%s" (pp_fundefs fundefs) (pp e2)
+  | App(x, ys) ->
+      Printf.sprintf "%s %s" (pp_ident x) (pp_idents ys)
+  | NegInt(x) ->
+      Printf.sprintf "-%s" (ppIS pp_ident x)
+  | SubInt(x, y) ->
+      Printf.sprintf "%s - %s" (pp_ident x) (ppIS pp_ident y)
+  | IfLEInt(x, y, e1, e2) ->
+      Printf.sprintf "if %s <= %s then %s else\n%s"
+	(pp_ident x) (ppIS pp_ident y) (pp e1) (pp e2)
+d45 1
+a45 1
+let gentmp x = Syntax.I(Fresh.gensym ("_" ^ x))
+d48 1
+a48 1
+  | Let(x, e1, e2) -> FinSet.union (fv e1) (FinSet.remove x (fv e2))
+d53 3
+a55 3
+	    (FinSet.add x xs,
+	     FinSet.union zs (FinSet.diff (fv e1) (FinSet.from_list ys))))
+	  (FinSet.empty, FinSet.empty)
+d57 7
+a63 7
+      FinSet.diff (FinSet.union zs (fv e2)) xs
+  | Var(x) -> FinSet.from_list [x]
+  | App(x, ys) -> FinSet.from_list (x :: ys)
+  | NegInt(Ident(x)) -> FinSet.from_list [x]
+  | NegInt(SInt(_)) -> FinSet.empty
+  | SubInt(x, Ident(y)) -> FinSet.from_list [x; y]
+  | SubInt(x, SInt(_)) -> FinSet.from_list [x]
+d65 1
+a65 1
+      FinSet.add x (FinSet.add y (FinSet.union (fv e1) (fv e2)))
+d67 4
+a70 2
+      FinSet.add x (FinSet.union (fv e1) (fv e2))
+  | Imm(_) -> FinSet.empty
+d74 12
+a93 1
+  | Syntax.Let(x, e1, e2) -> Let(x, f e1, f e2)
+d95 2
+a96 2
+      (match f e1 with
+      |	Var(x) ->
+d101 3
+a103 59
+		(match f e with
+		| Var(y) -> bindargs (ys @@ [y]) es
+		| e' ->
+		    let y = gentmp "a" in
+		    Let(y, e', bindargs (ys @@ [y]) es)) in
+	  bindargs [] e2s
+      |	e1' ->
+	  let x = gentmp "f" in
+	  Let(x, f e1,
+	      let rec bindargs ys = function
+            (* "ys" are identifiers for the arguments *)
+		| [] -> App(x, ys)
+		| e :: es ->
+		    (match f e with
+		    | Var(y) -> bindargs (ys @@ [y]) es
+		    | e' ->
+			let y = gentmp "a" in
+			Let(y, e', bindargs (ys @@ [y]) es)) in
+	      bindargs [] e2s))
+  | Syntax.NegInt(e) ->
+      (match f e with
+      |	Var(x) -> NegInt(Ident(x))
+      |	e' ->
+	  let x = gentmp "i" in
+	  Let(x, e', NegInt(Ident(x))))
+  | Syntax.SubInt(e1, e2) ->
+      (match f e1 with
+      |	Var(x) ->
+	  (match f e2 with
+	  | Var(y) -> SubInt(x, Ident(y))
+	  | e2' ->
+	      let y = gentmp "j" in
+	      Let(y, e2', SubInt(x, Ident(y))))
+      |	e1' ->
+	  (match f e2 with
+	  | Var(y) ->
+	      let x = gentmp "i" in
+	      Let(x, e1', SubInt(x, Ident(y)))
+	  | e2' ->
+	      let x = gentmp "i" in
+	      let y = gentmp "j" in
+	      Let(x, e1', Let(y, e2', SubInt(x, Ident(y))))))
+  | Syntax.IfLEInt(e1, e2, e3, e4) ->
+      (match f e1 with
+      |	Var(x) ->
+	  (match f e2 with
+	  | Var(y) -> IfLEInt(x, Ident(y), f e3, f e4)
+	  | e2' ->
+	      let y = gentmp "j" in
+	      Let(y, e2', IfLEInt(x, Ident(y), f e3, f e4)))
+      |	e1' ->
+	  (match f e2 with
+	  | Var(y) ->
+	      let x = gentmp "i" in
+	      Let(x, e1', IfLEInt(x, Ident(y), f e3, f e4))
+	  | e2' ->
+	      let x = gentmp "i" in
+	      let y = gentmp "j" in
+	      Let(x, e1', Let(y, e2', IfLEInt(x, Ident(y), f e3, f e4)))))
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d25 1
+d32 2
+a38 1
+
+d40 1
+a40 1
+  Printf.sprintf "%s %s = %s" (pp_ident x) (pp_idents ys) (pp e1)  
+d44 1
+a44 1
+  | fundef :: fundefs -> pp_fundef fundef ^ " and " ^ pp_fundefs fundefs
+d47 1
+a47 1
+      Printf.sprintf "(let %s = %s in %s)" (pp_ident x) (pp e1) (pp e2)
+d50 1
+a50 1
+      Printf.sprintf "(let rec %s in %s)" (pp_fundefs fundefs) (pp e2)
+d52 1
+a52 1
+      Printf.sprintf "(%s %s)" (pp_ident x) (pp_idents ys)
+d54 1
+a54 1
+      Printf.sprintf "(-%s)" (ppIS Syntax.ppI x)
+d56 1
+a56 1
+      Printf.sprintf "(%s - %s)" (pp_ident x) (ppIS Syntax.ppI y)
+d58 2
+a59 2
+      Printf.sprintf "(if %s <= %s then %s else %s)"
+	(pp_ident x) (ppIS Syntax.ppI y) (pp e1) (pp e2)
+d100 2
+a101 2
+      let x = gentmp "f" in
+      Let(x, f e1,
+d106 19
+a124 3
+		let y = gentmp "a" in
+		Let(y, f e, bindargs (ys @@ [y]) es) in
+	  bindargs [] e2s)
+d126 5
+a130 2
+      let x = gentmp "i" in
+      Let(x, f e, NegInt(Ident(x)))
+d132 16
+a147 3
+      let x = gentmp "i" in
+      let y = gentmp "j" in
+      Let(x, f e1, Let(y, f e2, SubInt(x, Ident(y))))
+d149 16
+a164 3
+      let x = gentmp "i" in
+      let y = gentmp "j" in
+      Let(x, f e1, Let(y, f e2, IfLEInt(x, Ident(y), f e3, f e4)))
+@

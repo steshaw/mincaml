@@ -1,0 +1,433 @@
+head	1.6;
+access;
+symbols;
+locks
+	sumii:1.6; strict;
+comment	@# @;
+
+
+1.6
+date	2001.12.05.06.15.18;	author sumii;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2001.12.04.04.55.33;	author sumii;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2001.12.04.04.40.46;	author sumii;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2001.12.04.03.31.01;	author sumii;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2001.11.27.11.33.48;	author sumii;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2001.11.01.02.14.11;	author sumii;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.6
+log
+@*** empty log message ***
+@
+text
+@%{
+(* 補助的な変数、関数、型などの定義 *)
+open Type
+open Syntax
+%}
+
+/* トークンの定義 */
+%token LET
+%token REC
+%token AND
+%token EQUAL
+%token IN
+%token <int> INT
+%token <float> FLOAT
+%token PLUS
+%token MINUS
+%token MINUS_DOT
+%token PLUS
+%token PLUS_DOT
+%token AST
+%token AST_DOT
+%token SLASH_DOT
+%token LESS
+%token GREATER
+%token LESS_EQUAL
+%token GREATER_EQUAL
+%token LESS_GREATER
+%token IF
+%token THEN
+%token ELSE
+%token COMMA
+%token LESS_MINUS
+%token DOT
+%token SEMICOLON
+%token LPAREN
+%token RPAREN
+%token <Syntax.ident> IDENT
+%token EOF
+
+/* 優先順位とassociativityの定義(低い方から高い方へ) */
+%right prec_let
+%right SEMICOLON
+%right prec_if
+%right COMMA
+%left EQUAL LESS_EQUAL
+%left MINUS MINUS_DOT PLUS PLUS_DOT
+%left AST AST_DOT SLASH_DOT
+%right prec_unary_minus
+%left prec_app
+%left DOT
+
+/* 開始記号の定義 */
+%type <Syntax.t> exp
+%start exp
+
+%%
+
+idents:
+| IDENT idents
+    { gentyp $1 :: $2 }
+| IDENT
+    { [gentyp $1] }
+
+fundefs:
+| fundef AND fundefs
+    { $1 :: $3 }
+| fundef
+    { [$1] }
+
+fundef:
+| IDENT idents EQUAL exp
+    { { name = gentyp $1; args = $2; body = $4 } }
+| IDENT LPAREN RPAREN EQUAL exp /* [XXX] ad hoc workaround */
+    { { name = gentyp $1; args = []; body = $5 } }
+
+elems:
+| exp COMMA elems
+    { $1 :: $3 }
+| exp COMMA exp
+    { [$1; $3] }
+
+pat:
+| IDENT COMMA pat
+    { gentyp $1 :: $3 }
+| IDENT COMMA IDENT
+    { [gentyp $1; gentyp $3] }
+
+app:
+| app simple_exp
+    %prec prec_app
+    { $1 @@ [$2] }
+| exp simple_exp
+    %prec prec_app
+    { [$1; $2] }
+
+simple_exp:
+| LPAREN exp RPAREN
+    { $2 }
+| IDENT
+    { Var($1) }
+| FLOAT
+    { Float($1) }
+| INT
+    { Int($1) }
+
+exp:
+| simple_exp
+    { $1 }
+| LET REC fundefs IN exp
+    %prec prec_let
+    { LetRec($3, $5) }
+| LET IDENT EQUAL exp IN exp
+    %prec prec_let
+    { Let(gentyp $2, $4, $6) }
+| exp MINUS exp
+    { SubInt($1, $3) }
+| exp MINUS_DOT exp
+    { App(Var(Syntax.I("fsub")), [$1; $3]) }
+| exp PLUS exp
+    { AddInt($1, $3) }
+| exp PLUS_DOT exp
+    { App(Var(Syntax.I("fadd")), [$1; $3]) }
+| exp AST exp
+    { App(Var(Syntax.I("imul")), [$1; $3]) }
+| exp AST_DOT exp
+    { App(Var(Syntax.I("fmul")), [$1; $3]) }
+| exp SLASH_DOT exp
+    { App(Var(Syntax.I("fdiv")), [$1; $3]) }
+| MINUS exp
+    %prec prec_unary_minus
+    { NegInt($2) }
+| MINUS_DOT exp
+    %prec prec_unary_minus
+    { App(Var(Syntax.I("fneg")), [$2]) }
+| IF exp EQUAL exp THEN exp ELSE exp
+    %prec prec_if
+    { IfEqInt($2, $4, $6, $8) }
+| IF exp LESS_GREATER exp THEN exp ELSE exp
+    %prec prec_if
+    { IfEqInt($2, $4, $8, $6) }
+| IF exp LESS_EQUAL exp THEN exp ELSE exp
+    %prec prec_if
+    { IfLEInt($2, $4, $6, $8) }
+| IF exp GREATER_EQUAL exp THEN exp ELSE exp
+    %prec prec_if
+    { IfLEInt($4, $2, $6, $8) }
+| IF exp LESS exp THEN exp ELSE exp
+    %prec prec_if
+    { IfLEInt($4, $2, $8, $6) }
+| IF exp GREATER exp THEN exp ELSE exp
+    %prec prec_if
+    { IfLEInt($2, $4, $8, $6) }
+| IF exp THEN exp ELSE exp
+    %prec prec_if
+    { IfEqInt($2, Int(0), $6, $4) }
+| elems
+    { Tuple($1) }
+| LET LPAREN pat RPAREN EQUAL exp IN exp
+    { LetTuple($3, $6, $8) }
+| exp DOT LPAREN exp RPAREN LESS_MINUS exp SEMICOLON exp
+    { Put($1, $4, $7, $9) }
+| exp DOT LPAREN exp RPAREN
+    { Get($1, $4) }
+| app
+    %prec prec_app
+    { match $1 with
+    | f :: x :: ys -> App(f, x :: ys)
+    | _ -> assert(false) }
+| exp LPAREN RPAREN /* [XXX] ad hoc workaround */
+    %prec prec_app
+    { App($1, []) }
+| error
+    { Format.eprintf "parser error near characters %d-%d@@."
+	(Parsing.symbol_start ()) (Parsing.symbol_end ());
+      failwith "parse error" }
+@
+
+
+1.5
+log
+@going to adopt simple_exp again
+@
+text
+@d3 1
+d60 1
+a60 1
+    { $1 :: $2 }
+d62 1
+a62 1
+    { [$1] }
+d72 1
+a72 1
+    { { name = $1; args = $2; body = $4 } }
+d74 1
+a74 1
+    { { name = $1; args = []; body = $5 } }
+d84 1
+a84 1
+    { $1 :: $3 }
+d86 1
+a86 1
+    { [$1; $3] }
+d89 1
+a89 1
+| app exp
+d92 1
+a92 1
+| exp exp
+d96 1
+a96 1
+exp:
+d101 8
+d114 1
+a114 5
+    { Let($2, $4, $6) }
+| FLOAT
+    { Float($1) }
+| INT
+    { Int($1) }
+d156 2
+a157 2
+| LPAREN elems RPAREN
+    { Tuple($2) }
+a163 1
+/*
+d168 1
+a168 2
+    | [] -> assert(false) }
+*/
+@
+
+
+1.4
+log
+@*** empty log message ***
+@
+text
+@a48 1
+%left prec_args
+d87 7
+a93 7
+args:
+| exp args
+    %prec prec_args
+    { $1 :: $2 }
+| exp
+    %prec prec_args
+    { [$1] }
+d159 2
+a160 1
+| exp args
+d162 4
+a165 1
+    { App($1, $2) }
+@
+
+
+1.3
+log
+@*** empty log message ***
+@
+text
+@d49 1
+d89 5
+a93 5
+| args simple_exp
+    %prec prec_app
+    { $1 @@ [$2] }
+| simple_exp
+    %prec prec_app
+d96 3
+a98 1
+simple_exp:
+a100 12
+| LPAREN exp RPAREN
+    { $2 }
+| exp DOT LPAREN exp RPAREN
+    { Get($1, $4) }
+| FLOAT
+    { Float($1) }
+| INT
+    { Int($1) }
+
+exp:
+| simple_exp
+    { $1 }
+d107 4
+d156 1
+a156 1
+| simple_exp DOT LPAREN exp RPAREN LESS_MINUS exp SEMICOLON exp
+d158 3
+a160 1
+| simple_exp args
+d163 1
+a163 1
+| simple_exp LPAREN RPAREN /* [XXX] ad hoc workaround */
+@
+
+
+1.2
+log
+@*** empty log message ***
+@
+text
+@d31 1
+a31 2
+%token ARRAY_CREATE
+%token LEFT_ARROW
+d33 1
+d41 1
+d72 1
+a72 1
+| IDENT LPAREN RPAREN EQUAL exp
+d88 1
+a88 1
+| exp args
+d90 2
+a91 2
+    { $1 :: $2 }
+| exp
+d95 3
+a97 1
+exp:
+d100 10
+a109 2
+| IDENT
+    { Var($1) }
+a115 4
+| FLOAT
+    { Imm(Float($1)) }
+| INT
+    { Imm(Int($1)) }
+d156 1
+a156 1
+    { IfEqInt($2, Imm(Int(0)), $6, $4) }
+d161 3
+a163 7
+| ARRAY_CREATE exp exp
+    { App(Var(Syntax.I("create_array")), [$2; $3]) }
+| exp DOT LPAREN exp RPAREN LEFT_ARROW exp
+    { Put($1, $4, $7) }
+| exp DOT LPAREN exp RPAREN
+    { Get($1, $4) }
+| exp args
+d166 1
+a166 1
+| exp LPAREN RPAREN /* [XXX] ad hoc workaround */
+d170 1
+a170 1
+    { Printf.eprintf "parse error at characters %d-%d\n"
+d172 1
+a172 1
+      raise(Parsing.Parse_error) }
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d14 1
+d16 11
+a26 1
+%token LE
+d30 4
+d42 4
+a45 1
+%left MINUS
+d48 1
+d71 2
+d74 14
+a87 2
+exps:
+| exp exps
+d105 2
+d111 12
+d126 10
+a135 1
+| IF exp LE exp THEN exp ELSE exp
+d138 23
+a160 1
+| exp exps
+d163 7
+@

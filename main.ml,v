@@ -1,0 +1,62 @@
+head	1.1;
+access;
+symbols;
+locks
+	sumii:1.1; strict;
+comment	@; @;
+
+
+1.1
+date	2001.11.27.12.44.11;	author sumii;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@let limit = ref 1000
+
+let rec iter n e0 =
+  Format.eprintf "iteration %d@@." n;
+  if n = 0 then e0 else
+  let e1 = Assoc.f e0 in (* not very useful, actually *)
+  let e2 = Beta.f FinMap.empty e1 in (* ditto *)
+  let e3 = Eta.f e2 in (* ditto *)
+  let e4 = Inline.f FinMap.empty e3 in
+  let e5 = ConstFold.f FinMap.empty e4 in
+  let e6 = Elim.f e5 in
+  if e0 = e6 then e6 else
+  iter (n - 1) e6
+
+let lexbuf l =
+  Fresh.reset ();
+  SparcAsm.f
+    (RegAlloc.f
+       (RegAssign.f
+	  (Closure.f
+	     (iter !limit
+		(Alpha.f FinMap.empty
+		   (KNormal.f
+		      (Parser.exp Lexer.token l)))))))
+
+let string s = print_string (lexbuf (Lexing.from_string s))
+
+let file f =
+  let inchan = open_in (f ^ ".ml") in
+  let outchan = open_out (f ^ ".s") in
+  output_string outchan (lexbuf (Lexing.from_channel inchan));
+  close_in inchan;
+  close_out outchan;
+  try
+    if Sys.getenv "MACHTYPE" = "sparc" then
+      Sys.command (Printf.sprintf "gcc -g -O main.c %s.s -o %s" f f)
+    else -1
+  with Not_found -> -1
+@

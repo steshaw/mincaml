@@ -1,0 +1,343 @@
+head	1.5;
+access;
+symbols;
+locks
+	sumii:1.5; strict;
+comment	@; @;
+
+
+1.5
+date	2005.02.23.22.52.10;	author sumii;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2005.01.29.02.53.40;	author sumii;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2005.01.29.01.17.35;	author sumii;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2005.01.27.00.20.58;	author sumii;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2005.01.26.21.02.16;	author sumii;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.5
+log
+@*** empty log message ***
+@
+text
+@(* SPARC assembly with a few virtual instructions *)
+
+type id_or_imm = V of Id.t | C of int
+type t =
+  | Ans of exp
+  | Seq of exp * t
+  | Let of Id.t * exp * t
+  | FLetD of Id.t * exp * t
+  | Forget of Id.t * t (* virtual instruction *)
+and exp =
+  | Nop
+  | Set of int
+  | SetL of Id.l
+  | Mov of Id.t
+  | Neg of Id.t
+  | Add of Id.t * id_or_imm
+  | Sub of Id.t * id_or_imm
+  | SLL of Id.t * id_or_imm
+  | Ld of Id.t * id_or_imm
+  | St of Id.t * Id.t * id_or_imm
+  | FMovD of Id.t
+  | FNegD of Id.t
+  | FAddD of Id.t * Id.t
+  | FSubD of Id.t * Id.t
+  | FMulD of Id.t * Id.t
+  | FDivD of Id.t * Id.t
+  | LdDF of Id.t * id_or_imm
+  | StDF of Id.t * Id.t * id_or_imm
+  | Comment of string
+  (* virtual instructions *)
+  | IfEq of Id.t * id_or_imm * t * t
+  | IfLE of Id.t * id_or_imm * t * t
+  | IfGE of Id.t * id_or_imm * t * t (* 左右対称ではないので必要 *)
+  | IfFEq of Id.t * Id.t * t * t
+  | IfFLE of Id.t * Id.t * t * t
+  (* closure address, integer arguments, and float arguments *)
+  | CallCls of Id.t * Id.t list * Id.t list
+  | CallDir of Id.l * Id.t list * Id.t list
+  | Save of Id.t * Id.t (* レジスタ変数の値をスタック変数へ保存 *)
+  | Restore of Id.t (* スタック変数から値を復元 *)
+type fundef = { name : Id.l; args : Id.t list; fargs : Id.t list; body : t; ret : Type.t }
+type prog = Prog of (Id.l * float) list * fundef list * t
+
+let regs = (* Array.init 16 (fun i -> Printf.sprintf "%%r%d" i) *)
+  [| "%i2"; "%i3"; "%i4"; "%i5";
+     "%l0"; "%l1"; "%l2"; "%l3"; "%l4"; "%l5"; "%l6"; "%l7";
+     "%o0"; "%o1"; "%o2"; "%o3"; "%o4"; "%o5" |]
+let fregs = Array.init 8 (fun i -> Printf.sprintf "%%f%d" (i * 2))
+let allregs = List.rev (Array.to_list regs)
+let allfregs = List.rev (Array.to_list fregs)
+let reg_cl = regs.(Array.length regs - 1) (* closure address *)
+let reg_sw = regs.(Array.length regs - 2) (* temporary for swap *)
+let reg_fsw = fregs.(Array.length fregs - 1) (* temporary for swap *)
+let reg_sp = "%i0" (* stack pointer *)
+let reg_hp = "%i1" (* heap pointer *)
+let reg_ra = "%o7" (* return address *)
+let is_reg x = (x.[0] = '%')
+let co_freg_table =
+  let ht = Hashtbl.create 8 in
+  for i = 0 to 7 do
+    Hashtbl.add
+      ht
+      (Printf.sprintf "%%f%d" (i * 2))
+      (Printf.sprintf "%%f%d" (i * 2 + 1))
+  done;
+  ht
+let co_freg freg = Hashtbl.find co_freg_table freg (* "companion" freg *)
+
+(* super-tenuki *)
+let remove x ys = List.filter (fun y -> y <> x) ys
+let remove_list xs ys = List.filter (fun y -> not (List.mem y xs)) ys
+let add x ys = x :: remove x ys
+let add_list xs ys = xs @@ remove_list xs ys
+
+(* free variables in the order of use (for spilling) *)
+let memo = Hashtbl.create 1000
+let fv_id_or_imm = function V(x) -> [x] | _ -> []
+let rec fv_exp = function
+  | Nop | Set(_) | SetL(_) | Comment(_) | Restore(_) -> []
+  | Mov(x) | Neg(x) | FMovD(x) | FNegD(x) | Save(x, _) -> [x]
+  | Add(x, y') | Sub(x, y') | SLL(x, y') | Ld(x, y') | LdDF(x, y') -> add x (fv_id_or_imm y')
+  | St(x, y, z') | StDF(x, y, z') -> add x (add y (fv_id_or_imm z'))
+  | FAddD(x, y) | FSubD(x, y) | FMulD(x, y) | FDivD(x, y) -> [x; y]
+  | IfEq(x, y', e1, e2) | IfLE(x, y', e1, e2) | IfGE(x, y', e1, e2) -> add x (add_list (fv_id_or_imm y') (add_list (fv_add e1) (fv_add e2)))
+  | IfFEq(x, y, e1, e2) | IfFLE(x, y, e1, e2) -> add x (add y (add_list (fv_add e1) (fv_add e2)))
+  | CallCls(x, ys, zs) -> add x (add_list ys zs)
+  | CallDir(_, ys, zs) -> add_list ys zs
+and fv_main = function
+  | Ans(exp) -> fv_exp exp
+  | Seq(exp, e) -> add_list (fv_exp exp) (fv_add e)
+  | Let(x, exp, e) | FLetD(x, exp, e) -> add_list (fv_exp exp) (remove x (fv_add e))
+  | Forget(x, e) -> remove x (fv_add e)
+    (* [XX] e  =  (if y = z then (forget x; ...) else (forget x; ...)); x + x
+            のように、if文のthen節とelse節の両方でxがforgetされている場合は、
+            eの自由変数からxを除いても良いが、ここではそうしないことにする。
+            つまり、if文では変数はforgetされない(かもしれない)と近似する。 *)
+and fv_add e = (* memoization for the efficiency of RegAlloc *)
+  let xs = fv_main e in
+  Hashtbl.add memo e xs;
+  xs
+let fv e =
+  try Hashtbl.find memo e
+  with Not_found -> fv_add e
+
+let rec concat e1 xt e2 =
+  match e1 with
+  | Ans(exp) ->
+      (match snd xt with
+      | Type.Unit -> Seq(exp, e2)
+      | Type.Float -> FLetD(fst xt, exp, e2)
+      | _ -> Let(fst xt, exp, e2))
+  | Seq(exp, e1') -> Seq(exp, concat e1' xt e2)
+  | Let(y, exp, e1') -> Let(y, exp, concat e1' xt e2)
+  | FLetD(y, exp, e1') -> FLetD(y, exp, concat e1' xt e2)
+  | Forget(y, e1') -> Forget(y, concat e1' xt e2)
+
+let align i = (if i mod 8 = 0 then i else i + 4)
+@
+
+
+1.4
+log
+@*** empty log message ***
+@
+text
+@d9 1
+a18 1
+  | Cmp of Id.t * id_or_imm
+a26 1
+  | FCmpD of Id.t * Id.t
+d31 5
+a35 3
+  | IfEq of t * t
+  | IfLE of t * t
+  | IfFLE of t * t
+d39 3
+a41 2
+type fundef = { name : Id.l; args : Id.t list; fargs : Id.t list;
+		body : t; stacksize : int; ret : Id.t }
+d44 4
+a47 1
+let regs = Array.init 16 (fun i -> Printf.sprintf "%%r%d" i)
+d49 19
+a67 4
+let reg_cl = regs.(Array.length regs - 1)
+let reg_ra = "%ra"
+let reg_hp = "%hp"
+let reg_sp = "%sp"
+d76 1
+a76 1
+let memo = Hashtbl.create 1000 (* memoization for efficiency of RegAlloc *)
+d79 3
+a81 3
+  | Nop | Set(_) | SetL(_) | Comment(_) -> []
+  | Mov(x) | Neg(x) | FMovD(x) | FNegD(x) -> [x]
+  | Add(x, y') | Sub(x, y') | SLL(x, y') | Cmp(x, y') | Ld(x, y') | LdDF(x, y') -> add x (fv_id_or_imm y')
+d83 6
+a88 5
+  | FAddD(x, y) | FSubD(x, y) | FMulD(x, y) | FDivD(x, y) | FCmpD(x, y) -> [x; y]
+  | IfEq(e1, e2) | IfLE(e1, e2) | IfFLE(e1, e2) -> add_list (fv_memo e1) (fv_memo e2)
+  | CallCls(x, ys, zs) -> x :: ys @@ zs
+  | CallDir(_, ys, zs) -> ys @@ zs
+and fv_nomemo = function
+d90 9
+a98 4
+  | Seq(exp, e) -> add_list (fv_exp exp) (fv_memo e)
+  | Let(x, exp, e) | FLetD(x, exp, e) -> add_list (fv_exp exp) (remove x (fv_memo e))
+and fv_memo e =
+  let xs = fv_nomemo e in
+d101 3
+a103 1
+let fv e = try Hashtbl.find memo e with Not_found -> fv_memo e
+d105 1
+a105 1
+let rec concat e1 (x, t) e2 =
+d108 1
+a108 1
+      (match t with
+d110 8
+a117 5
+      | Type.Float -> FLetD(x, exp, e2)
+      | _ -> Let(x, exp, e2))
+  | Seq(exp, e1') -> Seq(exp, concat e1' (x, t) e2)
+  | Let(y, exp, e1') -> Let(y, exp, concat e1' (x, t) e2)
+  | FLetD(y, exp, e1') -> FLetD(y, exp, concat e1' (x, t) e2)
+@
+
+
+1.3
+log
+@*** empty log message ***
+@
+text
+@d38 2
+a39 1
+type fundef = { name : Id.l; args : Id.t list; fargs : Id.t list; body : t; ret : Id.t }
+@
+
+
+1.2
+log
+@*** empty log message ***
+@
+text
+@d1 2
+d5 5
+d11 7
+a17 7
+  | Set of int * Id.t
+  | SetL of Id.l * Id.t
+  | Mov of Id.t * Id.t
+  | Neg of Id.t * Id.t
+  | Add of Id.t * id_or_imm * Id.t
+  | Sub of Id.t * id_or_imm * Id.t
+  | SLL of Id.t * id_or_imm * Id.t
+d19 1
+a19 1
+  | Ld of Id.t * id_or_imm * Id.t
+d21 6
+a26 6
+  | FMovD of Id.t * Id.t
+  | FNegD of Id.t * Id.t
+  | FAddD of Id.t * Id.t * Id.t
+  | FSubD of Id.t * Id.t * Id.t
+  | FMulD of Id.t * Id.t * Id.t
+  | FDivD of Id.t * Id.t * Id.t
+d28 1
+a28 1
+  | LdDF of Id.t * id_or_imm * Id.t
+a29 1
+  | Jmp of Id.t
+d32 8
+a39 10
+  | IfEq of t list * t list
+  | IfLE of t list * t list
+  | IfFLE of t list * t list
+  | CallCls of Id.t
+  | CallDir of Id.l
+  | Ret
+  | Save of Id.t
+  | Restore of Id.t
+type fundef = { name : Id.l; body : t list }
+type prog = Prog of (Id.l * float) list * fundef list * t list
+d43 1
+d46 1
+d56 16
+a71 25
+let fv' = function V(x) -> [x] | _ -> []
+let rec fv_memo e =
+  let xs =
+    (match e with
+    | [] -> []
+    | (Nop | Comment(_) | CallDir(_) | Ret | Save(_)) :: e ->
+	fv_memo e
+    | (Set(_, x) | SetL(_, x) | Restore(x)) :: e ->
+	remove x (fv_memo e)
+    | (Mov(x, y) | Neg(x, y) | FMovD(x, y) | FNegD(x, y)) :: e ->
+	add x (remove y (fv_memo e))
+    | (Add(x, y', z) | Sub(x, y', z) | SLL(x, y', z) | Ld(x, y', z) | LdDF(x, y', z)) :: e ->
+	add x (add_list (fv' y') (remove z (fv_memo e)))
+    | Cmp(x, y') :: e ->
+	add x (add_list (fv' y') (fv_memo e))
+    | (St(x, y, z') | StDF(x, y, z')) :: e ->
+	add x (add y (add_list (fv' z') (fv_memo e)))
+    | (FAddD(x, y, z) | FSubD(x, y, z) | FMulD(x, y, z) | FDivD(x, y, z)) :: e ->
+	add x (add y (remove z (fv_memo e)))
+    | FCmpD(x, y) :: e ->
+	add x (add y (fv_memo e))
+    | (Jmp(x) | CallCls(x)) :: e ->
+	add x (fv_memo e)
+    | (IfEq(e1, e2) | IfLE(e1, e2) | IfFLE(e1, e2)) :: e ->
+	add_list (fv_memo (e1 @@ e)) (fv_memo (e2 @@ e))) in
+d75 11
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d5 1
+a11 2
+  | BE of Id.l
+  | BLE of Id.l
+a20 2
+  | FBE of Id.l
+  | FBLE of Id.l
+a22 3
+  | Label of Id.l
+  | B of Id.l
+  | SetL of Id.l * Id.t
+d32 2
+d55 1
+a55 1
+    | (Nop | BE(_) | BLE(_) | FBE(_) | FBLE(_) | Label(_) | B(_) | Comment(_) | CallDir(_) | Ret) :: e ->
+d57 1
+a57 1
+    | (Set(_, x) | SetL(_, x)) :: e ->
+@
