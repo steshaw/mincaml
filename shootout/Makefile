@@ -27,7 +27,7 @@ fib.gcc64: fib.c
 	gcc -m64 -O3 -Wall fib.c -o fib.gcc64
 
 fib.gcc-mflat: fib.c
-	gcc -m32 -mflat -O3 -Wall fib.c -o fib.gcc-mflat
+	sparc-sun-solaris2.9-gcc-3.4.3 -m32 -mflat -O3 -Wall fib.c -o fib.gcc-mflat
 
 test-ack: ack.min-caml ack.ocamlopt ack.gcc ack.gcc64 ack.gcc-mflat
 	time ./ack.min-caml > ack.min-caml.out
@@ -54,7 +54,7 @@ ack.gcc64: ack.c
 	gcc -m64 -O3 -Wall ack.c -o ack.gcc64
 
 ack.gcc-mflat: ack.c
-	gcc -m32 -mflat -O3 -Wall ack.c -o ack.gcc-mflat
+	sparc-sun-solaris2.9-gcc-3.4.3 -m32 -mflat -O3 -Wall ack.c -o ack.gcc-mflat
 
 test-harmonic: harmonic.min-caml harmonic.ocamlopt harmonic.gcc harmonic.gcc64 harmonic.gcc-mflat
 	time ./harmonic.min-caml > harmonic.min-caml.out
@@ -81,7 +81,7 @@ harmonic.gcc64: harmonic.c
 	gcc -m64 -O3 -Wall harmonic.c -o harmonic.gcc64
 
 harmonic.gcc-mflat: harmonic.c
-	gcc -m32 -mflat -O3 -Wall harmonic.c -o harmonic.gcc-mflat
+	sparc-sun-solaris2.9-gcc-3.4.3 -m32 -mflat -O3 -Wall harmonic.c -o harmonic.gcc-mflat
 
 test-mandelbrot: mandelbrot.min-caml mandelbrot.ocamlopt mandelbrot.gcc mandelbrot.gcc64 mandelbrot.gcc-mflat
 	time ./mandelbrot.min-caml > mandelbrot.min-caml.out
@@ -108,7 +108,7 @@ mandelbrot.gcc64: mandelbrot.c
 	gcc -m64 -O3 -Wall mandelbrot.c -o mandelbrot.gcc64
 
 mandelbrot.gcc-mflat: mandelbrot.c
-	gcc -m32 -mflat -O3 -Wall mandelbrot.c -o mandelbrot.gcc-mflat
+	sparc-sun-solaris2.9-gcc-3.4.3 -m32 -mflat -O3 -Wall mandelbrot.c -o mandelbrot.gcc-mflat
 
 test-tak: tak.min-caml tak.ocamlopt tak.gcc tak.gcc64 tak.gcc-mflat
 	time ./tak.min-caml > tak.min-caml.out
@@ -135,4 +135,4 @@ tak.gcc: tak.c
 	gcc -m32 -O3 -Wall tak.c -o tak.gcc
 
 tak.gcc-mflat: tak.c
-	gcc -m32 -mflat -O3 -Wall tak.c -o tak.gcc-mflat
+	sparc-sun-solaris2.9-gcc-3.4.3 -m32 -mflat -O3 -Wall tak.c -o tak.gcc-mflat

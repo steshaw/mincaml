@@ -27,4 +27,4 @@ huffman.gcc64: huffman.c
 	gcc -m64 -O3 -Wall huffman.c -o huffman.gcc64
 
 huffman.gcc-mflat: huffman.c
-	gcc -m32 -mflat -O3 -Wall huffman.c -o huffman.gcc-mflat
+	sparc-sun-solaris2.9-gcc-3.4.3 -m32 -mflat -O3 -Wall huffman.c -o huffman.gcc-mflat
