@@ -1022,6 +1022,7 @@ rule token = parse
       <span style="color:green">let</span> <span style="color:green">rec</span> insert = <span style="color:green">function</span>
         <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Let</span>(yt, e3, e4) -&gt; <span style="color:#0033cc">Let</span>(yt, e3, insert e4)
         <span style="color:#77aaaa">|</span> <span style="color:#0033cc">LetRec</span>(fundefs, e) -&gt; <span style="color:#0033cc">LetRec</span>(fundefs, insert e)
+        <span style="color:#77aaaa">|</span> <span style="color:#0033cc">LetTuple</span>(yts, z, e) -&gt; <span style="color:#0033cc">LetTuple</span>(yts, z, insert e)
         <span style="color:#77aaaa">|</span> e -&gt; <span style="color:#0033cc">Let</span>(xt, e, f e2) <span style="color:green">in</span>
       insert (f e1)
   <span style="color:#77aaaa">|</span> <span style="color:#0033cc">LetRec</span>(fundefs, e2) -&gt;
@@ -1521,31 +1522,32 @@ rule token = parse
 <span style="color:green">let</span> co_freg freg = <span style="color:#0033cc">Hashtbl</span>.find co_freg_table freg <span style="color:#990000">(* "companion" freg *)</span>
 
 <span style="color:#990000">(* super-tenuki *)</span>
-<span style="color:green">let</span> remove x ys = <span style="color:#0033cc">List</span>.filter (<span style="color:green">fun</span> y -&gt; y &lt;&gt; x) ys
-<span style="color:green">let</span> remove_list xs ys = <span style="color:#0033cc">List</span>.filter (<span style="color:green">fun</span> y -&gt; not (<span style="color:#0033cc">List</span>.mem y xs)) ys
-<a name="sparcasm_fv"></a><span style="color:green">let</span> add x ys = x :: remove x ys
-<span style="color:green">let</span> add_list xs ys = xs @ remove_list xs ys
+<span style="color:green">let</span> <span style="color:green">rec</span> remove_and_uniq xs = <span style="color:green">function</span>
+  <span style="color:#77aaaa">|</span> [] -&gt; []
+<a name="sparcasm_fv"></a>  <span style="color:#77aaaa">|</span> x :: ys <span style="color:#77aaaa">when</span> <span style="color:#0033cc">S</span>.mem x xs -&gt; remove_and_uniq xs ys
+  <span style="color:#77aaaa">|</span> x :: ys -&gt; x :: remove_and_uniq (<span style="color:#0033cc">S</span>.add x xs) ys
 
 <span style="color:#990000">(* free variables in the order of use (for spilling) *)</span>
 <span style="color:green">let</span> fv_id_or_imm = <span style="color:green">function</span> <span style="color:#0033cc">V</span>(x) -&gt; [x] <span style="color:#77aaaa">|</span> _ -&gt; []
-<span style="color:green">let</span> <span style="color:green">rec</span> fv_exp = <span style="color:green">function</span>
-  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Nop</span> <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Set</span>(_) <span style="color:#77aaaa">|</span> <span style="color:#0033cc">SetL</span>(_) <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Comment</span>(_) <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Restore</span>(_) -&gt; []
-  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Mov</span>(x) <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Neg</span>(x) <span style="color:#77aaaa">|</span> <span style="color:#0033cc">FMovD</span>(x) <span style="color:#77aaaa">|</span> <span style="color:#0033cc">FNegD</span>(x) <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Save</span>(x, _) -&gt; [x]
-  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Add</span>(x, y') <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Sub</span>(x, y') <span style="color:#77aaaa">|</span> <span style="color:#0033cc">SLL</span>(x, y') <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Ld</span>(x, y') <span style="color:#77aaaa">|</span> <span style="color:#0033cc">LdDF</span>(x, y') -&gt; add x (fv_id_or_imm y')
-  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">St</span>(x, y, z') <span style="color:#77aaaa">|</span> <span style="color:#0033cc">StDF</span>(x, y, z') -&gt; add x (add y (fv_id_or_imm z'))
-  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">FAddD</span>(x, y) <span style="color:#77aaaa">|</span> <span style="color:#0033cc">FSubD</span>(x, y) <span style="color:#77aaaa">|</span> <span style="color:#0033cc">FMulD</span>(x, y) <span style="color:#77aaaa">|</span> <span style="color:#0033cc">FDivD</span>(x, y) -&gt; [x; y]
-  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">IfEq</span>(x, y', e1, e2) <span style="color:#77aaaa">|</span> <span style="color:#0033cc">IfLE</span>(x, y', e1, e2) <span style="color:#77aaaa">|</span> <span style="color:#0033cc">IfGE</span>(x, y', e1, e2) -&gt; add x (add_list (fv_id_or_imm y') (add_list (fv e1) (fv e2)))
-  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">IfFEq</span>(x, y, e1, e2) <span style="color:#77aaaa">|</span> <span style="color:#0033cc">IfFLE</span>(x, y, e1, e2) -&gt; add x (add y (add_list (fv e1) (fv e2)))
-  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">CallCls</span>(x, ys, zs) -&gt; add x (add_list ys zs)
-  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">CallDir</span>(_, ys, zs) -&gt; add_list ys zs
-<a name="sparcasm_exclude"></a><span style="color:green">and</span> fv = <span style="color:green">function</span>
-  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Ans</span>(exp) -&gt; fv_exp exp
-  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Let</span>((x, t), exp, e) -&gt; add_list (fv_exp exp) (remove x (fv e))
-  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Forget</span>(x, e) -&gt; remove x (fv e) <span style="color:#990000">(* Spillされた変数は、自由変数の計算から除外 *)</span>
-    <span style="color:#990000">(* [XXX] (if y = z then (forget x; ...) else (forget x; ...)); x + x</span>
-<span style="color:#990000">       のように、ifのthen節とelse節の両方でxがforgetされている場合は、</span>
-<span style="color:#990000">       eの自由変数からxを除いても良いが、ここではそうしないことにする。</span>
-<span style="color:#990000">       つまり、ifでは変数はforgetされない(かもしれない)と近似する。 *)</span>
+<span style="color:green">let</span> <span style="color:green">rec</span> fv_exp cont = <span style="color:green">function</span>
+  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Nop</span> <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Set</span>(_) <span style="color:#77aaaa">|</span> <span style="color:#0033cc">SetL</span>(_) <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Comment</span>(_) <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Restore</span>(_) -&gt; cont
+  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Mov</span>(x) <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Neg</span>(x) <span style="color:#77aaaa">|</span> <span style="color:#0033cc">FMovD</span>(x) <span style="color:#77aaaa">|</span> <span style="color:#0033cc">FNegD</span>(x) <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Save</span>(x, _) -&gt; x :: cont
+  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Add</span>(x, y') <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Sub</span>(x, y') <span style="color:#77aaaa">|</span> <span style="color:#0033cc">SLL</span>(x, y') <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Ld</span>(x, y') <span style="color:#77aaaa">|</span> <span style="color:#0033cc">LdDF</span>(x, y') -&gt; x :: fv_id_or_imm y' @ cont
+  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">St</span>(x, y, z') <span style="color:#77aaaa">|</span> <span style="color:#0033cc">StDF</span>(x, y, z') -&gt; x :: y :: fv_id_or_imm z' @ cont
+  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">FAddD</span>(x, y) <span style="color:#77aaaa">|</span> <span style="color:#0033cc">FSubD</span>(x, y) <span style="color:#77aaaa">|</span> <span style="color:#0033cc">FMulD</span>(x, y) <span style="color:#77aaaa">|</span> <span style="color:#0033cc">FDivD</span>(x, y) -&gt; x :: y :: cont
+  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">IfEq</span>(x, y', e1, e2) <span style="color:#77aaaa">|</span> <span style="color:#0033cc">IfLE</span>(x, y', e1, e2) <span style="color:#77aaaa">|</span> <span style="color:#0033cc">IfGE</span>(x, y', e1, e2) -&gt; x :: fv_id_or_imm y' @ remove_and_uniq <span style="color:#0033cc">S</span>.empty (fv cont e1 @ fv cont e2) <span style="color:#990000">(* uniq here just for efficiency *)</span>
+  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">IfFEq</span>(x, y, e1, e2) <span style="color:#77aaaa">|</span> <span style="color:#0033cc">IfFLE</span>(x, y, e1, e2) -&gt; x :: y :: remove_and_uniq <span style="color:#0033cc">S</span>.empty (fv cont e1 @ fv cont e2) <span style="color:#990000">(* uniq here just for efficiency *)</span>
+  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">CallCls</span>(x, ys, zs) -&gt; x :: ys @ zs @ cont
+  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">CallDir</span>(_, ys, zs) -&gt; ys @ zs @ cont
+<span style="color:green">and</span> fv cont = <span style="color:green">function</span>
+  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Ans</span>(exp) -&gt; fv_exp cont exp
+<a name="sparcasm_exclude"></a>  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Let</span>((x, t), exp, e) -&gt;
+      <span style="color:green">let</span> cont' = remove_and_uniq (<span style="color:#0033cc">S</span>.singleton x) (fv cont e) <span style="color:green">in</span>
+      fv_exp cont' exp
+  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Forget</span>(x, e) -&gt; remove_and_uniq (<span style="color:#0033cc">S</span>.singleton x) (fv cont e) <span style="color:#990000">(* Spillされた変数は、自由変数の計算から除外 *)</span>
+    <span style="color:#990000">(* (if y = z then (forget x; ...) else (forget x; ...)); x + x</span>
+<span style="color:#990000">       のような場合のために、継続の自由変数contを引数とする *)</span>
+<span style="color:green">let</span> fv e = remove_and_uniq <span style="color:#0033cc">S</span>.empty (fv [] e)
 
 <span style="color:green">let</span> <span style="color:green">rec</span> concat e1 xt e2 =
   <span style="color:#77aaaa">match</span> e1 <span style="color:#77aaaa">with</span>
@@ -1789,13 +1791,13 @@ rule token = parse
 <span style="color:green">let</span> <span style="color:green">rec</span> g env = <span style="color:green">function</span> <span style="color:#990000">(* 命令列の13bit即値最適化 *)</span>
   <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Ans</span>(exp) -&gt; <span style="color:#0033cc">Ans</span>(g' env exp)
   <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Let</span>((x, t) <span style="color:green">as</span> xt, <span style="color:#0033cc">Set</span>(i), e) <span style="color:#77aaaa">when</span> (-4096 &lt;= i) &amp;&amp; (i &lt; 4096) -&gt;
-      <span style="color:#0033cc">Format</span>.eprintf <span style="color:#aa4444">"found simm13 %s = %d@."</span> x i;
+      <span style="color:#990000">(* Format.eprintf "found simm13 %s = %d@." x i; *)</span>
       <span style="color:green">let</span> e' = g (<span style="color:#0033cc">M</span>.add x i env) e <span style="color:green">in</span>
       <span style="color:#77aaaa">if</span> <span style="color:#0033cc">List</span>.mem x (fv e') <span style="color:#77aaaa">then</span> <span style="color:#0033cc">Let</span>(xt, <span style="color:#0033cc">Set</span>(i), e') <span style="color:#77aaaa">else</span>
-      (<span style="color:#0033cc">Format</span>.eprintf <span style="color:#aa4444">"erased redundant Set to %s@."</span> x;
+      (<span style="color:#990000">(* Format.eprintf "erased redundant Set to %s@." x; *)</span>
        e')
   <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Let</span>((x, t) <span style="color:green">as</span> xt, <span style="color:#0033cc">SLL</span>(y, <span style="color:#0033cc">C</span>(i)), e) <span style="color:#77aaaa">when</span> <span style="color:#0033cc">M</span>.mem y env -&gt; <span style="color:#990000">(* for array access *)</span>
-      <span style="color:#0033cc">Format</span>.eprintf <span style="color:#aa4444">"erased redundant SLL on %s@."</span> x;
+      <span style="color:#990000">(* Format.eprintf "erased redundant SLL on %s@." x; *)</span>
 <a name="simm13_gprime"></a>      g env (<span style="color:#0033cc">Let</span>(xt, <span style="color:#0033cc">Set</span>((<span style="color:#0033cc">M</span>.find y env) <span style="color:#808080">lsl</span> i), e))
   <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Let</span>((x, t) <span style="color:green">as</span> xt, exp, e) -&gt; <span style="color:#0033cc">Let</span>(xt, g' env exp, g env e)
   <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Forget</span>(x, e) -&gt; <span style="color:#0033cc">Forget</span>(x, g env e)
@@ -1886,7 +1888,6 @@ rule token = parse
   <span style="color:#77aaaa">if</span> is_reg x <span style="color:#77aaaa">then</span> <span style="color:#0033cc">Alloc</span>(x) <span style="color:#77aaaa">else</span>
   <span style="color:green">let</span> free = fv cont <span style="color:green">in</span>
   <span style="color:#77aaaa">try</span>
-    <span style="color:#0033cc">Format</span>.eprintf <span style="color:#aa4444">"allocating %s@."</span> x;
     <span style="color:green">let</span> (c, prefer) = target x dest cont <span style="color:green">in</span>
     <span style="color:green">let</span> live = <span style="color:#990000">(* 生きているレジスタ *)</span>
       <span style="color:#0033cc">List</span>.fold_left
@@ -1900,7 +1901,7 @@ rule token = parse
       <span style="color:#0033cc">List</span>.find
         (<span style="color:green">fun</span> r -&gt; not (<span style="color:#0033cc">S</span>.mem r live))
         (prefer @ all) <span style="color:green">in</span>
-    <span style="color:#0033cc">Format</span>.eprintf <span style="color:#aa4444">"allocated %s to %s@."</span> x r;
+    <span style="color:#990000">(* Format.eprintf "allocated %s to %s@." x r; *)</span>
     <span style="color:#0033cc">Alloc</span>(r)
   <span style="color:#77aaaa">with</span> <span style="color:#0033cc">Not_found</span> -&gt;
     <span style="color:#0033cc">Format</span>.eprintf <span style="color:#aa4444">"register allocation failed for %s@."</span> x;
@@ -1984,7 +1985,7 @@ rule token = parse
 <span style="color:green">and</span> g'_and_unspill dest cont regenv exp = <span style="color:#990000">(* 使用される変数をスタックからレジスタへRestore *)</span>
   <span style="color:#77aaaa">try</span> g' dest cont regenv exp
   <span style="color:#77aaaa">with</span> <span style="color:#0033cc">NoReg</span>(x, t) -&gt;
-    (<span style="color:#0033cc">Format</span>.eprintf <span style="color:#aa4444">"unspilling %s@."</span> x;
+    (<span style="color:#990000">(* Format.eprintf "unspilling %s@." x; *)</span>
      <span style="color:green">let</span> cont' = concat (<span style="color:#0033cc">Ans</span>(exp)) dest cont <span style="color:green">in</span>
      <span style="color:green">let</span> all =
        <span style="color:#77aaaa">match</span> t <span style="color:#77aaaa">with</span>
@@ -2099,6 +2100,7 @@ rule token = parse
   { name = <span style="color:#0033cc">Id</span>.<span style="color:#0033cc">L</span>(x); args = arg_regs; fargs = farg_regs; body = e'; ret = t }
 
 <span style="color:green">let</span> f (<span style="color:#0033cc">Prog</span>(data, fundefs, e)) = <span style="color:#990000">(* プログラム全体のレジスタ割り当て *)</span>
+  <span style="color:#0033cc">Format</span>.eprintf <span style="color:#aa4444">"register allocation: may take some time (up to a few minutes, depending on the size of functions)@."</span>;
   <span style="color:green">let</span> fundefs' = <span style="color:#0033cc">List</span>.map h fundefs <span style="color:green">in</span>
   <span style="color:green">let</span> e', regenv' = g_repeat (<span style="color:#0033cc">Id</span>.gentmp <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Unit</span>, <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Unit</span>) (<span style="color:#0033cc">Ans</span>(<span style="color:#0033cc">Nop</span>)) <span style="color:#0033cc">M</span>.empty e <span style="color:green">in</span>
   <span style="color:#0033cc">Prog</span>(data, fundefs', e')
