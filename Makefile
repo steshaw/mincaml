@@ -56,13 +56,7 @@ min-caml.html: main.mli main.ml id.ml m.ml s.ml \
 	mv min-caml.tmp.html min-caml.html
 
 release: min-caml.html
-	rm -fr tmp
-	mkdir tmp
-	cd tmp
-	cvs -d:pserver:anonymous@cvs.sf.net:/cvsroot/min-caml export -Dtomorrow min-caml
-	tar cvzf ../min-caml.tar.gz min-caml
-	cd ..
-	rm -fr tmp
+	rm -fr tmp ; mkdir tmp ; cd tmp ; cvs -d:ext:sumii@cvs.sf.net://cvsroot/min-caml export -Dtomorrow min-caml ; tar cvzf ../min-caml.tar.gz min-caml ; cd .. ; rm -fr tmp
 	cp Makefile stub.c libmincaml.s min-caml.html min-caml.tar.gz ../htdocs/
 
 include OCamlMakefile
