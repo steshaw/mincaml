@@ -746,7 +746,7 @@ rule token = parse
 <a name="knormal_bool"></a>
 <span style="color:green">let</span> <span style="color:green">rec</span> g env = <span style="color:green">function</span> <span style="color:#990000">(* K正規化ルーチン本体 *)</span>
   <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Syntax</span>.<span style="color:#0033cc">Unit</span> -&gt; <span style="color:#0033cc">Unit</span>, <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Unit</span>
-  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Syntax</span>.<span style="color:#0033cc">Bool</span>(b) -&gt; <span style="color:#0033cc">Int</span>(<span style="color:#77aaaa">if</span> b <span style="color:#77aaaa">then</span> 1 <span style="color:#77aaaa">else</span> 0), <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Bool</span> <span style="color:#990000">(* 論理値true, falseを整数1, 0に変換 *)</span>
+  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Syntax</span>.<span style="color:#0033cc">Bool</span>(b) -&gt; <span style="color:#0033cc">Int</span>(<span style="color:#77aaaa">if</span> b <span style="color:#77aaaa">then</span> 1 <span style="color:#77aaaa">else</span> 0), <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Int</span> <span style="color:#990000">(* 論理値true, falseを整数1, 0に変換 *)</span>
   <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Syntax</span>.<span style="color:#0033cc">Int</span>(i) -&gt; <span style="color:#0033cc">Int</span>(i), <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Int</span>
   <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Syntax</span>.<span style="color:#0033cc">Float</span>(d) -&gt; <span style="color:#0033cc">Float</span>(d), <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Float</span>
   <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Syntax</span>.<span style="color:#0033cc">Not</span>(e) -&gt; g env (<span style="color:#0033cc">Syntax</span>.<span style="color:#0033cc">If</span>(e, <span style="color:#0033cc">Syntax</span>.<span style="color:#0033cc">Bool</span>(false), <span style="color:#0033cc">Syntax</span>.<span style="color:#0033cc">Bool</span>(true)))
@@ -2369,7 +2369,7 @@ rule token = parse
   <span style="color:#0033cc">Printf</span>.fprintf oc <span style="color:#aa4444">"\tsave\t%%sp, -112, %%sp\n"</span>; <span style="color:#990000">(* from gcc; why 112? *)</span>
   stackset := <span style="color:#0033cc">S</span>.empty;
   stackmap := [];
-  g oc (<span style="color:#0033cc">NonTail</span>(<span style="color:#aa4444">"%i0"</span>), e);
+  g oc (<span style="color:#0033cc">NonTail</span>(<span style="color:#aa4444">"%g0"</span>), e);
   <span style="color:#0033cc">Printf</span>.fprintf oc <span style="color:#aa4444">"\tret\n"</span>;
   <span style="color:#0033cc">Printf</span>.fprintf oc <span style="color:#aa4444">"\trestore\n"</span>
 </pre>
