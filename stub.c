@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-extern int min_caml_start(char *, char *);
+extern void min_caml_start(char *, char *);
 
 int main() {
   char *hp, *sp;
