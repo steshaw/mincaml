@@ -86,16 +86,19 @@ let rec g env known = function (* クロージャ変換ルーチン本体 (caml2html: closure
 	List.fold_left2
 	  (fun check { KNormal.name = (x, t); KNormal.args = yts } e1' ->
 	    check &&
-	    S.subset
-	      (fv e1')
-	      (S.add x (S.of_list (List.map fst yts)))) (* x自身と引数y1,...,yn以外は自由変数とみなす(相互再帰関数も) *)
+	    (* x自身と引数y1,...,yn以外は自由変数とみなす(相互再帰関数も) *)
+	    let fv = S.diff (fv e1') (S.add x (S.of_list (List.map fst yts))) in
+	    if S.is_empty fv then true else
+	    (Format.eprintf "free variable(s) %s found in function %s@." (Id.pp_list (S.elements fv)) x;
+	     false))
 	  true
 	  fundefs
 	  e1s' in
       let known', e1s' =
 	if check then known', e1s' else
 	(* 駄目だったら状態(toplevelの値)を戻して、クロージャ変換をやり直す *)
-	(toplevel := toplevel_back;
+	(Format.eprintf "function(s) %s cannot be directly applied in fact@." (Id.pp_list xs);
+	 toplevel := toplevel_back;
 	 let e1s' =
 	   List.map
 	     (fun { KNormal.args = yts; KNormal.body = e1 } ->

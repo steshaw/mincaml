@@ -1333,16 +1333,19 @@ rule token = parse
         <span style="color:#0033cc">List</span>.fold_left2
           (<span style="color:green">fun</span> check { <span style="color:#0033cc">KNormal</span>.name = (x, t); <span style="color:#0033cc">KNormal</span>.args = yts } e1' -&gt;
             check &amp;&amp;
-            <span style="color:#0033cc">S</span>.subset
-              (fv e1')
-              (<span style="color:#0033cc">S</span>.add x (<span style="color:#0033cc">S</span>.of_list (<span style="color:#0033cc">List</span>.map fst yts)))) <span style="color:#990000">(* x自身と引数y1,...,yn以外は自由変数とみなす(相互再帰関数も) *)</span>
+            <span style="color:#990000">(* x自身と引数y1,...,yn以外は自由変数とみなす(相互再帰関数も) *)</span>
+            <span style="color:green">let</span> fv = <span style="color:#0033cc">S</span>.diff (fv e1') (<span style="color:#0033cc">S</span>.add x (<span style="color:#0033cc">S</span>.of_list (<span style="color:#0033cc">List</span>.map fst yts))) <span style="color:green">in</span>
+            <span style="color:#77aaaa">if</span> <span style="color:#0033cc">S</span>.is_empty fv <span style="color:#77aaaa">then</span> true <span style="color:#77aaaa">else</span>
+            (<span style="color:#0033cc">Format</span>.eprintf <span style="color:#aa4444">"free variable(s) %s found in function %s@."</span> (<span style="color:#0033cc">Id</span>.pp_list (<span style="color:#0033cc">S</span>.elements fv)) x;
+             false))
           true
           fundefs
           e1s' <span style="color:green">in</span>
       <span style="color:green">let</span> known', e1s' =
         <span style="color:#77aaaa">if</span> check <span style="color:#77aaaa">then</span> known', e1s' <span style="color:#77aaaa">else</span>
         <span style="color:#990000">(* 駄目だったら状態(toplevelの値)を戻して、クロージャ変換をやり直す *)</span>
-        (toplevel := toplevel_back;
+        (<span style="color:#0033cc">Format</span>.eprintf <span style="color:#aa4444">"function(s) %s cannot be directly applied in fact@."</span> (<span style="color:#0033cc">Id</span>.pp_list xs);
+         toplevel := toplevel_back;
          <span style="color:green">let</span> e1s' =
            <span style="color:#0033cc">List</span>.map
              (<span style="color:green">fun</span> { <span style="color:#0033cc">KNormal</span>.args = yts; <span style="color:#0033cc">KNormal</span>.body = e1 } -&gt;

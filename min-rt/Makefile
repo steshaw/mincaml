@@ -41,7 +41,7 @@ RayTrace: RayTrace.cxx
 
 ######################################################################
 
-# original by Oiwa follows
+# original by Oiwa follows (modified a little by Sumii)
 
 native: min-rt
 bytecode: min-rt_b
@@ -52,7 +52,7 @@ bytecode: min-rt_b
 	ocamlc -g -c -pp ./preprocess.sh $<
 
 .ml.cmx:
-	ocamlopt -unsafe -inline 10 -c -pp ./preprocess.sh $<
+	ocamlopt -unsafe -inline 100 -c -pp ./preprocess.sh $<
 
 .mli.cmi:
 	ocamlc -g -c $<
@@ -66,19 +66,19 @@ min-rt_b: min-rt.cmo globals.cmo miniMLRuntime.cmo
 	ocamlc -g -o min-rt_b miniMLRuntime.cmo globals.cmo min-rt.cmo 
 
 min-rt: min-rt.cmx globals.cmx miniMLRuntime.cmx
-	ocamlopt -unsafe -inline 10 -o min-rt miniMLRuntime.cmx globals.cmx min-rt.cmx 
+	ocamlopt -unsafe -inline 100 -o min-rt miniMLRuntime.cmx globals.cmx min-rt.cmx 
 
 miniMLRuntime.cmi: miniMLRuntime.mli
 	ocamlc -c miniMLRuntime.mli
 
 miniMLRuntime.cmx: miniMLRuntime.ml miniMLRuntime.cmi
-	ocamlopt -unsafe -inline 10 -c miniMLRuntime.ml
+	ocamlopt -unsafe -inline 100 -c miniMLRuntime.ml
 
 miniMLRuntime.cmo: miniMLRuntime.ml miniMLRuntime.cmi
 	ocamlc -g -c miniMLRuntime.ml
 
 rt: rt.cmx miniMLRuntime.cmx
-	ocamlopt -unsafe -inline 10 -o rt miniMLRuntime.cmx rt.cmx
+	ocamlopt -unsafe -inline 100 -o rt miniMLRuntime.cmx rt.cmx
 
 rt_b: rt.cmo miniMLRuntime.cmo
 	ocamlc -o rt_b miniMLRuntime.cmo rt.cmo
