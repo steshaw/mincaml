@@ -3,9 +3,7 @@
 type id_or_imm = V of Id.t | C of int
 type t = (* 命令の列 (caml2html: sparcasm_t) *)
   | Ans of exp
-  | Seq of exp * t
-  | Let of Id.t * exp * t
-  | FLetD of Id.t * exp * t
+  | Let of (Id.t * Type.t) * exp * t
   | Forget of Id.t * t (* Spillされた変数を、自由変数の計算から除外するための仮想命令 (caml2html: sparcasm_forget) *)
 and exp = (* 一つ一つの命令に対応する式 (caml2html: sparcasm_exp) *)
   | Nop
@@ -41,6 +39,9 @@ and exp = (* 一つ一つの命令に対応する式 (caml2html: sparcasm_exp) *)
 type fundef = { name : Id.l; args : Id.t list; fargs : Id.t list; body : t; ret : Type.t }
 (* プログラム全体 = 浮動小数定数テーブル + トップレベル関数 + メインの式 (caml2html: sparcasm_prog) *)
 type prog = Prog of (Id.l * float) list * fundef list * t
+
+let fletd(x, e1, e2) = Let((x, Type.Float), e1, e2)
+let seq(e1, e2) = Let((Id.gentmp Type.Unit, Type.Unit), e1, e2)
 
 let regs = (* Array.init 16 (fun i -> Printf.sprintf "%%r%d" i) *)
   [| "%i2"; "%i3"; "%i4"; "%i5";
@@ -87,8 +88,7 @@ let rec fv_exp = function
   | CallDir(_, ys, zs) -> add_list ys zs
 and fv = function
   | Ans(exp) -> fv_exp exp
-  | Seq(exp, e) -> add_list (fv_exp exp) (fv e)
-  | Let(x, exp, e) | FLetD(x, exp, e) -> add_list (fv_exp exp) (remove x (fv e))
+  | Let((x, t), exp, e) -> add_list (fv_exp exp) (remove x (fv e))
   | Forget(x, e) -> remove x (fv e) (* Spillされた変数は、自由変数の計算から除外 (caml2html: sparcasm_exclude) *)
     (* [XXX] (if y = z then (forget x; ...) else (forget x; ...)); x + x
        のように、ifのthen節とelse節の両方でxがforgetされている場合は、
@@ -97,14 +97,8 @@ and fv = function
 
 let rec concat e1 xt e2 =
   match e1 with
-  | Ans(exp) ->
-      (match snd xt with
-      | Type.Unit -> Seq(exp, e2)
-      | Type.Float -> FLetD(fst xt, exp, e2)
-      | _ -> Let(fst xt, exp, e2))
-  | Seq(exp, e1') -> Seq(exp, concat e1' xt e2)
-  | Let(y, exp, e1') -> Let(y, exp, concat e1' xt e2)
-  | FLetD(y, exp, e1') -> FLetD(y, exp, concat e1' xt e2)
+  | Ans(exp) -> Let(xt, exp, e2)
+  | Let(yt, exp, e1') -> Let(yt, exp, concat e1' xt e2)
   | Forget(y, e1') -> Forget(y, concat e1' xt e2)
 
 let align i = (if i mod 8 = 0 then i else i + 4)

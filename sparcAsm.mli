@@ -1,9 +1,7 @@
 type id_or_imm = V of Id.t | C of int
 type t =
   | Ans of exp
-  | Seq of exp * t
-  | Let of Id.t * exp * t
-  | FLetD of Id.t * exp * t
+  | Let of (Id.t * Type.t) * exp * t
   | Forget of Id.t * t (* virtual instruction *)
 and exp =
   | Nop
@@ -38,6 +36,9 @@ and exp =
   | Restore of Id.t (* スタック変数から値を復元 *)
 type fundef = { name : Id.l; args : Id.t list; fargs : Id.t list; body : t; ret : Type.t }
 type prog = Prog of (Id.l * float) list * fundef list * t
+
+val fletd : Id.t * exp * t -> t (* shorthand of Let for float *)
+val seq : exp * t -> t (* shorthand of Let for unit *)
 
 val regs : Id.t array
 val fregs : Id.t array

@@ -1,81 +1,81 @@
 .section	".rodata"
 .align	8
-l.12034:	! 128.000000
+l.12044:	! 128.000000
 	.long	0x40600000
 	.long	0x0
-l.12004:	! 40000.000000
+l.12014:	! 40000.000000
 	.long	0x40e38800
 	.long	0x0
-l.11921:	! -2.000000
+l.11931:	! -2.000000
 	.long	0xc0000000
 	.long	0x0
-l.11919:	! 0.100000
+l.11929:	! 0.100000
 	.long	0x3fb99999
 	.long	0x9999999a
-l.11906:	! 0.200000
+l.11916:	! 0.200000
 	.long	0x3fc99999
 	.long	0x9999999a
-l.11845:	! 100000000.000000
+l.11855:	! 100000000.000000
 	.long	0x4197d784
 	.long	0x0
-l.11839:	! 1000000000.000000
+l.11849:	! 1000000000.000000
 	.long	0x41cdcd65
 	.long	0x0
-l.11826:	! 20.000000
+l.11836:	! 20.000000
 	.long	0x40340000
 	.long	0x0
-l.11824:	! 0.050000
+l.11834:	! 0.050000
 	.long	0x3fa99999
 	.long	0x9999999a
-l.11815:	! 0.250000
+l.11825:	! 0.250000
 	.long	0x3fd00000
 	.long	0x0
-l.11808:	! 255.000000
+l.11818:	! 255.000000
 	.long	0x406fe000
 	.long	0x0
-l.11806:	! 3.141593
+l.11816:	! 3.141593
 	.long	0x400921fb
 	.long	0x5a7ed197
-l.11804:	! 10.000000
+l.11814:	! 10.000000
 	.long	0x40240000
 	.long	0x0
-l.11796:	! 850.000000
+l.11806:	! 850.000000
 	.long	0x408a9000
 	.long	0x0
-l.11792:	! 0.500000
+l.11802:	! 0.500000
 	.long	0x3fe00000
 	.long	0x0
-l.11790:	! 0.150000
+l.11800:	! 0.150000
 	.long	0x3fc33333
 	.long	0x33333333
-l.11782:	! 9.549296
+l.11792:	! 9.549296
 	.long	0x4023193d
 	.long	0x62316387
-l.11780:	! 15.000000
+l.11790:	! 15.000000
 	.long	0x402e0000
 	.long	0x0
-l.11778:	! 0.000100
+l.11788:	! 0.000100
 	.long	0x3f1a36e2
 	.long	0xeb1c432d
-l.11380:	! -0.100000
+l.11390:	! -0.100000
 	.long	0xbfb99999
 	.long	0x9999999a
-l.11298:	! 0.010000
+l.11308:	! 0.010000
 	.long	0x3f847ae1
 	.long	0x47ae147b
-l.11296:	! -0.200000
+l.11306:	! -0.200000
 	.long	0xbfc99999
 	.long	0x9999999a
-l.11086:	! 4.000000
+l.11096:	! 4.000000
 	.long	0x40100000
 	.long	0x0
-l.10876:	! 2.000000
+l.10886:	! 2.000000
 	.long	0x40000000
 	.long	0x0
-l.10793:	! -1.000000
+l.10803:	! -1.000000
 	.long	0xbff00000
 	.long	0x0
-l.10791:	! 1.000000
+l.10801:	! 1.000000
 	.long	0x3ff00000
 	.long	0x0
 l.10753:	! 0.000000
@@ -333,12 +333,12 @@ read_nth_object.2384:
 	ld	[%i0 + 4], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.124436
+	bne	be_else.26012
 	nop
 	set	0, %i2
 	retl
 	nop
-be_else.124436:
+be_else.26012:
 	st	%o5, [%i0 + 4]
 	st	%o7, [%i0 + 12]
 	call	min_caml_read_int
@@ -448,14 +448,14 @@ be_else.124436:
 	ldd	[%i0 + 32], %f12
 	fcmpd	%f12, %f14
 	nop
-	fbg	fble_else.124474
+	fbg	fble_else.26026
 	nop
 	set	0, %o5
-	b	fble_cont.124475
+	b	fble_cont.26027
 	nop
-fble_else.124474:
+fble_else.26026:
 	set	1, %o5
-fble_cont.124475:
+fble_cont.26027:
 	st	%o5, [%i0 + 40]
 	set	2, %i2
 	set	l.10753, %o5
@@ -534,11 +534,11 @@ fble_cont.124475:
 	st	%o5, [%i0 + 52]
 	ld	[%i0 + 16], %o4
 	cmp	%o4, 0
-	bne	be_else.124499
+	bne	be_else.26036
 	nop
-	b	be_cont.124500
+	b	be_cont.26037
 	nop
-be_else.124499:
+be_else.26036:
 	st	%o7, [%i0 + 60]
 	call	min_caml_read_float
 	add	%i0, 64, %i0	! delay slot
@@ -575,17 +575,17 @@ be_else.124499:
 	fmuld	%f14, %f12, %f14
 	ld	[%i0 + 52], %o5
 	std	%f14, [%o5 + 16]
-be_cont.124500:
+be_cont.26037:
 	ld	[%i0 + 8], %o4
 	cmp	%o4, 2
-	bne	be_else.124511
+	bne	be_else.26041
 	nop
 	set	1, %o4
-	b	be_cont.124512
+	b	be_cont.26042
 	nop
-be_else.124511:
+be_else.26041:
 	ld	[%i0 + 40], %o4
-be_cont.124512:
+be_cont.26042:
 	ld	[%i0 + 4], %o3
 	st	%o3, [%i1 + 0]
 	ld	[%i0 + 8], %o3
@@ -611,114 +611,114 @@ be_cont.124512:
 	sll	%o1, 2, %o1
 	st	%o5, [%o4 + %o1]
 	cmp	%o3, 3
-	bne	be_else.124525
+	bne	be_else.26043
 	nop
 	ldd	[%o2 + 0], %f14
 	set	l.10753, %o5
 	ldd	[%o5 + 0], %f12
 	fcmpd	%f12, %f14
 	nop
-	fbne	fbe_else.124527
+	fbne	fbe_else.26045
 	nop
 	set	l.10753, %o5
 	ldd	[%o5 + 0], %f14
-	b	fbe_cont.124528
+	b	fbe_cont.26046
 	nop
-fbe_else.124527:
+fbe_else.26045:
 	set	l.10753, %o5
 	ldd	[%o5 + 0], %f12
 	fcmpd	%f14, %f12
 	nop
-	fbg	fble_else.124529
+	fbg	fble_else.26047
 	nop
-	set	l.10793, %o5
+	set	l.10803, %o5
 	ldd	[%o5 + 0], %f12
-	b	fble_cont.124530
+	b	fble_cont.26048
 	nop
-fble_else.124529:
-	set	l.10791, %o5
+fble_else.26047:
+	set	l.10801, %o5
 	ldd	[%o5 + 0], %f12
-fble_cont.124530:
+fble_cont.26048:
 	fmuld	%f14, %f14, %f14
 	fdivd	%f12, %f14, %f14
-fbe_cont.124528:
+fbe_cont.26046:
 	std	%f14, [%o2 + 0]
 	ldd	[%o2 + 8], %f14
 	set	l.10753, %o5
 	ldd	[%o5 + 0], %f12
 	fcmpd	%f12, %f14
 	nop
-	fbne	fbe_else.124532
+	fbne	fbe_else.26049
 	nop
 	set	l.10753, %o5
 	ldd	[%o5 + 0], %f14
-	b	fbe_cont.124533
+	b	fbe_cont.26050
 	nop
-fbe_else.124532:
+fbe_else.26049:
 	set	l.10753, %o5
 	ldd	[%o5 + 0], %f12
 	fcmpd	%f14, %f12
 	nop
-	fbg	fble_else.124534
+	fbg	fble_else.26051
 	nop
-	set	l.10793, %o5
+	set	l.10803, %o5
 	ldd	[%o5 + 0], %f12
-	b	fble_cont.124535
+	b	fble_cont.26052
 	nop
-fble_else.124534:
-	set	l.10791, %o5
+fble_else.26051:
+	set	l.10801, %o5
 	ldd	[%o5 + 0], %f12
-fble_cont.124535:
+fble_cont.26052:
 	fmuld	%f14, %f14, %f14
 	fdivd	%f12, %f14, %f14
-fbe_cont.124533:
+fbe_cont.26050:
 	std	%f14, [%o2 + 8]
 	ldd	[%o2 + 16], %f14
 	set	l.10753, %o5
 	ldd	[%o5 + 0], %f12
 	fcmpd	%f12, %f14
 	nop
-	fbne	fbe_else.124537
+	fbne	fbe_else.26053
 	nop
 	set	l.10753, %o5
 	ldd	[%o5 + 0], %f14
-	b	fbe_cont.124538
+	b	fbe_cont.26054
 	nop
-fbe_else.124537:
+fbe_else.26053:
 	set	l.10753, %o5
 	ldd	[%o5 + 0], %f12
 	fcmpd	%f14, %f12
 	nop
-	fbg	fble_else.124539
+	fbg	fble_else.26055
 	nop
-	set	l.10793, %o5
+	set	l.10803, %o5
 	ldd	[%o5 + 0], %f12
-	b	fble_cont.124540
+	b	fble_cont.26056
 	nop
-fble_else.124539:
-	set	l.10791, %o5
+fble_else.26055:
+	set	l.10801, %o5
 	ldd	[%o5 + 0], %f12
-fble_cont.124540:
+fble_cont.26056:
 	fmuld	%f14, %f14, %f14
 	fdivd	%f12, %f14, %f14
-fbe_cont.124538:
+fbe_cont.26054:
 	std	%f14, [%o2 + 16]
-	b	be_cont.124526
+	b	be_cont.26044
 	nop
-be_else.124525:
+be_else.26043:
 	cmp	%o3, 2
-	bne	be_else.124541
+	bne	be_else.26057
 	nop
 	ld	[%i0 + 40], %o5
 	cmp	%o5, 0
-	bne	be_else.124544
+	bne	be_else.26059
 	nop
 	set	1, %o5
-	b	be_cont.124545
+	b	be_cont.26060
 	nop
-be_else.124544:
+be_else.26059:
 	set	0, %o5
-be_cont.124545:
+be_cont.26060:
 	st	%o5, [%i0 + 56]
 	ldd	[%o2 + 0], %f14
 	fmuld	%f14, %f14, %f14
@@ -737,13 +737,13 @@ be_cont.124545:
 	fmovs	%f1, %f15
 	ld	[%i0 + 56], %o5
 	cmp	%o5, 0
-	bne	be_else.124548
+	bne	be_else.26062
 	nop
-	b	be_cont.124549
+	b	be_cont.26063
 	nop
-be_else.124548:
+be_else.26062:
 	fnegs	%f14, %f14
-be_cont.124549:
+be_cont.26063:
 	ld	[%i0 + 20], %o5
 	ldd	[%o5 + 0], %f12
 	fdivd	%f12, %f14, %f12
@@ -754,18 +754,18 @@ be_cont.124549:
 	ldd	[%o5 + 16], %f12
 	fdivd	%f12, %f14, %f14
 	std	%f14, [%o5 + 16]
-	b	be_cont.124542
+	b	be_cont.26058
 	nop
-be_else.124541:
-be_cont.124542:
-be_cont.124526:
+be_else.26057:
+be_cont.26058:
+be_cont.26044:
 	ld	[%i0 + 16], %o5
 	cmp	%o5, 0
-	bne	be_else.124554
+	bne	be_else.26064
 	nop
-	b	be_cont.124555
+	b	be_cont.26065
 	nop
-be_else.124554:
+be_else.26064:
 	set	min_caml_cs_temp, %o5
 	st	%o5, [%i0 + 60]
 	ld	[%i0 + 52], %o5
@@ -990,7 +990,7 @@ be_else.124554:
 	fmuld	%f10, %f6, %f6
 	faddd	%f8, %f6, %f8
 	std	%f8, [%o5 + 16]
-	set	l.10876, %o5
+	set	l.10886, %o5
 	ldd	[%o5 + 0], %f8
 	set	min_caml_cs_temp, %o5
 	ldd	[%o5 + 8], %f6
@@ -1015,7 +1015,7 @@ be_else.124554:
 	fmuld	%f8, %f6, %f8
 	ld	[%i0 + 52], %o5
 	std	%f8, [%o5 + 0]
-	set	l.10876, %o4
+	set	l.10886, %o4
 	ldd	[%o4 + 0], %f8
 	set	min_caml_cs_temp, %o4
 	ldd	[%o4 + 0], %f6
@@ -1039,7 +1039,7 @@ be_else.124554:
 	faddd	%f6, %f4, %f6
 	fmuld	%f8, %f6, %f8
 	std	%f8, [%o5 + 8]
-	set	l.10876, %o4
+	set	l.10886, %o4
 	ldd	[%o4 + 0], %f8
 	set	min_caml_cs_temp, %o4
 	ldd	[%o4 + 0], %f6
@@ -1063,17 +1063,17 @@ be_else.124554:
 	faddd	%f14, %f12, %f14
 	fmuld	%f8, %f14, %f14
 	std	%f14, [%o5 + 16]
-be_cont.124555:
+be_cont.26065:
 	set	1, %i2
 	retl
 	nop
 read_object.2832:
 	cmp	%i2, 61
-	bl	bge_else.124590
+	bl	bge_else.26072
 	nop
 	retl
 	nop
-bge_else.124590:
+bge_else.26072:
 	st	%i2, [%i0 + 0]
 	st	%o7, [%i0 + 4]
 	call	read_nth_object.2384
@@ -1082,19 +1082,19 @@ bge_else.124590:
 	ld	[%i0 + 4], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.124594
+	bne	be_else.26075
 	nop
 	retl
 	nop
-be_else.124594:
+be_else.26075:
 	ld	[%i0 + 0], %o5
 	add	%o5, 1, %i2
 	cmp	%i2, 61
-	bl	bge_else.124596
+	bl	bge_else.26077
 	nop
 	retl
 	nop
-bge_else.124596:
+bge_else.26077:
 	st	%i2, [%i0 + 4]
 	st	%o7, [%i0 + 12]
 	call	read_nth_object.2384
@@ -1103,19 +1103,19 @@ bge_else.124596:
 	ld	[%i0 + 12], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.124600
+	bne	be_else.26080
 	nop
 	retl
 	nop
-be_else.124600:
+be_else.26080:
 	ld	[%i0 + 4], %o5
 	add	%o5, 1, %i2
 	cmp	%i2, 61
-	bl	bge_else.124602
+	bl	bge_else.26082
 	nop
 	retl
 	nop
-bge_else.124602:
+bge_else.26082:
 	st	%i2, [%i0 + 8]
 	st	%o7, [%i0 + 12]
 	call	read_nth_object.2384
@@ -1124,19 +1124,19 @@ bge_else.124602:
 	ld	[%i0 + 12], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.124606
+	bne	be_else.26085
 	nop
 	retl
 	nop
-be_else.124606:
+be_else.26085:
 	ld	[%i0 + 8], %o5
 	add	%o5, 1, %i2
 	cmp	%i2, 61
-	bl	bge_else.124608
+	bl	bge_else.26087
 	nop
 	retl
 	nop
-bge_else.124608:
+bge_else.26087:
 	st	%i2, [%i0 + 12]
 	st	%o7, [%i0 + 20]
 	call	read_nth_object.2384
@@ -1145,19 +1145,19 @@ bge_else.124608:
 	ld	[%i0 + 20], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.124612
+	bne	be_else.26090
 	nop
 	retl
 	nop
-be_else.124612:
+be_else.26090:
 	ld	[%i0 + 12], %o5
 	add	%o5, 1, %i2
 	cmp	%i2, 61
-	bl	bge_else.124614
+	bl	bge_else.26092
 	nop
 	retl
 	nop
-bge_else.124614:
+bge_else.26092:
 	st	%i2, [%i0 + 16]
 	st	%o7, [%i0 + 20]
 	call	read_nth_object.2384
@@ -1166,19 +1166,19 @@ bge_else.124614:
 	ld	[%i0 + 20], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.124618
+	bne	be_else.26095
 	nop
 	retl
 	nop
-be_else.124618:
+be_else.26095:
 	ld	[%i0 + 16], %o5
 	add	%o5, 1, %i2
 	cmp	%i2, 61
-	bl	bge_else.124620
+	bl	bge_else.26097
 	nop
 	retl
 	nop
-bge_else.124620:
+bge_else.26097:
 	st	%i2, [%i0 + 20]
 	st	%o7, [%i0 + 28]
 	call	read_nth_object.2384
@@ -1187,19 +1187,19 @@ bge_else.124620:
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.124624
+	bne	be_else.26100
 	nop
 	retl
 	nop
-be_else.124624:
+be_else.26100:
 	ld	[%i0 + 20], %o5
 	add	%o5, 1, %i2
 	cmp	%i2, 61
-	bl	bge_else.124626
+	bl	bge_else.26102
 	nop
 	retl
 	nop
-bge_else.124626:
+bge_else.26102:
 	st	%i2, [%i0 + 24]
 	st	%o7, [%i0 + 28]
 	call	read_nth_object.2384
@@ -1208,19 +1208,19 @@ bge_else.124626:
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.124630
+	bne	be_else.26105
 	nop
 	retl
 	nop
-be_else.124630:
+be_else.26105:
 	ld	[%i0 + 24], %o5
 	add	%o5, 1, %i2
 	cmp	%i2, 61
-	bl	bge_else.124632
+	bl	bge_else.26107
 	nop
 	retl
 	nop
-bge_else.124632:
+bge_else.26107:
 	st	%i2, [%i0 + 28]
 	st	%o7, [%i0 + 36]
 	call	read_nth_object.2384
@@ -1229,11 +1229,11 @@ bge_else.124632:
 	ld	[%i0 + 36], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.124636
+	bne	be_else.26110
 	nop
 	retl
 	nop
-be_else.124636:
+be_else.26110:
 	ld	[%i0 + 28], %o5
 	add	%o5, 1, %i2
 	b	read_object.2832
@@ -1247,14 +1247,14 @@ read_net_item.2842:
 	ld	[%i0 + 4], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.124641
+	bne	be_else.26113
 	nop
 	ld	[%i0 + 0], %o5
 	add	%o5, 1, %i2
 	set	-1, %i3
 	b	min_caml_create_array
 	nop
-be_else.124641:
+be_else.26113:
 	st	%o5, [%i0 + 4]
 	ld	[%i0 + 0], %o5
 	add	%o5, 1, %o5
@@ -1266,7 +1266,7 @@ be_else.124641:
 	ld	[%i0 + 12], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.124647
+	bne	be_else.26115
 	nop
 	ld	[%i0 + 8], %o5
 	add	%o5, 1, %i2
@@ -1277,9 +1277,9 @@ be_else.124641:
 	sub	%i0, 16, %i0
 	ld	[%i0 + 12], %o7
 	mov	%i2, %o5
-	b	be_cont.124648
+	b	be_cont.26116
 	nop
-be_else.124647:
+be_else.26115:
 	st	%o5, [%i0 + 12]
 	ld	[%i0 + 8], %o5
 	add	%o5, 1, %o5
@@ -1291,7 +1291,7 @@ be_else.124647:
 	ld	[%i0 + 20], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.124655
+	bne	be_else.26119
 	nop
 	ld	[%i0 + 16], %o5
 	add	%o5, 1, %i2
@@ -1302,9 +1302,9 @@ be_else.124647:
 	sub	%i0, 24, %i0
 	ld	[%i0 + 20], %o7
 	mov	%i2, %o5
-	b	be_cont.124656
+	b	be_cont.26120
 	nop
-be_else.124655:
+be_else.26119:
 	st	%o5, [%i0 + 20]
 	ld	[%i0 + 16], %o5
 	add	%o5, 1, %o5
@@ -1316,7 +1316,7 @@ be_else.124655:
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.124663
+	bne	be_else.26123
 	nop
 	ld	[%i0 + 24], %o5
 	add	%o5, 1, %i2
@@ -1327,9 +1327,9 @@ be_else.124655:
 	sub	%i0, 32, %i0
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
-	b	be_cont.124664
+	b	be_cont.26124
 	nop
-be_else.124663:
+be_else.26123:
 	st	%o5, [%i0 + 28]
 	ld	[%i0 + 24], %o5
 	add	%o5, 1, %o5
@@ -1341,7 +1341,7 @@ be_else.124663:
 	ld	[%i0 + 36], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.124671
+	bne	be_else.26127
 	nop
 	ld	[%i0 + 32], %o5
 	add	%o5, 1, %i2
@@ -1352,9 +1352,9 @@ be_else.124663:
 	sub	%i0, 40, %i0
 	ld	[%i0 + 36], %o7
 	mov	%i2, %o5
-	b	be_cont.124672
+	b	be_cont.26128
 	nop
-be_else.124671:
+be_else.26127:
 	st	%o5, [%i0 + 36]
 	ld	[%i0 + 32], %o5
 	add	%o5, 1, %o5
@@ -1366,7 +1366,7 @@ be_else.124671:
 	ld	[%i0 + 44], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.124679
+	bne	be_else.26131
 	nop
 	ld	[%i0 + 40], %o5
 	add	%o5, 1, %i2
@@ -1377,9 +1377,9 @@ be_else.124671:
 	sub	%i0, 48, %i0
 	ld	[%i0 + 44], %o7
 	mov	%i2, %o5
-	b	be_cont.124680
+	b	be_cont.26132
 	nop
-be_else.124679:
+be_else.26131:
 	st	%o5, [%i0 + 44]
 	ld	[%i0 + 40], %o5
 	add	%o5, 1, %o5
@@ -1391,7 +1391,7 @@ be_else.124679:
 	ld	[%i0 + 52], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.124687
+	bne	be_else.26135
 	nop
 	ld	[%i0 + 48], %o5
 	add	%o5, 1, %i2
@@ -1402,9 +1402,9 @@ be_else.124679:
 	sub	%i0, 56, %i0
 	ld	[%i0 + 52], %o7
 	mov	%i2, %o5
-	b	be_cont.124688
+	b	be_cont.26136
 	nop
-be_else.124687:
+be_else.26135:
 	st	%o5, [%i0 + 52]
 	ld	[%i0 + 48], %o5
 	add	%o5, 1, %o5
@@ -1416,7 +1416,7 @@ be_else.124687:
 	ld	[%i0 + 60], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.124695
+	bne	be_else.26139
 	nop
 	ld	[%i0 + 56], %o5
 	add	%o5, 1, %i2
@@ -1427,9 +1427,9 @@ be_else.124687:
 	sub	%i0, 64, %i0
 	ld	[%i0 + 60], %o7
 	mov	%i2, %o5
-	b	be_cont.124696
+	b	be_cont.26140
 	nop
-be_else.124695:
+be_else.26139:
 	st	%o5, [%i0 + 60]
 	ld	[%i0 + 56], %o5
 	add	%o5, 1, %i2
@@ -1443,37 +1443,37 @@ be_else.124695:
 	sll	%o4, 2, %o4
 	ld	[%i0 + 60], %o3
 	st	%o3, [%o5 + %o4]
-be_cont.124696:
+be_cont.26140:
 	ld	[%i0 + 48], %o4
 	sll	%o4, 2, %o4
 	ld	[%i0 + 52], %o3
 	st	%o3, [%o5 + %o4]
-be_cont.124688:
+be_cont.26136:
 	ld	[%i0 + 40], %o4
 	sll	%o4, 2, %o4
 	ld	[%i0 + 44], %o3
 	st	%o3, [%o5 + %o4]
-be_cont.124680:
+be_cont.26132:
 	ld	[%i0 + 32], %o4
 	sll	%o4, 2, %o4
 	ld	[%i0 + 36], %o3
 	st	%o3, [%o5 + %o4]
-be_cont.124672:
+be_cont.26128:
 	ld	[%i0 + 24], %o4
 	sll	%o4, 2, %o4
 	ld	[%i0 + 28], %o3
 	st	%o3, [%o5 + %o4]
-be_cont.124664:
+be_cont.26124:
 	ld	[%i0 + 16], %o4
 	sll	%o4, 2, %o4
 	ld	[%i0 + 20], %o3
 	st	%o3, [%o5 + %o4]
-be_cont.124656:
+be_cont.26120:
 	ld	[%i0 + 8], %o4
 	sll	%o4, 2, %o4
 	ld	[%i0 + 12], %o3
 	st	%o3, [%o5 + %o4]
-be_cont.124648:
+be_cont.26116:
 	mov	%o5, %i2
 	ld	[%i0 + 0], %o5
 	sll	%o5, 2, %o5
@@ -1490,7 +1490,7 @@ read_or_network.2854:
 	ld	[%i0 + 4], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.124712
+	bne	be_else.26144
 	nop
 	set	1, %i2
 	set	-1, %i3
@@ -1500,9 +1500,9 @@ read_or_network.2854:
 	sub	%i0, 8, %i0
 	ld	[%i0 + 4], %o7
 	mov	%i2, %o5
-	b	be_cont.124713
+	b	be_cont.26145
 	nop
-be_else.124712:
+be_else.26144:
 	st	%o5, [%i0 + 4]
 	st	%o7, [%i0 + 12]
 	call	min_caml_read_int
@@ -1511,7 +1511,7 @@ be_else.124712:
 	ld	[%i0 + 12], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.124718
+	bne	be_else.26148
 	nop
 	set	2, %i2
 	set	-1, %i3
@@ -1521,9 +1521,9 @@ be_else.124712:
 	sub	%i0, 16, %i0
 	ld	[%i0 + 12], %o7
 	mov	%i2, %o5
-	b	be_cont.124719
+	b	be_cont.26149
 	nop
-be_else.124718:
+be_else.26148:
 	st	%o5, [%i0 + 8]
 	st	%o7, [%i0 + 12]
 	call	min_caml_read_int
@@ -1532,7 +1532,7 @@ be_else.124718:
 	ld	[%i0 + 12], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.124724
+	bne	be_else.26152
 	nop
 	set	3, %i2
 	set	-1, %i3
@@ -1542,9 +1542,9 @@ be_else.124718:
 	sub	%i0, 16, %i0
 	ld	[%i0 + 12], %o7
 	mov	%i2, %o5
-	b	be_cont.124725
+	b	be_cont.26153
 	nop
-be_else.124724:
+be_else.26152:
 	st	%o5, [%i0 + 12]
 	st	%o7, [%i0 + 20]
 	call	min_caml_read_int
@@ -1553,7 +1553,7 @@ be_else.124724:
 	ld	[%i0 + 20], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.124730
+	bne	be_else.26156
 	nop
 	set	4, %i2
 	set	-1, %i3
@@ -1563,9 +1563,9 @@ be_else.124724:
 	sub	%i0, 24, %i0
 	ld	[%i0 + 20], %o7
 	mov	%i2, %o5
-	b	be_cont.124731
+	b	be_cont.26157
 	nop
-be_else.124730:
+be_else.26156:
 	st	%o5, [%i0 + 16]
 	st	%o7, [%i0 + 20]
 	call	min_caml_read_int
@@ -1574,7 +1574,7 @@ be_else.124730:
 	ld	[%i0 + 20], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.124736
+	bne	be_else.26160
 	nop
 	set	5, %i2
 	set	-1, %i3
@@ -1584,9 +1584,9 @@ be_else.124730:
 	sub	%i0, 24, %i0
 	ld	[%i0 + 20], %o7
 	mov	%i2, %o5
-	b	be_cont.124737
+	b	be_cont.26161
 	nop
-be_else.124736:
+be_else.26160:
 	st	%o5, [%i0 + 20]
 	st	%o7, [%i0 + 28]
 	call	min_caml_read_int
@@ -1595,7 +1595,7 @@ be_else.124736:
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.124742
+	bne	be_else.26164
 	nop
 	set	6, %i2
 	set	-1, %i3
@@ -1605,9 +1605,9 @@ be_else.124736:
 	sub	%i0, 32, %i0
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
-	b	be_cont.124743
+	b	be_cont.26165
 	nop
-be_else.124742:
+be_else.26164:
 	st	%o5, [%i0 + 24]
 	st	%o7, [%i0 + 28]
 	call	min_caml_read_int
@@ -1616,7 +1616,7 @@ be_else.124742:
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.124748
+	bne	be_else.26168
 	nop
 	set	7, %i2
 	set	-1, %i3
@@ -1626,9 +1626,9 @@ be_else.124742:
 	sub	%i0, 32, %i0
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
-	b	be_cont.124749
+	b	be_cont.26169
 	nop
-be_else.124748:
+be_else.26168:
 	st	%o5, [%i0 + 28]
 	set	7, %i2
 	st	%o7, [%i0 + 36]
@@ -1639,35 +1639,35 @@ be_else.124748:
 	mov	%i2, %o5
 	ld	[%i0 + 28], %o4
 	st	%o4, [%o5 + 24]
-be_cont.124749:
+be_cont.26169:
 	ld	[%i0 + 24], %o4
 	st	%o4, [%o5 + 20]
-be_cont.124743:
+be_cont.26165:
 	ld	[%i0 + 20], %o4
 	st	%o4, [%o5 + 16]
-be_cont.124737:
+be_cont.26161:
 	ld	[%i0 + 16], %o4
 	st	%o4, [%o5 + 12]
-be_cont.124731:
+be_cont.26157:
 	ld	[%i0 + 12], %o4
 	st	%o4, [%o5 + 8]
-be_cont.124725:
+be_cont.26153:
 	ld	[%i0 + 8], %o4
 	st	%o4, [%o5 + 4]
-be_cont.124719:
+be_cont.26149:
 	ld	[%i0 + 4], %o4
 	st	%o4, [%o5 + 0]
-be_cont.124713:
+be_cont.26145:
 	mov	%o5, %i3
 	ld	[%i3 + 0], %o5
 	cmp	%o5, -1
-	bne	be_else.124760
+	bne	be_else.26172
 	nop
 	ld	[%i0 + 0], %o5
 	add	%o5, 1, %i2
 	b	min_caml_create_array
 	nop
-be_else.124760:
+be_else.26172:
 	st	%i3, [%i0 + 32]
 	ld	[%i0 + 0], %o5
 	add	%o5, 1, %o5
@@ -1679,7 +1679,7 @@ be_else.124760:
 	ld	[%i0 + 44], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.124766
+	bne	be_else.26174
 	nop
 	set	1, %i2
 	set	-1, %i3
@@ -1689,9 +1689,9 @@ be_else.124760:
 	sub	%i0, 48, %i0
 	ld	[%i0 + 44], %o7
 	mov	%i2, %o5
-	b	be_cont.124767
+	b	be_cont.26175
 	nop
-be_else.124766:
+be_else.26174:
 	st	%o5, [%i0 + 40]
 	st	%o7, [%i0 + 44]
 	call	min_caml_read_int
@@ -1700,7 +1700,7 @@ be_else.124766:
 	ld	[%i0 + 44], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.124772
+	bne	be_else.26178
 	nop
 	set	2, %i2
 	set	-1, %i3
@@ -1710,9 +1710,9 @@ be_else.124766:
 	sub	%i0, 48, %i0
 	ld	[%i0 + 44], %o7
 	mov	%i2, %o5
-	b	be_cont.124773
+	b	be_cont.26179
 	nop
-be_else.124772:
+be_else.26178:
 	st	%o5, [%i0 + 44]
 	st	%o7, [%i0 + 52]
 	call	min_caml_read_int
@@ -1721,7 +1721,7 @@ be_else.124772:
 	ld	[%i0 + 52], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.124778
+	bne	be_else.26182
 	nop
 	set	3, %i2
 	set	-1, %i3
@@ -1731,9 +1731,9 @@ be_else.124772:
 	sub	%i0, 56, %i0
 	ld	[%i0 + 52], %o7
 	mov	%i2, %o5
-	b	be_cont.124779
+	b	be_cont.26183
 	nop
-be_else.124778:
+be_else.26182:
 	st	%o5, [%i0 + 48]
 	st	%o7, [%i0 + 52]
 	call	min_caml_read_int
@@ -1742,7 +1742,7 @@ be_else.124778:
 	ld	[%i0 + 52], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.124784
+	bne	be_else.26186
 	nop
 	set	4, %i2
 	set	-1, %i3
@@ -1752,9 +1752,9 @@ be_else.124778:
 	sub	%i0, 56, %i0
 	ld	[%i0 + 52], %o7
 	mov	%i2, %o5
-	b	be_cont.124785
+	b	be_cont.26187
 	nop
-be_else.124784:
+be_else.26186:
 	st	%o5, [%i0 + 52]
 	st	%o7, [%i0 + 60]
 	call	min_caml_read_int
@@ -1763,7 +1763,7 @@ be_else.124784:
 	ld	[%i0 + 60], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.124790
+	bne	be_else.26190
 	nop
 	set	5, %i2
 	set	-1, %i3
@@ -1773,9 +1773,9 @@ be_else.124784:
 	sub	%i0, 64, %i0
 	ld	[%i0 + 60], %o7
 	mov	%i2, %o5
-	b	be_cont.124791
+	b	be_cont.26191
 	nop
-be_else.124790:
+be_else.26190:
 	st	%o5, [%i0 + 56]
 	st	%o7, [%i0 + 60]
 	call	min_caml_read_int
@@ -1784,7 +1784,7 @@ be_else.124790:
 	ld	[%i0 + 60], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.124796
+	bne	be_else.26194
 	nop
 	set	6, %i2
 	set	-1, %i3
@@ -1794,9 +1794,9 @@ be_else.124790:
 	sub	%i0, 64, %i0
 	ld	[%i0 + 60], %o7
 	mov	%i2, %o5
-	b	be_cont.124797
+	b	be_cont.26195
 	nop
-be_else.124796:
+be_else.26194:
 	st	%o5, [%i0 + 60]
 	set	6, %i2
 	st	%o7, [%i0 + 68]
@@ -1807,26 +1807,26 @@ be_else.124796:
 	mov	%i2, %o5
 	ld	[%i0 + 60], %o4
 	st	%o4, [%o5 + 20]
-be_cont.124797:
+be_cont.26195:
 	ld	[%i0 + 56], %o4
 	st	%o4, [%o5 + 16]
-be_cont.124791:
+be_cont.26191:
 	ld	[%i0 + 52], %o4
 	st	%o4, [%o5 + 12]
-be_cont.124785:
+be_cont.26187:
 	ld	[%i0 + 48], %o4
 	st	%o4, [%o5 + 8]
-be_cont.124779:
+be_cont.26183:
 	ld	[%i0 + 44], %o4
 	st	%o4, [%o5 + 4]
-be_cont.124773:
+be_cont.26179:
 	ld	[%i0 + 40], %o4
 	st	%o4, [%o5 + 0]
-be_cont.124767:
+be_cont.26175:
 	mov	%o5, %i3
 	ld	[%i3 + 0], %o5
 	cmp	%o5, -1
-	bne	be_else.124807
+	bne	be_else.26198
 	nop
 	ld	[%i0 + 36], %o5
 	add	%o5, 1, %i2
@@ -1836,9 +1836,9 @@ be_cont.124767:
 	sub	%i0, 72, %i0
 	ld	[%i0 + 68], %o7
 	mov	%i2, %o5
-	b	be_cont.124808
+	b	be_cont.26199
 	nop
-be_else.124807:
+be_else.26198:
 	st	%i3, [%i0 + 64]
 	ld	[%i0 + 36], %o5
 	add	%o5, 1, %o5
@@ -1850,7 +1850,7 @@ be_else.124807:
 	ld	[%i0 + 76], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.124815
+	bne	be_else.26202
 	nop
 	set	1, %i2
 	set	-1, %i3
@@ -1860,9 +1860,9 @@ be_else.124807:
 	sub	%i0, 80, %i0
 	ld	[%i0 + 76], %o7
 	mov	%i2, %o5
-	b	be_cont.124816
+	b	be_cont.26203
 	nop
-be_else.124815:
+be_else.26202:
 	st	%o5, [%i0 + 72]
 	st	%o7, [%i0 + 76]
 	call	min_caml_read_int
@@ -1871,7 +1871,7 @@ be_else.124815:
 	ld	[%i0 + 76], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.124821
+	bne	be_else.26206
 	nop
 	set	2, %i2
 	set	-1, %i3
@@ -1881,9 +1881,9 @@ be_else.124815:
 	sub	%i0, 80, %i0
 	ld	[%i0 + 76], %o7
 	mov	%i2, %o5
-	b	be_cont.124822
+	b	be_cont.26207
 	nop
-be_else.124821:
+be_else.26206:
 	st	%o5, [%i0 + 76]
 	st	%o7, [%i0 + 84]
 	call	min_caml_read_int
@@ -1892,7 +1892,7 @@ be_else.124821:
 	ld	[%i0 + 84], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.124827
+	bne	be_else.26210
 	nop
 	set	3, %i2
 	set	-1, %i3
@@ -1902,9 +1902,9 @@ be_else.124821:
 	sub	%i0, 88, %i0
 	ld	[%i0 + 84], %o7
 	mov	%i2, %o5
-	b	be_cont.124828
+	b	be_cont.26211
 	nop
-be_else.124827:
+be_else.26210:
 	st	%o5, [%i0 + 80]
 	st	%o7, [%i0 + 84]
 	call	min_caml_read_int
@@ -1913,7 +1913,7 @@ be_else.124827:
 	ld	[%i0 + 84], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.124833
+	bne	be_else.26214
 	nop
 	set	4, %i2
 	set	-1, %i3
@@ -1923,9 +1923,9 @@ be_else.124827:
 	sub	%i0, 88, %i0
 	ld	[%i0 + 84], %o7
 	mov	%i2, %o5
-	b	be_cont.124834
+	b	be_cont.26215
 	nop
-be_else.124833:
+be_else.26214:
 	st	%o5, [%i0 + 84]
 	st	%o7, [%i0 + 92]
 	call	min_caml_read_int
@@ -1934,7 +1934,7 @@ be_else.124833:
 	ld	[%i0 + 92], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.124839
+	bne	be_else.26218
 	nop
 	set	5, %i2
 	set	-1, %i3
@@ -1944,9 +1944,9 @@ be_else.124833:
 	sub	%i0, 96, %i0
 	ld	[%i0 + 92], %o7
 	mov	%i2, %o5
-	b	be_cont.124840
+	b	be_cont.26219
 	nop
-be_else.124839:
+be_else.26218:
 	st	%o5, [%i0 + 88]
 	set	5, %i2
 	st	%o7, [%i0 + 92]
@@ -1957,23 +1957,23 @@ be_else.124839:
 	mov	%i2, %o5
 	ld	[%i0 + 88], %o4
 	st	%o4, [%o5 + 16]
-be_cont.124840:
+be_cont.26219:
 	ld	[%i0 + 84], %o4
 	st	%o4, [%o5 + 12]
-be_cont.124834:
+be_cont.26215:
 	ld	[%i0 + 80], %o4
 	st	%o4, [%o5 + 8]
-be_cont.124828:
+be_cont.26211:
 	ld	[%i0 + 76], %o4
 	st	%o4, [%o5 + 4]
-be_cont.124822:
+be_cont.26207:
 	ld	[%i0 + 72], %o4
 	st	%o4, [%o5 + 0]
-be_cont.124816:
+be_cont.26203:
 	mov	%o5, %i3
 	ld	[%i3 + 0], %o5
 	cmp	%o5, -1
-	bne	be_else.124849
+	bne	be_else.26222
 	nop
 	ld	[%i0 + 68], %o5
 	add	%o5, 1, %i2
@@ -1983,9 +1983,9 @@ be_cont.124816:
 	sub	%i0, 96, %i0
 	ld	[%i0 + 92], %o7
 	mov	%i2, %o5
-	b	be_cont.124850
+	b	be_cont.26223
 	nop
-be_else.124849:
+be_else.26222:
 	st	%i3, [%i0 + 92]
 	ld	[%i0 + 68], %o5
 	add	%o5, 1, %o5
@@ -1997,7 +1997,7 @@ be_else.124849:
 	ld	[%i0 + 100], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.124857
+	bne	be_else.26226
 	nop
 	set	1, %i2
 	set	-1, %i3
@@ -2007,9 +2007,9 @@ be_else.124849:
 	sub	%i0, 104, %i0
 	ld	[%i0 + 100], %o7
 	mov	%i2, %o5
-	b	be_cont.124858
+	b	be_cont.26227
 	nop
-be_else.124857:
+be_else.26226:
 	st	%o5, [%i0 + 100]
 	st	%o7, [%i0 + 108]
 	call	min_caml_read_int
@@ -2018,7 +2018,7 @@ be_else.124857:
 	ld	[%i0 + 108], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.124863
+	bne	be_else.26230
 	nop
 	set	2, %i2
 	set	-1, %i3
@@ -2028,9 +2028,9 @@ be_else.124857:
 	sub	%i0, 112, %i0
 	ld	[%i0 + 108], %o7
 	mov	%i2, %o5
-	b	be_cont.124864
+	b	be_cont.26231
 	nop
-be_else.124863:
+be_else.26230:
 	st	%o5, [%i0 + 104]
 	st	%o7, [%i0 + 108]
 	call	min_caml_read_int
@@ -2039,7 +2039,7 @@ be_else.124863:
 	ld	[%i0 + 108], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.124869
+	bne	be_else.26234
 	nop
 	set	3, %i2
 	set	-1, %i3
@@ -2049,9 +2049,9 @@ be_else.124863:
 	sub	%i0, 112, %i0
 	ld	[%i0 + 108], %o7
 	mov	%i2, %o5
-	b	be_cont.124870
+	b	be_cont.26235
 	nop
-be_else.124869:
+be_else.26234:
 	st	%o5, [%i0 + 108]
 	st	%o7, [%i0 + 116]
 	call	min_caml_read_int
@@ -2060,7 +2060,7 @@ be_else.124869:
 	ld	[%i0 + 116], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.124875
+	bne	be_else.26238
 	nop
 	set	4, %i2
 	set	-1, %i3
@@ -2070,9 +2070,9 @@ be_else.124869:
 	sub	%i0, 120, %i0
 	ld	[%i0 + 116], %o7
 	mov	%i2, %o5
-	b	be_cont.124876
+	b	be_cont.26239
 	nop
-be_else.124875:
+be_else.26238:
 	st	%o5, [%i0 + 112]
 	set	4, %i2
 	st	%o7, [%i0 + 116]
@@ -2083,20 +2083,20 @@ be_else.124875:
 	mov	%i2, %o5
 	ld	[%i0 + 112], %o4
 	st	%o4, [%o5 + 12]
-be_cont.124876:
+be_cont.26239:
 	ld	[%i0 + 108], %o4
 	st	%o4, [%o5 + 8]
-be_cont.124870:
+be_cont.26235:
 	ld	[%i0 + 104], %o4
 	st	%o4, [%o5 + 4]
-be_cont.124864:
+be_cont.26231:
 	ld	[%i0 + 100], %o4
 	st	%o4, [%o5 + 0]
-be_cont.124858:
+be_cont.26227:
 	mov	%o5, %i3
 	ld	[%i3 + 0], %o5
 	cmp	%o5, -1
-	bne	be_else.124884
+	bne	be_else.26242
 	nop
 	ld	[%i0 + 96], %o5
 	add	%o5, 1, %i2
@@ -2106,9 +2106,9 @@ be_cont.124858:
 	sub	%i0, 120, %i0
 	ld	[%i0 + 116], %o7
 	mov	%i2, %o5
-	b	be_cont.124885
+	b	be_cont.26243
 	nop
-be_else.124884:
+be_else.26242:
 	st	%i3, [%i0 + 116]
 	ld	[%i0 + 96], %o5
 	add	%o5, 1, %i2
@@ -2122,17 +2122,17 @@ be_else.124884:
 	sll	%o4, 2, %o4
 	ld	[%i0 + 116], %o3
 	st	%o3, [%o5 + %o4]
-be_cont.124885:
+be_cont.26243:
 	ld	[%i0 + 68], %o4
 	sll	%o4, 2, %o4
 	ld	[%i0 + 92], %o3
 	st	%o3, [%o5 + %o4]
-be_cont.124850:
+be_cont.26223:
 	ld	[%i0 + 36], %o4
 	sll	%o4, 2, %o4
 	ld	[%i0 + 64], %o3
 	st	%o3, [%o5 + %o4]
-be_cont.124808:
+be_cont.26199:
 	mov	%o5, %i2
 	ld	[%i0 + 0], %o5
 	sll	%o5, 2, %o5
@@ -2149,7 +2149,7 @@ read_and_network.2867:
 	ld	[%i0 + 4], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.124897
+	bne	be_else.26247
 	nop
 	set	1, %i2
 	set	-1, %i3
@@ -2159,9 +2159,9 @@ read_and_network.2867:
 	sub	%i0, 8, %i0
 	ld	[%i0 + 4], %o7
 	mov	%i2, %o5
-	b	be_cont.124898
+	b	be_cont.26248
 	nop
-be_else.124897:
+be_else.26247:
 	st	%o5, [%i0 + 4]
 	st	%o7, [%i0 + 12]
 	call	min_caml_read_int
@@ -2170,7 +2170,7 @@ be_else.124897:
 	ld	[%i0 + 12], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.124903
+	bne	be_else.26251
 	nop
 	set	2, %i2
 	set	-1, %i3
@@ -2180,9 +2180,9 @@ be_else.124897:
 	sub	%i0, 16, %i0
 	ld	[%i0 + 12], %o7
 	mov	%i2, %o5
-	b	be_cont.124904
+	b	be_cont.26252
 	nop
-be_else.124903:
+be_else.26251:
 	st	%o5, [%i0 + 8]
 	st	%o7, [%i0 + 12]
 	call	min_caml_read_int
@@ -2191,7 +2191,7 @@ be_else.124903:
 	ld	[%i0 + 12], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.124909
+	bne	be_else.26255
 	nop
 	set	3, %i2
 	set	-1, %i3
@@ -2201,9 +2201,9 @@ be_else.124903:
 	sub	%i0, 16, %i0
 	ld	[%i0 + 12], %o7
 	mov	%i2, %o5
-	b	be_cont.124910
+	b	be_cont.26256
 	nop
-be_else.124909:
+be_else.26255:
 	st	%o5, [%i0 + 12]
 	st	%o7, [%i0 + 20]
 	call	min_caml_read_int
@@ -2212,7 +2212,7 @@ be_else.124909:
 	ld	[%i0 + 20], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.124915
+	bne	be_else.26259
 	nop
 	set	4, %i2
 	set	-1, %i3
@@ -2222,9 +2222,9 @@ be_else.124909:
 	sub	%i0, 24, %i0
 	ld	[%i0 + 20], %o7
 	mov	%i2, %o5
-	b	be_cont.124916
+	b	be_cont.26260
 	nop
-be_else.124915:
+be_else.26259:
 	st	%o5, [%i0 + 16]
 	st	%o7, [%i0 + 20]
 	call	min_caml_read_int
@@ -2233,7 +2233,7 @@ be_else.124915:
 	ld	[%i0 + 20], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.124921
+	bne	be_else.26263
 	nop
 	set	5, %i2
 	set	-1, %i3
@@ -2243,9 +2243,9 @@ be_else.124915:
 	sub	%i0, 24, %i0
 	ld	[%i0 + 20], %o7
 	mov	%i2, %o5
-	b	be_cont.124922
+	b	be_cont.26264
 	nop
-be_else.124921:
+be_else.26263:
 	st	%o5, [%i0 + 20]
 	st	%o7, [%i0 + 28]
 	call	min_caml_read_int
@@ -2254,7 +2254,7 @@ be_else.124921:
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.124927
+	bne	be_else.26267
 	nop
 	set	6, %i2
 	set	-1, %i3
@@ -2264,9 +2264,9 @@ be_else.124921:
 	sub	%i0, 32, %i0
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
-	b	be_cont.124928
+	b	be_cont.26268
 	nop
-be_else.124927:
+be_else.26267:
 	st	%o5, [%i0 + 24]
 	st	%o7, [%i0 + 28]
 	call	min_caml_read_int
@@ -2275,7 +2275,7 @@ be_else.124927:
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.124933
+	bne	be_else.26271
 	nop
 	set	7, %i2
 	set	-1, %i3
@@ -2285,9 +2285,9 @@ be_else.124927:
 	sub	%i0, 32, %i0
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
-	b	be_cont.124934
+	b	be_cont.26272
 	nop
-be_else.124933:
+be_else.26271:
 	st	%o5, [%i0 + 28]
 	set	7, %i2
 	st	%o7, [%i0 + 36]
@@ -2298,32 +2298,32 @@ be_else.124933:
 	mov	%i2, %o5
 	ld	[%i0 + 28], %o4
 	st	%o4, [%o5 + 24]
-be_cont.124934:
+be_cont.26272:
 	ld	[%i0 + 24], %o4
 	st	%o4, [%o5 + 20]
-be_cont.124928:
+be_cont.26268:
 	ld	[%i0 + 20], %o4
 	st	%o4, [%o5 + 16]
-be_cont.124922:
+be_cont.26264:
 	ld	[%i0 + 16], %o4
 	st	%o4, [%o5 + 12]
-be_cont.124916:
+be_cont.26260:
 	ld	[%i0 + 12], %o4
 	st	%o4, [%o5 + 8]
-be_cont.124910:
+be_cont.26256:
 	ld	[%i0 + 8], %o4
 	st	%o4, [%o5 + 4]
-be_cont.124904:
+be_cont.26252:
 	ld	[%i0 + 4], %o4
 	st	%o4, [%o5 + 0]
-be_cont.124898:
+be_cont.26248:
 	ld	[%o5 + 0], %o4
 	cmp	%o4, -1
-	bne	be_else.124945
+	bne	be_else.26275
 	nop
 	retl
 	nop
-be_else.124945:
+be_else.26275:
 	set	min_caml_and_net, %o4
 	ld	[%i0 + 0], %o3
 	sll	%o3, 2, %o2
@@ -2337,7 +2337,7 @@ be_else.124945:
 	ld	[%i0 + 36], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.124951
+	bne	be_else.26278
 	nop
 	set	1, %i2
 	set	-1, %i3
@@ -2347,9 +2347,9 @@ be_else.124945:
 	sub	%i0, 40, %i0
 	ld	[%i0 + 36], %o7
 	mov	%i2, %o5
-	b	be_cont.124952
+	b	be_cont.26279
 	nop
-be_else.124951:
+be_else.26278:
 	st	%o5, [%i0 + 36]
 	st	%o7, [%i0 + 44]
 	call	min_caml_read_int
@@ -2358,7 +2358,7 @@ be_else.124951:
 	ld	[%i0 + 44], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.124957
+	bne	be_else.26282
 	nop
 	set	2, %i2
 	set	-1, %i3
@@ -2368,9 +2368,9 @@ be_else.124951:
 	sub	%i0, 48, %i0
 	ld	[%i0 + 44], %o7
 	mov	%i2, %o5
-	b	be_cont.124958
+	b	be_cont.26283
 	nop
-be_else.124957:
+be_else.26282:
 	st	%o5, [%i0 + 40]
 	st	%o7, [%i0 + 44]
 	call	min_caml_read_int
@@ -2379,7 +2379,7 @@ be_else.124957:
 	ld	[%i0 + 44], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.124963
+	bne	be_else.26286
 	nop
 	set	3, %i2
 	set	-1, %i3
@@ -2389,9 +2389,9 @@ be_else.124957:
 	sub	%i0, 48, %i0
 	ld	[%i0 + 44], %o7
 	mov	%i2, %o5
-	b	be_cont.124964
+	b	be_cont.26287
 	nop
-be_else.124963:
+be_else.26286:
 	st	%o5, [%i0 + 44]
 	st	%o7, [%i0 + 52]
 	call	min_caml_read_int
@@ -2400,7 +2400,7 @@ be_else.124963:
 	ld	[%i0 + 52], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.124969
+	bne	be_else.26290
 	nop
 	set	4, %i2
 	set	-1, %i3
@@ -2410,9 +2410,9 @@ be_else.124963:
 	sub	%i0, 56, %i0
 	ld	[%i0 + 52], %o7
 	mov	%i2, %o5
-	b	be_cont.124970
+	b	be_cont.26291
 	nop
-be_else.124969:
+be_else.26290:
 	st	%o5, [%i0 + 48]
 	st	%o7, [%i0 + 52]
 	call	min_caml_read_int
@@ -2421,7 +2421,7 @@ be_else.124969:
 	ld	[%i0 + 52], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.124975
+	bne	be_else.26294
 	nop
 	set	5, %i2
 	set	-1, %i3
@@ -2431,9 +2431,9 @@ be_else.124969:
 	sub	%i0, 56, %i0
 	ld	[%i0 + 52], %o7
 	mov	%i2, %o5
-	b	be_cont.124976
+	b	be_cont.26295
 	nop
-be_else.124975:
+be_else.26294:
 	st	%o5, [%i0 + 52]
 	st	%o7, [%i0 + 60]
 	call	min_caml_read_int
@@ -2442,7 +2442,7 @@ be_else.124975:
 	ld	[%i0 + 60], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.124981
+	bne	be_else.26298
 	nop
 	set	6, %i2
 	set	-1, %i3
@@ -2452,9 +2452,9 @@ be_else.124975:
 	sub	%i0, 64, %i0
 	ld	[%i0 + 60], %o7
 	mov	%i2, %o5
-	b	be_cont.124982
+	b	be_cont.26299
 	nop
-be_else.124981:
+be_else.26298:
 	st	%o5, [%i0 + 56]
 	set	6, %i2
 	st	%o7, [%i0 + 60]
@@ -2465,29 +2465,29 @@ be_else.124981:
 	mov	%i2, %o5
 	ld	[%i0 + 56], %o4
 	st	%o4, [%o5 + 20]
-be_cont.124982:
+be_cont.26299:
 	ld	[%i0 + 52], %o4
 	st	%o4, [%o5 + 16]
-be_cont.124976:
+be_cont.26295:
 	ld	[%i0 + 48], %o4
 	st	%o4, [%o5 + 12]
-be_cont.124970:
+be_cont.26291:
 	ld	[%i0 + 44], %o4
 	st	%o4, [%o5 + 8]
-be_cont.124964:
+be_cont.26287:
 	ld	[%i0 + 40], %o4
 	st	%o4, [%o5 + 4]
-be_cont.124958:
+be_cont.26283:
 	ld	[%i0 + 36], %o4
 	st	%o4, [%o5 + 0]
-be_cont.124952:
+be_cont.26279:
 	ld	[%o5 + 0], %o4
 	cmp	%o4, -1
-	bne	be_else.124992
+	bne	be_else.26302
 	nop
 	retl
 	nop
-be_else.124992:
+be_else.26302:
 	set	min_caml_and_net, %o4
 	ld	[%i0 + 32], %o3
 	sll	%o3, 2, %o2
@@ -2501,7 +2501,7 @@ be_else.124992:
 	ld	[%i0 + 68], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.124998
+	bne	be_else.26305
 	nop
 	set	1, %i2
 	set	-1, %i3
@@ -2511,9 +2511,9 @@ be_else.124992:
 	sub	%i0, 72, %i0
 	ld	[%i0 + 68], %o7
 	mov	%i2, %o5
-	b	be_cont.124999
+	b	be_cont.26306
 	nop
-be_else.124998:
+be_else.26305:
 	st	%o5, [%i0 + 64]
 	st	%o7, [%i0 + 68]
 	call	min_caml_read_int
@@ -2522,7 +2522,7 @@ be_else.124998:
 	ld	[%i0 + 68], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.125004
+	bne	be_else.26309
 	nop
 	set	2, %i2
 	set	-1, %i3
@@ -2532,9 +2532,9 @@ be_else.124998:
 	sub	%i0, 72, %i0
 	ld	[%i0 + 68], %o7
 	mov	%i2, %o5
-	b	be_cont.125005
+	b	be_cont.26310
 	nop
-be_else.125004:
+be_else.26309:
 	st	%o5, [%i0 + 68]
 	st	%o7, [%i0 + 76]
 	call	min_caml_read_int
@@ -2543,7 +2543,7 @@ be_else.125004:
 	ld	[%i0 + 76], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.125010
+	bne	be_else.26313
 	nop
 	set	3, %i2
 	set	-1, %i3
@@ -2553,9 +2553,9 @@ be_else.125004:
 	sub	%i0, 80, %i0
 	ld	[%i0 + 76], %o7
 	mov	%i2, %o5
-	b	be_cont.125011
+	b	be_cont.26314
 	nop
-be_else.125010:
+be_else.26313:
 	st	%o5, [%i0 + 72]
 	st	%o7, [%i0 + 76]
 	call	min_caml_read_int
@@ -2564,7 +2564,7 @@ be_else.125010:
 	ld	[%i0 + 76], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.125016
+	bne	be_else.26317
 	nop
 	set	4, %i2
 	set	-1, %i3
@@ -2574,9 +2574,9 @@ be_else.125010:
 	sub	%i0, 80, %i0
 	ld	[%i0 + 76], %o7
 	mov	%i2, %o5
-	b	be_cont.125017
+	b	be_cont.26318
 	nop
-be_else.125016:
+be_else.26317:
 	st	%o5, [%i0 + 76]
 	st	%o7, [%i0 + 84]
 	call	min_caml_read_int
@@ -2585,7 +2585,7 @@ be_else.125016:
 	ld	[%i0 + 84], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.125022
+	bne	be_else.26321
 	nop
 	set	5, %i2
 	set	-1, %i3
@@ -2595,9 +2595,9 @@ be_else.125016:
 	sub	%i0, 88, %i0
 	ld	[%i0 + 84], %o7
 	mov	%i2, %o5
-	b	be_cont.125023
+	b	be_cont.26322
 	nop
-be_else.125022:
+be_else.26321:
 	st	%o5, [%i0 + 80]
 	set	5, %i2
 	st	%o7, [%i0 + 84]
@@ -2608,26 +2608,26 @@ be_else.125022:
 	mov	%i2, %o5
 	ld	[%i0 + 80], %o4
 	st	%o4, [%o5 + 16]
-be_cont.125023:
+be_cont.26322:
 	ld	[%i0 + 76], %o4
 	st	%o4, [%o5 + 12]
-be_cont.125017:
+be_cont.26318:
 	ld	[%i0 + 72], %o4
 	st	%o4, [%o5 + 8]
-be_cont.125011:
+be_cont.26314:
 	ld	[%i0 + 68], %o4
 	st	%o4, [%o5 + 4]
-be_cont.125005:
+be_cont.26310:
 	ld	[%i0 + 64], %o4
 	st	%o4, [%o5 + 0]
-be_cont.124999:
+be_cont.26306:
 	ld	[%o5 + 0], %o4
 	cmp	%o4, -1
-	bne	be_else.125032
+	bne	be_else.26325
 	nop
 	retl
 	nop
-be_else.125032:
+be_else.26325:
 	set	min_caml_and_net, %o4
 	ld	[%i0 + 60], %o3
 	sll	%o3, 2, %o2
@@ -2641,7 +2641,7 @@ be_else.125032:
 	ld	[%i0 + 92], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.125038
+	bne	be_else.26328
 	nop
 	set	1, %i2
 	set	-1, %i3
@@ -2651,9 +2651,9 @@ be_else.125032:
 	sub	%i0, 96, %i0
 	ld	[%i0 + 92], %o7
 	mov	%i2, %o5
-	b	be_cont.125039
+	b	be_cont.26329
 	nop
-be_else.125038:
+be_else.26328:
 	st	%o5, [%i0 + 88]
 	st	%o7, [%i0 + 92]
 	call	min_caml_read_int
@@ -2662,7 +2662,7 @@ be_else.125038:
 	ld	[%i0 + 92], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.125044
+	bne	be_else.26332
 	nop
 	set	2, %i2
 	set	-1, %i3
@@ -2672,9 +2672,9 @@ be_else.125038:
 	sub	%i0, 96, %i0
 	ld	[%i0 + 92], %o7
 	mov	%i2, %o5
-	b	be_cont.125045
+	b	be_cont.26333
 	nop
-be_else.125044:
+be_else.26332:
 	st	%o5, [%i0 + 92]
 	st	%o7, [%i0 + 100]
 	call	min_caml_read_int
@@ -2683,7 +2683,7 @@ be_else.125044:
 	ld	[%i0 + 100], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.125050
+	bne	be_else.26336
 	nop
 	set	3, %i2
 	set	-1, %i3
@@ -2693,9 +2693,9 @@ be_else.125044:
 	sub	%i0, 104, %i0
 	ld	[%i0 + 100], %o7
 	mov	%i2, %o5
-	b	be_cont.125051
+	b	be_cont.26337
 	nop
-be_else.125050:
+be_else.26336:
 	st	%o5, [%i0 + 96]
 	st	%o7, [%i0 + 100]
 	call	min_caml_read_int
@@ -2704,7 +2704,7 @@ be_else.125050:
 	ld	[%i0 + 100], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.125056
+	bne	be_else.26340
 	nop
 	set	4, %i2
 	set	-1, %i3
@@ -2714,9 +2714,9 @@ be_else.125050:
 	sub	%i0, 104, %i0
 	ld	[%i0 + 100], %o7
 	mov	%i2, %o5
-	b	be_cont.125057
+	b	be_cont.26341
 	nop
-be_else.125056:
+be_else.26340:
 	st	%o5, [%i0 + 100]
 	set	4, %i2
 	st	%o7, [%i0 + 108]
@@ -2727,23 +2727,23 @@ be_else.125056:
 	mov	%i2, %o5
 	ld	[%i0 + 100], %o4
 	st	%o4, [%o5 + 12]
-be_cont.125057:
+be_cont.26341:
 	ld	[%i0 + 96], %o4
 	st	%o4, [%o5 + 8]
-be_cont.125051:
+be_cont.26337:
 	ld	[%i0 + 92], %o4
 	st	%o4, [%o5 + 4]
-be_cont.125045:
+be_cont.26333:
 	ld	[%i0 + 88], %o4
 	st	%o4, [%o5 + 0]
-be_cont.125039:
+be_cont.26329:
 	ld	[%o5 + 0], %o4
 	cmp	%o4, -1
-	bne	be_else.125065
+	bne	be_else.26344
 	nop
 	retl
 	nop
-be_else.125065:
+be_else.26344:
 	set	min_caml_and_net, %o4
 	ld	[%i0 + 84], %o3
 	sll	%o3, 2, %o2
@@ -2759,55 +2759,55 @@ solver_rect.2890:
 	ldd	[%i3 + 0], %f12
 	fcmpd	%f14, %f12
 	nop
-	fbne	fbe_else.125070
+	fbne	fbe_else.26346
 	nop
 	set	0, %o5
-	b	fbe_cont.125071
+	b	fbe_cont.26347
 	nop
-fbe_else.125070:
+fbe_else.26346:
 	ld	[%i2 + 24], %o5
 	set	l.10753, %o4
 	ldd	[%o4 + 0], %f14
 	ldd	[%i3 + 0], %f12
 	fcmpd	%f14, %f12
 	nop
-	fbg	fble_else.125074
+	fbg	fble_else.26348
 	nop
 	set	0, %o4
-	b	fble_cont.125075
+	b	fble_cont.26349
 	nop
-fble_else.125074:
+fble_else.26348:
 	set	1, %o4
-fble_cont.125075:
+fble_cont.26349:
 	cmp	%o5, 0
-	bne	be_else.125076
+	bne	be_else.26350
 	nop
 	mov	%o4, %o5
-	b	be_cont.125077
+	b	be_cont.26351
 	nop
-be_else.125076:
+be_else.26350:
 	cmp	%o4, 0
-	bne	be_else.125078
+	bne	be_else.26352
 	nop
 	set	1, %o5
-	b	be_cont.125079
+	b	be_cont.26353
 	nop
-be_else.125078:
+be_else.26352:
 	set	0, %o5
-be_cont.125079:
-be_cont.125077:
+be_cont.26353:
+be_cont.26351:
 	cmp	%o5, 0
-	bne	be_else.125080
+	bne	be_else.26354
 	nop
 	ld	[%i2 + 16], %o5
 	ldd	[%o5 + 0], %f14
 	fnegs	%f14, %f14
-	b	be_cont.125081
+	b	be_cont.26355
 	nop
-be_else.125080:
+be_else.26354:
 	ld	[%i2 + 16], %o5
 	ldd	[%o5 + 0], %f14
-be_cont.125081:
+be_cont.26355:
 	set	min_caml_solver_w_vec, %o5
 	ldd	[%o5 + 0], %f12
 	fsubd	%f14, %f12, %f14
@@ -2832,12 +2832,12 @@ be_cont.125081:
 	ldd	[%i0 + 16], %f12
 	fcmpd	%f12, %f14
 	nop
-	fbg	fble_else.125085
+	fbg	fble_else.26357
 	nop
 	set	0, %o5
-	b	fble_cont.125086
+	b	fble_cont.26358
 	nop
-fble_else.125085:
+fble_else.26357:
 	ld	[%i0 + 0], %o5
 	ld	[%o5 + 16], %o5
 	ldd	[%o5 + 16], %f14
@@ -2859,21 +2859,21 @@ fble_else.125085:
 	ldd	[%i0 + 24], %f12
 	fcmpd	%f12, %f14
 	nop
-	fbg	fble_else.125090
+	fbg	fble_else.26360
 	nop
 	set	0, %o5
-	b	fble_cont.125091
+	b	fble_cont.26361
 	nop
-fble_else.125090:
+fble_else.26360:
 	set	min_caml_solver_dist, %o5
 	ldd	[%i0 + 8], %f14
 	std	%f14, [%o5 + 0]
 	set	1, %o5
-fble_cont.125091:
-fble_cont.125086:
-fbe_cont.125071:
+fble_cont.26361:
+fble_cont.26358:
+fbe_cont.26347:
 	cmp	%o5, 0
-	bne	be_else.125093
+	bne	be_else.26362
 	nop
 	set	l.10753, %o5
 	ldd	[%o5 + 0], %f14
@@ -2881,12 +2881,12 @@ fbe_cont.125071:
 	ldd	[%o5 + 8], %f12
 	fcmpd	%f14, %f12
 	nop
-	fbne	fbe_else.125096
+	fbne	fbe_else.26363
 	nop
 	set	0, %o5
-	b	fbe_cont.125097
+	b	fbe_cont.26364
 	nop
-fbe_else.125096:
+fbe_else.26363:
 	ld	[%i0 + 0], %o4
 	ld	[%o4 + 24], %o3
 	set	l.10753, %o2
@@ -2894,43 +2894,43 @@ fbe_else.125096:
 	ldd	[%o5 + 8], %f12
 	fcmpd	%f14, %f12
 	nop
-	fbg	fble_else.125100
+	fbg	fble_else.26365
 	nop
 	set	0, %o2
-	b	fble_cont.125101
+	b	fble_cont.26366
 	nop
-fble_else.125100:
+fble_else.26365:
 	set	1, %o2
-fble_cont.125101:
+fble_cont.26366:
 	cmp	%o3, 0
-	bne	be_else.125102
+	bne	be_else.26367
 	nop
 	mov	%o2, %o3
-	b	be_cont.125103
+	b	be_cont.26368
 	nop
-be_else.125102:
+be_else.26367:
 	cmp	%o2, 0
-	bne	be_else.125104
+	bne	be_else.26369
 	nop
 	set	1, %o3
-	b	be_cont.125105
+	b	be_cont.26370
 	nop
-be_else.125104:
+be_else.26369:
 	set	0, %o3
-be_cont.125105:
-be_cont.125103:
+be_cont.26370:
+be_cont.26368:
 	cmp	%o3, 0
-	bne	be_else.125106
+	bne	be_else.26371
 	nop
 	ld	[%o4 + 16], %o3
 	ldd	[%o3 + 8], %f14
 	fnegs	%f14, %f14
-	b	be_cont.125107
+	b	be_cont.26372
 	nop
-be_else.125106:
+be_else.26371:
 	ld	[%o4 + 16], %o3
 	ldd	[%o3 + 8], %f14
-be_cont.125107:
+be_cont.26372:
 	set	min_caml_solver_w_vec, %o3
 	ldd	[%o3 + 8], %f12
 	fsubd	%f14, %f12, %f14
@@ -2955,12 +2955,12 @@ be_cont.125107:
 	ldd	[%i0 + 40], %f12
 	fcmpd	%f12, %f14
 	nop
-	fbg	fble_else.125111
+	fbg	fble_else.26374
 	nop
 	set	0, %o5
-	b	fble_cont.125112
+	b	fble_cont.26375
 	nop
-fble_else.125111:
+fble_else.26374:
 	ld	[%i0 + 0], %o5
 	ld	[%o5 + 16], %o5
 	ldd	[%o5 + 0], %f14
@@ -2982,21 +2982,21 @@ fble_else.125111:
 	ldd	[%i0 + 48], %f12
 	fcmpd	%f12, %f14
 	nop
-	fbg	fble_else.125116
+	fbg	fble_else.26377
 	nop
 	set	0, %o5
-	b	fble_cont.125117
+	b	fble_cont.26378
 	nop
-fble_else.125116:
+fble_else.26377:
 	set	min_caml_solver_dist, %o5
 	ldd	[%i0 + 32], %f14
 	std	%f14, [%o5 + 0]
 	set	1, %o5
-fble_cont.125117:
-fble_cont.125112:
-fbe_cont.125097:
+fble_cont.26378:
+fble_cont.26375:
+fbe_cont.26364:
 	cmp	%o5, 0
-	bne	be_else.125119
+	bne	be_else.26379
 	nop
 	set	l.10753, %o5
 	ldd	[%o5 + 0], %f14
@@ -3004,12 +3004,12 @@ fbe_cont.125097:
 	ldd	[%o5 + 16], %f12
 	fcmpd	%f14, %f12
 	nop
-	fbne	fbe_else.125120
+	fbne	fbe_else.26380
 	nop
 	set	0, %o5
-	b	fbe_cont.125121
+	b	fbe_cont.26381
 	nop
-fbe_else.125120:
+fbe_else.26380:
 	ld	[%i0 + 0], %o4
 	ld	[%o4 + 24], %o3
 	set	l.10753, %o2
@@ -3017,43 +3017,43 @@ fbe_else.125120:
 	ldd	[%o5 + 16], %f12
 	fcmpd	%f14, %f12
 	nop
-	fbg	fble_else.125124
+	fbg	fble_else.26382
 	nop
 	set	0, %o2
-	b	fble_cont.125125
+	b	fble_cont.26383
 	nop
-fble_else.125124:
+fble_else.26382:
 	set	1, %o2
-fble_cont.125125:
+fble_cont.26383:
 	cmp	%o3, 0
-	bne	be_else.125126
+	bne	be_else.26384
 	nop
 	mov	%o2, %o3
-	b	be_cont.125127
+	b	be_cont.26385
 	nop
-be_else.125126:
+be_else.26384:
 	cmp	%o2, 0
-	bne	be_else.125128
+	bne	be_else.26386
 	nop
 	set	1, %o3
-	b	be_cont.125129
+	b	be_cont.26387
 	nop
-be_else.125128:
+be_else.26386:
 	set	0, %o3
-be_cont.125129:
-be_cont.125127:
+be_cont.26387:
+be_cont.26385:
 	cmp	%o3, 0
-	bne	be_else.125130
+	bne	be_else.26388
 	nop
 	ld	[%o4 + 16], %o3
 	ldd	[%o3 + 16], %f14
 	fnegs	%f14, %f14
-	b	be_cont.125131
+	b	be_cont.26389
 	nop
-be_else.125130:
+be_else.26388:
 	ld	[%o4 + 16], %o3
 	ldd	[%o3 + 16], %f14
-be_cont.125131:
+be_cont.26389:
 	set	min_caml_solver_w_vec, %o3
 	ldd	[%o3 + 16], %f12
 	fsubd	%f14, %f12, %f14
@@ -3078,12 +3078,12 @@ be_cont.125131:
 	ldd	[%i0 + 64], %f12
 	fcmpd	%f12, %f14
 	nop
-	fbg	fble_else.125135
+	fbg	fble_else.26391
 	nop
 	set	0, %o5
-	b	fble_cont.125136
+	b	fble_cont.26392
 	nop
-fble_else.125135:
+fble_else.26391:
 	ld	[%i0 + 0], %o5
 	ld	[%o5 + 16], %o5
 	ldd	[%o5 + 8], %f14
@@ -3105,34 +3105,34 @@ fble_else.125135:
 	ldd	[%i0 + 72], %f12
 	fcmpd	%f12, %f14
 	nop
-	fbg	fble_else.125140
+	fbg	fble_else.26394
 	nop
 	set	0, %o5
-	b	fble_cont.125141
+	b	fble_cont.26395
 	nop
-fble_else.125140:
+fble_else.26394:
 	set	min_caml_solver_dist, %o5
 	ldd	[%i0 + 56], %f14
 	std	%f14, [%o5 + 0]
 	set	1, %o5
-fble_cont.125141:
-fble_cont.125136:
-fbe_cont.125121:
+fble_cont.26395:
+fble_cont.26392:
+fbe_cont.26381:
 	cmp	%o5, 0
-	bne	be_else.125143
+	bne	be_else.26396
 	nop
 	set	0, %i2
 	retl
 	nop
-be_else.125143:
+be_else.26396:
 	set	3, %i2
 	retl
 	nop
-be_else.125119:
+be_else.26379:
 	set	2, %i2
 	retl
 	nop
-be_else.125093:
+be_else.26362:
 	set	1, %i2
 	retl
 	nop
@@ -3197,11 +3197,11 @@ solver_second.3180:
 	faddd	%f14, %f12, %f14
 	ld	[%i2 + 12], %o5
 	cmp	%o5, 0
-	bne	be_else.125144
+	bne	be_else.26397
 	nop
-	b	be_cont.125145
+	b	be_cont.26398
 	nop
-be_else.125144:
+be_else.26397:
 	ldd	[%i3 + 8], %f12
 	ldd	[%i3 + 16], %f10
 	fmuld	%f12, %f10, %f12
@@ -3223,18 +3223,18 @@ be_else.125144:
 	fmuld	%f10, %f8, %f10
 	faddd	%f12, %f10, %f12
 	faddd	%f14, %f12, %f14
-be_cont.125145:
+be_cont.26398:
 	set	l.10753, %o5
 	ldd	[%o5 + 0], %f12
 	fcmpd	%f12, %f14
 	nop
-	fbne	fbe_else.125146
+	fbne	fbe_else.26399
 	nop
 	set	0, %i2
 	retl
 	nop
-fbe_else.125146:
-	set	l.10876, %o5
+fbe_else.26399:
+	set	l.10886, %o5
 	ldd	[%o5 + 0], %f12
 	set	min_caml_solver_w_vec, %o5
 	ldd	[%o5 + 0], %f10
@@ -3262,11 +3262,11 @@ fbe_else.125146:
 	fmuld	%f12, %f10, %f12
 	ld	[%i2 + 12], %o5
 	cmp	%o5, 0
-	bne	be_else.125147
+	bne	be_else.26400
 	nop
-	b	be_cont.125148
+	b	be_cont.26401
 	nop
-be_else.125147:
+be_else.26400:
 	set	min_caml_solver_w_vec, %o5
 	ldd	[%o5 + 16], %f10
 	ldd	[%i3 + 8], %f8
@@ -3306,7 +3306,7 @@ be_else.125147:
 	fmuld	%f8, %f6, %f8
 	faddd	%f10, %f8, %f10
 	faddd	%f12, %f10, %f12
-be_cont.125148:
+be_cont.26401:
 	set	min_caml_solver_w_vec, %o5
 	ldd	[%o5 + 0], %f10
 	fmuld	%f10, %f10, %f10
@@ -3327,11 +3327,11 @@ be_cont.125148:
 	faddd	%f10, %f8, %f10
 	ld	[%i2 + 12], %o5
 	cmp	%o5, 0
-	bne	be_else.125149
+	bne	be_else.26402
 	nop
-	b	be_cont.125150
+	b	be_cont.26403
 	nop
-be_else.125149:
+be_else.26402:
 	set	min_caml_solver_w_vec, %o5
 	ldd	[%o5 + 8], %f8
 	ldd	[%o5 + 16], %f6
@@ -3354,19 +3354,19 @@ be_else.125149:
 	fmuld	%f6, %f4, %f6
 	faddd	%f8, %f6, %f8
 	faddd	%f10, %f8, %f10
-be_cont.125150:
+be_cont.26403:
 	ld	[%i2 + 4], %o5
 	cmp	%o5, 3
-	bne	be_else.125151
+	bne	be_else.26404
 	nop
-	set	l.10791, %o5
+	set	l.10801, %o5
 	ldd	[%o5 + 0], %f8
 	fsubd	%f10, %f8, %f10
-	b	be_cont.125152
+	b	be_cont.26405
 	nop
-be_else.125151:
-be_cont.125152:
-	set	l.11086, %o5
+be_else.26404:
+be_cont.26405:
+	set	l.11096, %o5
 	ldd	[%o5 + 0], %f8
 	fmuld	%f8, %f14, %f8
 	fmuld	%f8, %f10, %f10
@@ -3376,12 +3376,12 @@ be_cont.125152:
 	ldd	[%o5 + 0], %f10
 	fcmpd	%f0, %f10
 	nop
-	fbg	fble_else.125153
+	fbg	fble_else.26406
 	nop
 	set	0, %i2
 	retl
 	nop
-fble_else.125153:
+fble_else.26406:
 	std	%f14, [%i0 + 0]
 	std	%f12, [%i0 + 8]
 	st	%i2, [%i0 + 16]
@@ -3395,17 +3395,17 @@ fble_else.125153:
 	ld	[%i0 + 16], %o5
 	ld	[%o5 + 24], %o5
 	cmp	%o5, 0
-	bne	be_else.125158
+	bne	be_else.26408
 	nop
 	fnegs	%f14, %f14
-	b	be_cont.125159
+	b	be_cont.26409
 	nop
-be_else.125158:
-be_cont.125159:
+be_else.26408:
+be_cont.26409:
 	set	min_caml_solver_dist, %o5
 	ldd	[%i0 + 8], %f12
 	fsubd	%f14, %f12, %f14
-	set	l.10876, %o4
+	set	l.10886, %o4
 	ldd	[%o4 + 0], %f12
 	fdivd	%f14, %f12, %f14
 	ldd	[%i0 + 0], %f12
@@ -3438,13 +3438,13 @@ solver.3224:
 	std	%f14, [%o5 + 16]
 	ld	[%i2 + 4], %o5
 	cmp	%o5, 1
-	bne	be_else.125164
+	bne	be_else.26410
 	nop
 	b	solver_rect.2890
 	nop
-be_else.125164:
+be_else.26410:
 	cmp	%o5, 2
-	bne	be_else.125165
+	bne	be_else.26411
 	nop
 	ldd	[%i3 + 0], %f14
 	ld	[%i2 + 16], %o5
@@ -3464,12 +3464,12 @@ be_else.125164:
 	ldd	[%o5 + 0], %f12
 	fcmpd	%f14, %f12
 	nop
-	fbg	fble_else.125166
+	fbg	fble_else.26412
 	nop
 	set	0, %i2
 	retl
 	nop
-fble_else.125166:
+fble_else.26412:
 	set	min_caml_solver_w_vec, %o5
 	ldd	[%o5 + 0], %f12
 	ld	[%i2 + 16], %o5
@@ -3494,7 +3494,7 @@ fble_else.125166:
 	set	1, %i2
 	retl
 	nop
-be_else.125165:
+be_else.26411:
 	ldd	[%i3 + 0], %f14
 	fmuld	%f14, %f14, %f14
 	ld	[%i2 + 16], %o5
@@ -3514,11 +3514,11 @@ be_else.125165:
 	faddd	%f14, %f12, %f14
 	ld	[%i2 + 12], %o5
 	cmp	%o5, 0
-	bne	be_else.125168
+	bne	be_else.26413
 	nop
-	b	be_cont.125169
+	b	be_cont.26414
 	nop
-be_else.125168:
+be_else.26413:
 	ldd	[%i3 + 8], %f12
 	ldd	[%i3 + 16], %f10
 	fmuld	%f12, %f10, %f12
@@ -3540,20 +3540,20 @@ be_else.125168:
 	fmuld	%f10, %f8, %f10
 	faddd	%f12, %f10, %f12
 	faddd	%f14, %f12, %f14
-be_cont.125169:
+be_cont.26414:
 	set	l.10753, %o5
 	ldd	[%o5 + 0], %f12
 	fcmpd	%f12, %f14
 	nop
-	fbne	fbe_else.125170
+	fbne	fbe_else.26415
 	nop
 	set	0, %i2
 	retl
 	nop
-fbe_else.125170:
+fbe_else.26415:
 	std	%f14, [%i0 + 0]
 	st	%i2, [%i0 + 8]
-	set	l.10876, %o5
+	set	l.10886, %o5
 	ldd	[%o5 + 0], %f14
 	set	min_caml_solver_w_vec, %o5
 	ldd	[%o5 + 0], %f12
@@ -3581,11 +3581,11 @@ fbe_else.125170:
 	fmuld	%f14, %f12, %f14
 	ld	[%i2 + 12], %o5
 	cmp	%o5, 0
-	bne	be_else.125173
+	bne	be_else.26416
 	nop
-	b	be_cont.125174
+	b	be_cont.26417
 	nop
-be_else.125173:
+be_else.26416:
 	std	%f14, [%i0 + 16]
 	st	%o7, [%i0 + 28]
 	call	solver2nd_rot_b.3131
@@ -3596,7 +3596,7 @@ be_else.125173:
 	fmovs	%f1, %f15
 	ldd	[%i0 + 16], %f12
 	faddd	%f12, %f14, %f14
-be_cont.125174:
+be_cont.26417:
 	set	min_caml_solver_w_vec, %o5
 	ldd	[%o5 + 0], %f12
 	fmuld	%f12, %f12, %f12
@@ -3618,11 +3618,11 @@ be_cont.125174:
 	faddd	%f12, %f10, %f12
 	ld	[%o4 + 12], %o5
 	cmp	%o5, 0
-	bne	be_else.125178
+	bne	be_else.26420
 	nop
-	b	be_cont.125179
+	b	be_cont.26421
 	nop
-be_else.125178:
+be_else.26420:
 	set	min_caml_solver_w_vec, %o5
 	ldd	[%o5 + 8], %f10
 	ldd	[%o5 + 16], %f8
@@ -3645,19 +3645,19 @@ be_else.125178:
 	fmuld	%f8, %f6, %f8
 	faddd	%f10, %f8, %f10
 	faddd	%f12, %f10, %f12
-be_cont.125179:
+be_cont.26421:
 	ld	[%o4 + 4], %o5
 	cmp	%o5, 3
-	bne	be_else.125180
+	bne	be_else.26422
 	nop
-	set	l.10791, %o5
+	set	l.10801, %o5
 	ldd	[%o5 + 0], %f10
 	fsubd	%f12, %f10, %f12
-	b	be_cont.125181
+	b	be_cont.26423
 	nop
-be_else.125180:
-be_cont.125181:
-	set	l.11086, %o5
+be_else.26422:
+be_cont.26423:
+	set	l.11096, %o5
 	ldd	[%o5 + 0], %f10
 	ldd	[%i0 + 0], %f8
 	fmuld	%f10, %f8, %f10
@@ -3668,12 +3668,12 @@ be_cont.125181:
 	ldd	[%o5 + 0], %f12
 	fcmpd	%f0, %f12
 	nop
-	fbg	fble_else.125182
+	fbg	fble_else.26424
 	nop
 	set	0, %i2
 	retl
 	nop
-fble_else.125182:
+fble_else.26424:
 	std	%f14, [%i0 + 24]
 	st	%o7, [%i0 + 36]
 	call	min_caml_sqrt
@@ -3685,17 +3685,17 @@ fble_else.125182:
 	ld	[%i0 + 8], %o5
 	ld	[%o5 + 24], %o5
 	cmp	%o5, 0
-	bne	be_else.125187
+	bne	be_else.26426
 	nop
 	fnegs	%f14, %f14
-	b	be_cont.125188
+	b	be_cont.26427
 	nop
-be_else.125187:
-be_cont.125188:
+be_else.26426:
+be_cont.26427:
 	set	min_caml_solver_dist, %o5
 	ldd	[%i0 + 24], %f12
 	fsubd	%f14, %f12, %f14
-	set	l.10876, %o4
+	set	l.10886, %o4
 	ldd	[%o4 + 0], %f12
 	fdivd	%f14, %f12, %f14
 	ldd	[%i0 + 0], %f12
@@ -3725,22 +3725,22 @@ is_second_outside.3299:
 	faddd	%f14, %f12, %f14
 	ld	[%i2 + 4], %o5
 	cmp	%o5, 3
-	bne	be_else.125190
+	bne	be_else.26428
 	nop
-	set	l.10791, %o5
+	set	l.10801, %o5
 	ldd	[%o5 + 0], %f12
 	fsubd	%f14, %f12, %f14
-	b	be_cont.125191
+	b	be_cont.26429
 	nop
-be_else.125190:
-be_cont.125191:
+be_else.26428:
+be_cont.26429:
 	ld	[%i2 + 12], %o5
 	cmp	%o5, 0
-	bne	be_else.125192
+	bne	be_else.26430
 	nop
-	b	be_cont.125193
+	b	be_cont.26431
 	nop
-be_else.125192:
+be_else.26430:
 	set	min_caml_isoutside_q, %o5
 	ldd	[%o5 + 8], %f12
 	ldd	[%o5 + 16], %f10
@@ -3763,43 +3763,43 @@ be_else.125192:
 	fmuld	%f10, %f8, %f10
 	faddd	%f12, %f10, %f12
 	faddd	%f14, %f12, %f14
-be_cont.125193:
+be_cont.26431:
 	set	l.10753, %o5
 	ldd	[%o5 + 0], %f12
 	fcmpd	%f12, %f14
 	nop
-	fbg	fble_else.125194
+	fbg	fble_else.26432
 	nop
 	set	0, %o5
-	b	fble_cont.125195
+	b	fble_cont.26433
 	nop
-fble_else.125194:
+fble_else.26432:
 	set	1, %o5
-fble_cont.125195:
+fble_cont.26433:
 	ld	[%i2 + 24], %o4
 	cmp	%o4, 0
-	bne	be_else.125196
+	bne	be_else.26434
 	nop
-	b	be_cont.125197
+	b	be_cont.26435
 	nop
-be_else.125196:
+be_else.26434:
 	cmp	%o5, 0
-	bne	be_else.125198
+	bne	be_else.26436
 	nop
 	set	1, %o5
-	b	be_cont.125199
+	b	be_cont.26437
 	nop
-be_else.125198:
+be_else.26436:
 	set	0, %o5
-be_cont.125199:
-be_cont.125197:
+be_cont.26437:
+be_cont.26435:
 	cmp	%o5, 0
-	bne	be_else.125200
+	bne	be_else.26438
 	nop
 	set	1, %i2
 	retl
 	nop
-be_else.125200:
+be_else.26438:
 	set	0, %i2
 	retl
 	nop
@@ -3827,7 +3827,7 @@ is_outside.3317:
 	std	%f14, [%o5 + 16]
 	ld	[%i2 + 4], %o5
 	cmp	%o5, 1
-	bne	be_else.125204
+	bne	be_else.26439
 	nop
 	st	%i2, [%i0 + 0]
 	ld	[%i2 + 16], %o5
@@ -3845,12 +3845,12 @@ is_outside.3317:
 	ldd	[%i0 + 8], %f12
 	fcmpd	%f12, %f14
 	nop
-	fbg	fble_else.125209
+	fbg	fble_else.26442
 	nop
 	set	0, %o5
-	b	fble_cont.125210
+	b	fble_cont.26443
 	nop
-fble_else.125209:
+fble_else.26442:
 	ld	[%i0 + 0], %o5
 	ld	[%o5 + 16], %o5
 	ldd	[%o5 + 8], %f14
@@ -3867,12 +3867,12 @@ fble_else.125209:
 	ldd	[%i0 + 16], %f12
 	fcmpd	%f12, %f14
 	nop
-	fbg	fble_else.125214
+	fbg	fble_else.26445
 	nop
 	set	0, %o5
-	b	fble_cont.125215
+	b	fble_cont.26446
 	nop
-fble_else.125214:
+fble_else.26445:
 	ld	[%i0 + 0], %o5
 	ld	[%o5 + 16], %o5
 	ldd	[%o5 + 16], %f14
@@ -3889,39 +3889,39 @@ fble_else.125214:
 	ldd	[%i0 + 24], %f12
 	fcmpd	%f12, %f14
 	nop
-	fbg	fble_else.125218
+	fbg	fble_else.26448
 	nop
 	set	0, %o5
-	b	fble_cont.125219
+	b	fble_cont.26449
 	nop
-fble_else.125218:
+fble_else.26448:
 	set	1, %o5
-fble_cont.125219:
-fble_cont.125215:
-fble_cont.125210:
+fble_cont.26449:
+fble_cont.26446:
+fble_cont.26443:
 	cmp	%o5, 0
-	bne	be_else.125220
+	bne	be_else.26450
 	nop
 	ld	[%i0 + 0], %o5
 	ld	[%o5 + 24], %o5
 	cmp	%o5, 0
-	bne	be_else.125221
+	bne	be_else.26451
 	nop
 	set	1, %i2
 	retl
 	nop
-be_else.125221:
+be_else.26451:
 	set	0, %i2
 	retl
 	nop
-be_else.125220:
+be_else.26450:
 	ld	[%i0 + 0], %o5
 	ld	[%o5 + 24], %i2
 	retl
 	nop
-be_else.125204:
+be_else.26439:
 	cmp	%o5, 2
-	bne	be_else.125222
+	bne	be_else.26452
 	nop
 	ld	[%i2 + 16], %o5
 	ldd	[%o5 + 0], %f14
@@ -3944,42 +3944,42 @@ be_else.125204:
 	ldd	[%o5 + 0], %f12
 	fcmpd	%f12, %f14
 	nop
-	fbg	fble_else.125223
+	fbg	fble_else.26453
 	nop
 	set	0, %o5
-	b	fble_cont.125224
+	b	fble_cont.26454
 	nop
-fble_else.125223:
+fble_else.26453:
 	set	1, %o5
-fble_cont.125224:
+fble_cont.26454:
 	ld	[%i2 + 24], %o4
 	cmp	%o4, 0
-	bne	be_else.125225
+	bne	be_else.26455
 	nop
-	b	be_cont.125226
+	b	be_cont.26456
 	nop
-be_else.125225:
+be_else.26455:
 	cmp	%o5, 0
-	bne	be_else.125227
+	bne	be_else.26457
 	nop
 	set	1, %o5
-	b	be_cont.125228
+	b	be_cont.26458
 	nop
-be_else.125227:
+be_else.26457:
 	set	0, %o5
-be_cont.125228:
-be_cont.125226:
+be_cont.26458:
+be_cont.26456:
 	cmp	%o5, 0
-	bne	be_else.125229
+	bne	be_else.26459
 	nop
 	set	1, %i2
 	retl
 	nop
-be_else.125229:
+be_else.26459:
 	set	0, %i2
 	retl
 	nop
-be_else.125222:
+be_else.26452:
 	set	min_caml_isoutside_q, %o5
 	ldd	[%o5 + 0], %f14
 	fmuld	%f14, %f14, %f14
@@ -4000,22 +4000,22 @@ be_else.125222:
 	faddd	%f14, %f12, %f14
 	ld	[%i2 + 4], %o5
 	cmp	%o5, 3
-	bne	be_else.125230
+	bne	be_else.26460
 	nop
-	set	l.10791, %o5
+	set	l.10801, %o5
 	ldd	[%o5 + 0], %f12
 	fsubd	%f14, %f12, %f14
-	b	be_cont.125231
+	b	be_cont.26461
 	nop
-be_else.125230:
-be_cont.125231:
+be_else.26460:
+be_cont.26461:
 	ld	[%i2 + 12], %o5
 	cmp	%o5, 0
-	bne	be_else.125232
+	bne	be_else.26462
 	nop
-	b	be_cont.125233
+	b	be_cont.26463
 	nop
-be_else.125232:
+be_else.26462:
 	set	min_caml_isoutside_q, %o5
 	ldd	[%o5 + 8], %f12
 	ldd	[%o5 + 16], %f10
@@ -4038,43 +4038,43 @@ be_else.125232:
 	fmuld	%f10, %f8, %f10
 	faddd	%f12, %f10, %f12
 	faddd	%f14, %f12, %f14
-be_cont.125233:
+be_cont.26463:
 	set	l.10753, %o5
 	ldd	[%o5 + 0], %f12
 	fcmpd	%f12, %f14
 	nop
-	fbg	fble_else.125234
+	fbg	fble_else.26464
 	nop
 	set	0, %o5
-	b	fble_cont.125235
+	b	fble_cont.26465
 	nop
-fble_else.125234:
+fble_else.26464:
 	set	1, %o5
-fble_cont.125235:
+fble_cont.26465:
 	ld	[%i2 + 24], %o4
 	cmp	%o4, 0
-	bne	be_else.125236
+	bne	be_else.26466
 	nop
-	b	be_cont.125237
+	b	be_cont.26467
 	nop
-be_else.125236:
+be_else.26466:
 	cmp	%o5, 0
-	bne	be_else.125238
+	bne	be_else.26468
 	nop
 	set	1, %o5
-	b	be_cont.125239
+	b	be_cont.26469
 	nop
-be_else.125238:
+be_else.26468:
 	set	0, %o5
-be_cont.125239:
-be_cont.125237:
+be_cont.26469:
+be_cont.26467:
 	cmp	%o5, 0
-	bne	be_else.125240
+	bne	be_else.26470
 	nop
 	set	1, %i2
 	retl
 	nop
-be_else.125240:
+be_else.26470:
 	set	0, %i2
 	retl
 	nop
@@ -4082,12 +4082,12 @@ check_all_inside.3346:
 	sll	%i2, 2, %o5
 	ld	[%i3 + %o5], %o5
 	cmp	%o5, -1
-	bne	be_else.125241
+	bne	be_else.26471
 	nop
 	set	1, %i2
 	retl
 	nop
-be_else.125241:
+be_else.26471:
 	st	%i3, [%i0 + 0]
 	st	%i2, [%i0 + 4]
 	set	min_caml_objects, %o4
@@ -4116,7 +4116,7 @@ be_else.125241:
 	std	%f14, [%o5 + 16]
 	ld	[%i2 + 4], %o5
 	cmp	%o5, 1
-	bne	be_else.125247
+	bne	be_else.26472
 	nop
 	st	%i2, [%i0 + 8]
 	ld	[%i2 + 16], %o5
@@ -4134,12 +4134,12 @@ be_else.125241:
 	ldd	[%i0 + 16], %f12
 	fcmpd	%f12, %f14
 	nop
-	fbg	fble_else.125253
+	fbg	fble_else.26476
 	nop
 	set	0, %o5
-	b	fble_cont.125254
+	b	fble_cont.26477
 	nop
-fble_else.125253:
+fble_else.26476:
 	ld	[%i0 + 8], %o5
 	ld	[%o5 + 16], %o5
 	ldd	[%o5 + 8], %f14
@@ -4156,12 +4156,12 @@ fble_else.125253:
 	ldd	[%i0 + 24], %f12
 	fcmpd	%f12, %f14
 	nop
-	fbg	fble_else.125258
+	fbg	fble_else.26479
 	nop
 	set	0, %o5
-	b	fble_cont.125259
+	b	fble_cont.26480
 	nop
-fble_else.125258:
+fble_else.26479:
 	ld	[%i0 + 8], %o5
 	ld	[%o5 + 16], %o5
 	ldd	[%o5 + 16], %f14
@@ -4178,41 +4178,41 @@ fble_else.125258:
 	ldd	[%i0 + 32], %f12
 	fcmpd	%f12, %f14
 	nop
-	fbg	fble_else.125262
+	fbg	fble_else.26482
 	nop
 	set	0, %o5
-	b	fble_cont.125263
+	b	fble_cont.26483
 	nop
-fble_else.125262:
+fble_else.26482:
 	set	1, %o5
-fble_cont.125263:
-fble_cont.125259:
-fble_cont.125254:
+fble_cont.26483:
+fble_cont.26480:
+fble_cont.26477:
 	cmp	%o5, 0
-	bne	be_else.125264
+	bne	be_else.26484
 	nop
 	ld	[%i0 + 8], %o5
 	ld	[%o5 + 24], %o5
 	cmp	%o5, 0
-	bne	be_else.125266
+	bne	be_else.26486
 	nop
 	set	1, %o5
-	b	be_cont.125267
+	b	be_cont.26487
 	nop
-be_else.125266:
+be_else.26486:
 	set	0, %o5
-be_cont.125267:
-	b	be_cont.125265
+be_cont.26487:
+	b	be_cont.26485
 	nop
-be_else.125264:
+be_else.26484:
 	ld	[%i0 + 8], %o5
 	ld	[%o5 + 24], %o5
-be_cont.125265:
-	b	be_cont.125248
+be_cont.26485:
+	b	be_cont.26473
 	nop
-be_else.125247:
+be_else.26472:
 	cmp	%o5, 2
-	bne	be_else.125268
+	bne	be_else.26488
 	nop
 	ld	[%i2 + 16], %o5
 	ldd	[%o5 + 0], %f14
@@ -4235,53 +4235,53 @@ be_else.125247:
 	ldd	[%o5 + 0], %f12
 	fcmpd	%f12, %f14
 	nop
-	fbg	fble_else.125270
+	fbg	fble_else.26490
 	nop
 	set	0, %o5
-	b	fble_cont.125271
+	b	fble_cont.26491
 	nop
-fble_else.125270:
+fble_else.26490:
 	set	1, %o5
-fble_cont.125271:
+fble_cont.26491:
 	ld	[%i2 + 24], %o4
 	cmp	%o4, 0
-	bne	be_else.125272
+	bne	be_else.26492
 	nop
-	b	be_cont.125273
+	b	be_cont.26493
 	nop
-be_else.125272:
+be_else.26492:
 	cmp	%o5, 0
-	bne	be_else.125274
+	bne	be_else.26494
 	nop
 	set	1, %o5
-	b	be_cont.125275
+	b	be_cont.26495
 	nop
-be_else.125274:
+be_else.26494:
 	set	0, %o5
-be_cont.125275:
-be_cont.125273:
+be_cont.26495:
+be_cont.26493:
 	cmp	%o5, 0
-	bne	be_else.125276
+	bne	be_else.26496
 	nop
 	set	1, %o5
-	b	be_cont.125277
+	b	be_cont.26497
 	nop
-be_else.125276:
+be_else.26496:
 	set	0, %o5
-be_cont.125277:
-	b	be_cont.125269
+be_cont.26497:
+	b	be_cont.26489
 	nop
-be_else.125268:
+be_else.26488:
 	st	%o7, [%i0 + 44]
 	call	is_second_outside.3299
 	add	%i0, 48, %i0	! delay slot
 	sub	%i0, 48, %i0
 	ld	[%i0 + 44], %o7
 	mov	%i2, %o5
-be_cont.125269:
-be_cont.125248:
+be_cont.26489:
+be_cont.26473:
 	cmp	%o5, 0
-	bne	be_else.125279
+	bne	be_else.26499
 	nop
 	ld	[%i0 + 4], %o5
 	add	%o5, 1, %o5
@@ -4289,12 +4289,12 @@ be_cont.125248:
 	ld	[%i0 + 0], %o3
 	ld	[%o3 + %o4], %o4
 	cmp	%o4, -1
-	bne	be_else.125280
+	bne	be_else.26500
 	nop
 	set	1, %i2
 	retl
 	nop
-be_else.125280:
+be_else.26500:
 	st	%o5, [%i0 + 40]
 	set	min_caml_objects, %o5
 	sll	%o4, 2, %o4
@@ -4306,7 +4306,7 @@ be_else.125280:
 	ld	[%i0 + 44], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125284
+	bne	be_else.26502
 	nop
 	ld	[%i0 + 40], %o5
 	add	%o5, 1, %o5
@@ -4314,12 +4314,12 @@ be_else.125280:
 	ld	[%i0 + 0], %o3
 	ld	[%o3 + %o4], %o4
 	cmp	%o4, -1
-	bne	be_else.125285
+	bne	be_else.26503
 	nop
 	set	1, %i2
 	retl
 	nop
-be_else.125285:
+be_else.26503:
 	st	%o5, [%i0 + 44]
 	set	min_caml_objects, %o5
 	sll	%o4, 2, %o4
@@ -4347,7 +4347,7 @@ be_else.125285:
 	std	%f14, [%o5 + 16]
 	ld	[%i2 + 4], %o5
 	cmp	%o5, 1
-	bne	be_else.125291
+	bne	be_else.26504
 	nop
 	st	%i2, [%i0 + 48]
 	ld	[%i2 + 16], %o5
@@ -4365,12 +4365,12 @@ be_else.125285:
 	ldd	[%i0 + 56], %f12
 	fcmpd	%f12, %f14
 	nop
-	fbg	fble_else.125297
+	fbg	fble_else.26508
 	nop
 	set	0, %o5
-	b	fble_cont.125298
+	b	fble_cont.26509
 	nop
-fble_else.125297:
+fble_else.26508:
 	ld	[%i0 + 48], %o5
 	ld	[%o5 + 16], %o5
 	ldd	[%o5 + 8], %f14
@@ -4387,12 +4387,12 @@ fble_else.125297:
 	ldd	[%i0 + 64], %f12
 	fcmpd	%f12, %f14
 	nop
-	fbg	fble_else.125302
+	fbg	fble_else.26511
 	nop
 	set	0, %o5
-	b	fble_cont.125303
+	b	fble_cont.26512
 	nop
-fble_else.125302:
+fble_else.26511:
 	ld	[%i0 + 48], %o5
 	ld	[%o5 + 16], %o5
 	ldd	[%o5 + 16], %f14
@@ -4409,41 +4409,41 @@ fble_else.125302:
 	ldd	[%i0 + 72], %f12
 	fcmpd	%f12, %f14
 	nop
-	fbg	fble_else.125306
+	fbg	fble_else.26514
 	nop
 	set	0, %o5
-	b	fble_cont.125307
+	b	fble_cont.26515
 	nop
-fble_else.125306:
+fble_else.26514:
 	set	1, %o5
-fble_cont.125307:
-fble_cont.125303:
-fble_cont.125298:
+fble_cont.26515:
+fble_cont.26512:
+fble_cont.26509:
 	cmp	%o5, 0
-	bne	be_else.125308
+	bne	be_else.26516
 	nop
 	ld	[%i0 + 48], %o5
 	ld	[%o5 + 24], %o5
 	cmp	%o5, 0
-	bne	be_else.125310
+	bne	be_else.26518
 	nop
 	set	1, %o5
-	b	be_cont.125311
+	b	be_cont.26519
 	nop
-be_else.125310:
+be_else.26518:
 	set	0, %o5
-be_cont.125311:
-	b	be_cont.125309
+be_cont.26519:
+	b	be_cont.26517
 	nop
-be_else.125308:
+be_else.26516:
 	ld	[%i0 + 48], %o5
 	ld	[%o5 + 24], %o5
-be_cont.125309:
-	b	be_cont.125292
+be_cont.26517:
+	b	be_cont.26505
 	nop
-be_else.125291:
+be_else.26504:
 	cmp	%o5, 2
-	bne	be_else.125312
+	bne	be_else.26520
 	nop
 	ld	[%i2 + 16], %o5
 	ldd	[%o5 + 0], %f14
@@ -4466,53 +4466,53 @@ be_else.125291:
 	ldd	[%o5 + 0], %f12
 	fcmpd	%f12, %f14
 	nop
-	fbg	fble_else.125314
+	fbg	fble_else.26522
 	nop
 	set	0, %o5
-	b	fble_cont.125315
+	b	fble_cont.26523
 	nop
-fble_else.125314:
+fble_else.26522:
 	set	1, %o5
-fble_cont.125315:
+fble_cont.26523:
 	ld	[%i2 + 24], %o4
 	cmp	%o4, 0
-	bne	be_else.125316
+	bne	be_else.26524
 	nop
-	b	be_cont.125317
+	b	be_cont.26525
 	nop
-be_else.125316:
+be_else.26524:
 	cmp	%o5, 0
-	bne	be_else.125318
+	bne	be_else.26526
 	nop
 	set	1, %o5
-	b	be_cont.125319
+	b	be_cont.26527
 	nop
-be_else.125318:
+be_else.26526:
 	set	0, %o5
-be_cont.125319:
-be_cont.125317:
+be_cont.26527:
+be_cont.26525:
 	cmp	%o5, 0
-	bne	be_else.125320
+	bne	be_else.26528
 	nop
 	set	1, %o5
-	b	be_cont.125321
+	b	be_cont.26529
 	nop
-be_else.125320:
+be_else.26528:
 	set	0, %o5
-be_cont.125321:
-	b	be_cont.125313
+be_cont.26529:
+	b	be_cont.26521
 	nop
-be_else.125312:
+be_else.26520:
 	st	%o7, [%i0 + 84]
 	call	is_second_outside.3299
 	add	%i0, 88, %i0	! delay slot
 	sub	%i0, 88, %i0
 	ld	[%i0 + 84], %o7
 	mov	%i2, %o5
-be_cont.125313:
-be_cont.125292:
+be_cont.26521:
+be_cont.26505:
 	cmp	%o5, 0
-	bne	be_else.125323
+	bne	be_else.26531
 	nop
 	ld	[%i0 + 44], %o5
 	add	%o5, 1, %o5
@@ -4520,12 +4520,12 @@ be_cont.125292:
 	ld	[%i0 + 0], %o3
 	ld	[%o3 + %o4], %o4
 	cmp	%o4, -1
-	bne	be_else.125324
+	bne	be_else.26532
 	nop
 	set	1, %i2
 	retl
 	nop
-be_else.125324:
+be_else.26532:
 	st	%o5, [%i0 + 80]
 	set	min_caml_objects, %o5
 	sll	%o4, 2, %o4
@@ -4537,26 +4537,26 @@ be_else.125324:
 	ld	[%i0 + 84], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125328
+	bne	be_else.26534
 	nop
 	ld	[%i0 + 80], %o5
 	add	%o5, 1, %i2
 	ld	[%i0 + 0], %i3
 	b	check_all_inside.3346
 	nop
-be_else.125328:
+be_else.26534:
 	set	0, %i2
 	retl
 	nop
-be_else.125323:
+be_else.26531:
 	set	0, %i2
 	retl
 	nop
-be_else.125284:
+be_else.26502:
 	set	0, %i2
 	retl
 	nop
-be_else.125279:
+be_else.26499:
 	set	0, %i2
 	retl
 	nop
@@ -4564,12 +4564,12 @@ shadow_check_and_group.3357:
 	sll	%i2, 2, %o5
 	ld	[%i3 + %o5], %o5
 	cmp	%o5, -1
-	bne	be_else.125329
+	bne	be_else.26535
 	nop
 	set	0, %i2
 	retl
 	nop
-be_else.125329:
+be_else.26535:
 	st	%i4, [%i0 + 0]
 	st	%i3, [%i0 + 4]
 	st	%i2, [%i0 + 8]
@@ -4600,7 +4600,7 @@ be_else.125329:
 	std	%f14, [%o5 + 16]
 	ld	[%i2 + 4], %o5
 	cmp	%o5, 1
-	bne	be_else.125337
+	bne	be_else.26536
 	nop
 	st	%o7, [%i0 + 20]
 	call	solver_rect.2890
@@ -4608,11 +4608,11 @@ be_else.125329:
 	sub	%i0, 24, %i0
 	ld	[%i0 + 20], %o7
 	mov	%i2, %o5
-	b	be_cont.125338
+	b	be_cont.26537
 	nop
-be_else.125337:
+be_else.26536:
 	cmp	%o5, 2
-	bne	be_else.125340
+	bne	be_else.26539
 	nop
 	ldd	[%i3 + 0], %f14
 	ld	[%i2 + 16], %o5
@@ -4632,12 +4632,12 @@ be_else.125337:
 	ldd	[%o5 + 0], %f12
 	fcmpd	%f14, %f12
 	nop
-	fbg	fble_else.125342
+	fbg	fble_else.26541
 	nop
 	set	0, %o5
-	b	fble_cont.125343
+	b	fble_cont.26542
 	nop
-fble_else.125342:
+fble_else.26541:
 	set	min_caml_solver_w_vec, %o5
 	ldd	[%o5 + 0], %f12
 	ld	[%i2 + 16], %o5
@@ -4660,42 +4660,42 @@ fble_else.125342:
 	fnegs	%f14, %f14
 	std	%f14, [%o5 + 0]
 	set	1, %o5
-fble_cont.125343:
-	b	be_cont.125341
+fble_cont.26542:
+	b	be_cont.26540
 	nop
-be_else.125340:
+be_else.26539:
 	st	%o7, [%i0 + 20]
 	call	solver_second.3180
 	add	%i0, 24, %i0	! delay slot
 	sub	%i0, 24, %i0
 	ld	[%i0 + 20], %o7
 	mov	%i2, %o5
-be_cont.125341:
-be_cont.125338:
+be_cont.26540:
+be_cont.26537:
 	set	min_caml_solver_dist, %o4
 	ldd	[%o4 + 0], %f14
 	cmp	%o5, 0
-	bne	be_else.125346
+	bne	be_else.26544
 	nop
 	set	0, %o5
-	b	be_cont.125347
+	b	be_cont.26545
 	nop
-be_else.125346:
-	set	l.11296, %o5
+be_else.26544:
+	set	l.11306, %o5
 	ldd	[%o5 + 0], %f12
 	fcmpd	%f12, %f14
 	nop
-	fbg	fble_else.125348
+	fbg	fble_else.26546
 	nop
 	set	0, %o5
-	b	fble_cont.125349
+	b	fble_cont.26547
 	nop
-fble_else.125348:
+fble_else.26546:
 	set	1, %o5
-fble_cont.125349:
-be_cont.125347:
+fble_cont.26547:
+be_cont.26545:
 	cmp	%o5, 0
-	bne	be_else.125350
+	bne	be_else.26548
 	nop
 	set	min_caml_objects, %o5
 	ld	[%i0 + 12], %o4
@@ -4703,20 +4703,20 @@ be_cont.125347:
 	ld	[%o5 + %o4], %o5
 	ld	[%o5 + 24], %o5
 	cmp	%o5, 0
-	bne	be_else.125351
+	bne	be_else.26549
 	nop
 	set	0, %i2
 	retl
 	nop
-be_else.125351:
+be_else.26549:
 	ld	[%i0 + 8], %o5
 	add	%o5, 1, %i2
 	ld	[%i0 + 4], %i3
 	ld	[%i0 + 0], %i4
 	b	shadow_check_and_group.3357
 	nop
-be_else.125350:
-	set	l.11298, %o5
+be_else.26548:
+	set	l.11308, %o5
 	ldd	[%o5 + 0], %f12
 	faddd	%f14, %f12, %f14
 	set	min_caml_chkinside_p, %o5
@@ -4744,12 +4744,12 @@ be_else.125350:
 	ld	[%i0 + 4], %i3
 	ld	[%i3 + 0], %o5
 	cmp	%o5, -1
-	bne	be_else.125358
+	bne	be_else.26550
 	nop
 	set	1, %o5
-	b	be_cont.125359
+	b	be_cont.26551
 	nop
-be_else.125358:
+be_else.26550:
 	set	min_caml_objects, %o4
 	sll	%o5, 2, %o5
 	ld	[%o4 + %o5], %i2
@@ -4760,17 +4760,17 @@ be_else.125358:
 	ld	[%i0 + 20], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125362
+	bne	be_else.26553
 	nop
 	ld	[%i0 + 4], %i3
 	ld	[%i3 + 4], %o5
 	cmp	%o5, -1
-	bne	be_else.125364
+	bne	be_else.26555
 	nop
 	set	1, %o5
-	b	be_cont.125365
+	b	be_cont.26556
 	nop
-be_else.125364:
+be_else.26555:
 	set	min_caml_objects, %o4
 	sll	%o5, 2, %o5
 	ld	[%o4 + %o5], %i2
@@ -4797,7 +4797,7 @@ be_else.125364:
 	std	%f14, [%o5 + 16]
 	ld	[%i2 + 4], %o5
 	cmp	%o5, 1
-	bne	be_else.125370
+	bne	be_else.26557
 	nop
 	st	%i2, [%i0 + 16]
 	ld	[%i2 + 16], %o5
@@ -4815,12 +4815,12 @@ be_else.125364:
 	ldd	[%i0 + 24], %f12
 	fcmpd	%f12, %f14
 	nop
-	fbg	fble_else.125376
+	fbg	fble_else.26561
 	nop
 	set	0, %o5
-	b	fble_cont.125377
+	b	fble_cont.26562
 	nop
-fble_else.125376:
+fble_else.26561:
 	ld	[%i0 + 16], %o5
 	ld	[%o5 + 16], %o5
 	ldd	[%o5 + 8], %f14
@@ -4837,12 +4837,12 @@ fble_else.125376:
 	ldd	[%i0 + 32], %f12
 	fcmpd	%f12, %f14
 	nop
-	fbg	fble_else.125381
+	fbg	fble_else.26564
 	nop
 	set	0, %o5
-	b	fble_cont.125382
+	b	fble_cont.26565
 	nop
-fble_else.125381:
+fble_else.26564:
 	ld	[%i0 + 16], %o5
 	ld	[%o5 + 16], %o5
 	ldd	[%o5 + 16], %f14
@@ -4859,41 +4859,41 @@ fble_else.125381:
 	ldd	[%i0 + 40], %f12
 	fcmpd	%f12, %f14
 	nop
-	fbg	fble_else.125385
+	fbg	fble_else.26567
 	nop
 	set	0, %o5
-	b	fble_cont.125386
+	b	fble_cont.26568
 	nop
-fble_else.125385:
+fble_else.26567:
 	set	1, %o5
-fble_cont.125386:
-fble_cont.125382:
-fble_cont.125377:
+fble_cont.26568:
+fble_cont.26565:
+fble_cont.26562:
 	cmp	%o5, 0
-	bne	be_else.125387
+	bne	be_else.26569
 	nop
 	ld	[%i0 + 16], %o5
 	ld	[%o5 + 24], %o5
 	cmp	%o5, 0
-	bne	be_else.125389
+	bne	be_else.26571
 	nop
 	set	1, %o5
-	b	be_cont.125390
+	b	be_cont.26572
 	nop
-be_else.125389:
+be_else.26571:
 	set	0, %o5
-be_cont.125390:
-	b	be_cont.125388
+be_cont.26572:
+	b	be_cont.26570
 	nop
-be_else.125387:
+be_else.26569:
 	ld	[%i0 + 16], %o5
 	ld	[%o5 + 24], %o5
-be_cont.125388:
-	b	be_cont.125371
+be_cont.26570:
+	b	be_cont.26558
 	nop
-be_else.125370:
+be_else.26557:
 	cmp	%o5, 2
-	bne	be_else.125391
+	bne	be_else.26573
 	nop
 	ld	[%i2 + 16], %o5
 	ldd	[%o5 + 0], %f14
@@ -4916,63 +4916,63 @@ be_else.125370:
 	ldd	[%o5 + 0], %f12
 	fcmpd	%f12, %f14
 	nop
-	fbg	fble_else.125393
+	fbg	fble_else.26575
 	nop
 	set	0, %o5
-	b	fble_cont.125394
+	b	fble_cont.26576
 	nop
-fble_else.125393:
+fble_else.26575:
 	set	1, %o5
-fble_cont.125394:
+fble_cont.26576:
 	ld	[%i2 + 24], %o4
 	cmp	%o4, 0
-	bne	be_else.125395
+	bne	be_else.26577
 	nop
-	b	be_cont.125396
+	b	be_cont.26578
 	nop
-be_else.125395:
+be_else.26577:
 	cmp	%o5, 0
-	bne	be_else.125397
+	bne	be_else.26579
 	nop
 	set	1, %o5
-	b	be_cont.125398
+	b	be_cont.26580
 	nop
-be_else.125397:
+be_else.26579:
 	set	0, %o5
-be_cont.125398:
-be_cont.125396:
+be_cont.26580:
+be_cont.26578:
 	cmp	%o5, 0
-	bne	be_else.125399
+	bne	be_else.26581
 	nop
 	set	1, %o5
-	b	be_cont.125400
+	b	be_cont.26582
 	nop
-be_else.125399:
+be_else.26581:
 	set	0, %o5
-be_cont.125400:
-	b	be_cont.125392
+be_cont.26582:
+	b	be_cont.26574
 	nop
-be_else.125391:
+be_else.26573:
 	st	%o7, [%i0 + 52]
 	call	is_second_outside.3299
 	add	%i0, 56, %i0	! delay slot
 	sub	%i0, 56, %i0
 	ld	[%i0 + 52], %o7
 	mov	%i2, %o5
-be_cont.125392:
-be_cont.125371:
+be_cont.26574:
+be_cont.26558:
 	cmp	%o5, 0
-	bne	be_else.125402
+	bne	be_else.26584
 	nop
 	ld	[%i0 + 4], %i3
 	ld	[%i3 + 8], %o5
 	cmp	%o5, -1
-	bne	be_else.125404
+	bne	be_else.26586
 	nop
 	set	1, %o5
-	b	be_cont.125405
+	b	be_cont.26587
 	nop
-be_else.125404:
+be_else.26586:
 	set	min_caml_objects, %o4
 	sll	%o5, 2, %o5
 	ld	[%o4 + %o5], %i2
@@ -4983,7 +4983,7 @@ be_else.125404:
 	ld	[%i0 + 52], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125408
+	bne	be_else.26589
 	nop
 	set	3, %i2
 	ld	[%i0 + 4], %i3
@@ -4993,26 +4993,26 @@ be_else.125404:
 	sub	%i0, 56, %i0
 	ld	[%i0 + 52], %o7
 	mov	%i2, %o5
-	b	be_cont.125409
+	b	be_cont.26590
 	nop
-be_else.125408:
+be_else.26589:
 	set	0, %o5
-be_cont.125409:
-be_cont.125405:
-	b	be_cont.125403
+be_cont.26590:
+be_cont.26587:
+	b	be_cont.26585
 	nop
-be_else.125402:
+be_else.26584:
 	set	0, %o5
-be_cont.125403:
-be_cont.125365:
-	b	be_cont.125363
+be_cont.26585:
+be_cont.26556:
+	b	be_cont.26554
 	nop
-be_else.125362:
+be_else.26553:
 	set	0, %o5
-be_cont.125363:
-be_cont.125359:
+be_cont.26554:
+be_cont.26551:
 	cmp	%o5, 0
-	bne	be_else.125411
+	bne	be_else.26592
 	nop
 	ld	[%i0 + 8], %o5
 	add	%o5, 1, %i2
@@ -5020,7 +5020,7 @@ be_cont.125359:
 	ld	[%i0 + 0], %i4
 	b	shadow_check_and_group.3357
 	nop
-be_else.125411:
+be_else.26592:
 	set	1, %i2
 	retl
 	nop
@@ -5028,12 +5028,12 @@ shadow_check_one_or_group.3416:
 	sll	%i2, 2, %o5
 	ld	[%i3 + %o5], %o5
 	cmp	%o5, -1
-	bne	be_else.125412
+	bne	be_else.26593
 	nop
 	set	0, %i2
 	retl
 	nop
-be_else.125412:
+be_else.26593:
 	st	%i4, [%i0 + 0]
 	st	%i3, [%i0 + 4]
 	st	%i2, [%i0 + 8]
@@ -5048,7 +5048,7 @@ be_else.125412:
 	ld	[%i0 + 12], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125417
+	bne	be_else.26595
 	nop
 	ld	[%i0 + 8], %o5
 	add	%o5, 1, %o5
@@ -5056,12 +5056,12 @@ be_else.125412:
 	ld	[%i0 + 4], %o3
 	ld	[%o3 + %o4], %o4
 	cmp	%o4, -1
-	bne	be_else.125418
+	bne	be_else.26596
 	nop
 	set	0, %i2
 	retl
 	nop
-be_else.125418:
+be_else.26596:
 	st	%o5, [%i0 + 12]
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
@@ -5075,7 +5075,7 @@ be_else.125418:
 	ld	[%i0 + 20], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125423
+	bne	be_else.26598
 	nop
 	ld	[%i0 + 12], %o5
 	add	%o5, 1, %o5
@@ -5083,12 +5083,12 @@ be_else.125418:
 	ld	[%i0 + 4], %o3
 	ld	[%o3 + %o4], %o4
 	cmp	%o4, -1
-	bne	be_else.125424
+	bne	be_else.26599
 	nop
 	set	0, %i2
 	retl
 	nop
-be_else.125424:
+be_else.26599:
 	st	%o5, [%i0 + 16]
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
@@ -5102,7 +5102,7 @@ be_else.125424:
 	ld	[%i0 + 20], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125429
+	bne	be_else.26601
 	nop
 	ld	[%i0 + 16], %o5
 	add	%o5, 1, %o5
@@ -5110,12 +5110,12 @@ be_else.125424:
 	ld	[%i0 + 4], %o3
 	ld	[%o3 + %o4], %o4
 	cmp	%o4, -1
-	bne	be_else.125430
+	bne	be_else.26602
 	nop
 	set	0, %i2
 	retl
 	nop
-be_else.125430:
+be_else.26602:
 	st	%o5, [%i0 + 20]
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
@@ -5129,7 +5129,7 @@ be_else.125430:
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125435
+	bne	be_else.26604
 	nop
 	ld	[%i0 + 20], %o5
 	add	%o5, 1, %o5
@@ -5137,12 +5137,12 @@ be_else.125430:
 	ld	[%i0 + 4], %o3
 	ld	[%o3 + %o4], %o4
 	cmp	%o4, -1
-	bne	be_else.125436
+	bne	be_else.26605
 	nop
 	set	0, %i2
 	retl
 	nop
-be_else.125436:
+be_else.26605:
 	st	%o5, [%i0 + 24]
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
@@ -5156,7 +5156,7 @@ be_else.125436:
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125441
+	bne	be_else.26607
 	nop
 	ld	[%i0 + 24], %o5
 	add	%o5, 1, %o5
@@ -5164,12 +5164,12 @@ be_else.125436:
 	ld	[%i0 + 4], %o3
 	ld	[%o3 + %o4], %o4
 	cmp	%o4, -1
-	bne	be_else.125442
+	bne	be_else.26608
 	nop
 	set	0, %i2
 	retl
 	nop
-be_else.125442:
+be_else.26608:
 	st	%o5, [%i0 + 28]
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
@@ -5183,7 +5183,7 @@ be_else.125442:
 	ld	[%i0 + 36], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125447
+	bne	be_else.26610
 	nop
 	ld	[%i0 + 28], %o5
 	add	%o5, 1, %o5
@@ -5191,12 +5191,12 @@ be_else.125442:
 	ld	[%i0 + 4], %o3
 	ld	[%o3 + %o4], %o4
 	cmp	%o4, -1
-	bne	be_else.125448
+	bne	be_else.26611
 	nop
 	set	0, %i2
 	retl
 	nop
-be_else.125448:
+be_else.26611:
 	st	%o5, [%i0 + 32]
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
@@ -5210,7 +5210,7 @@ be_else.125448:
 	ld	[%i0 + 36], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125453
+	bne	be_else.26613
 	nop
 	ld	[%i0 + 32], %o5
 	add	%o5, 1, %o5
@@ -5218,12 +5218,12 @@ be_else.125448:
 	ld	[%i0 + 4], %o3
 	ld	[%o3 + %o4], %o4
 	cmp	%o4, -1
-	bne	be_else.125454
+	bne	be_else.26614
 	nop
 	set	0, %i2
 	retl
 	nop
-be_else.125454:
+be_else.26614:
 	st	%o5, [%i0 + 36]
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
@@ -5237,7 +5237,7 @@ be_else.125454:
 	ld	[%i0 + 44], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125459
+	bne	be_else.26616
 	nop
 	ld	[%i0 + 36], %o5
 	add	%o5, 1, %i2
@@ -5245,35 +5245,35 @@ be_else.125454:
 	ld	[%i0 + 0], %i4
 	b	shadow_check_one_or_group.3416
 	nop
-be_else.125459:
+be_else.26616:
 	set	1, %i2
 	retl
 	nop
-be_else.125453:
+be_else.26613:
 	set	1, %i2
 	retl
 	nop
-be_else.125447:
+be_else.26610:
 	set	1, %i2
 	retl
 	nop
-be_else.125441:
+be_else.26607:
 	set	1, %i2
 	retl
 	nop
-be_else.125435:
+be_else.26604:
 	set	1, %i2
 	retl
 	nop
-be_else.125429:
+be_else.26601:
 	set	1, %i2
 	retl
 	nop
-be_else.125423:
+be_else.26598:
 	set	1, %i2
 	retl
 	nop
-be_else.125417:
+be_else.26595:
 	set	1, %i2
 	retl
 	nop
@@ -5282,26 +5282,26 @@ shadow_check_one_or_matrix.3429:
 	ld	[%i3 + %o5], %o5
 	ld	[%o5 + 0], %o4
 	cmp	%o4, -1
-	bne	be_else.125460
+	bne	be_else.26617
 	nop
 	set	0, %i2
 	retl
 	nop
-be_else.125460:
+be_else.26617:
 	cmp	%o4, 99
-	bne	be_else.125461
+	bne	be_else.26618
 	nop
 	st	%i4, [%i0 + 0]
 	st	%i3, [%i0 + 4]
 	st	%i2, [%i0 + 8]
 	ld	[%o5 + 4], %o4
 	cmp	%o4, -1
-	bne	be_else.125465
+	bne	be_else.26619
 	nop
 	set	0, %o5
-	b	be_cont.125466
+	b	be_cont.26620
 	nop
-be_else.125465:
+be_else.26619:
 	st	%o5, [%i0 + 12]
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
@@ -5314,17 +5314,17 @@ be_else.125465:
 	ld	[%i0 + 20], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125470
+	bne	be_else.26622
 	nop
 	ld	[%i0 + 12], %o5
 	ld	[%o5 + 8], %o4
 	cmp	%o4, -1
-	bne	be_else.125472
+	bne	be_else.26624
 	nop
 	set	0, %o5
-	b	be_cont.125473
+	b	be_cont.26625
 	nop
-be_else.125472:
+be_else.26624:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -5337,17 +5337,17 @@ be_else.125472:
 	ld	[%i0 + 20], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125477
+	bne	be_else.26627
 	nop
 	ld	[%i0 + 12], %o5
 	ld	[%o5 + 12], %o4
 	cmp	%o4, -1
-	bne	be_else.125479
+	bne	be_else.26629
 	nop
 	set	0, %o5
-	b	be_cont.125480
+	b	be_cont.26630
 	nop
-be_else.125479:
+be_else.26629:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -5360,17 +5360,17 @@ be_else.125479:
 	ld	[%i0 + 20], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125484
+	bne	be_else.26632
 	nop
 	ld	[%i0 + 12], %o5
 	ld	[%o5 + 16], %o4
 	cmp	%o4, -1
-	bne	be_else.125486
+	bne	be_else.26634
 	nop
 	set	0, %o5
-	b	be_cont.125487
+	b	be_cont.26635
 	nop
-be_else.125486:
+be_else.26634:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -5383,17 +5383,17 @@ be_else.125486:
 	ld	[%i0 + 20], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125491
+	bne	be_else.26637
 	nop
 	ld	[%i0 + 12], %o5
 	ld	[%o5 + 20], %o4
 	cmp	%o4, -1
-	bne	be_else.125493
+	bne	be_else.26639
 	nop
 	set	0, %o5
-	b	be_cont.125494
+	b	be_cont.26640
 	nop
-be_else.125493:
+be_else.26639:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -5406,17 +5406,17 @@ be_else.125493:
 	ld	[%i0 + 20], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125498
+	bne	be_else.26642
 	nop
 	ld	[%i0 + 12], %o5
 	ld	[%o5 + 24], %o4
 	cmp	%o4, -1
-	bne	be_else.125500
+	bne	be_else.26644
 	nop
 	set	0, %o5
-	b	be_cont.125501
+	b	be_cont.26645
 	nop
-be_else.125500:
+be_else.26644:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -5429,17 +5429,17 @@ be_else.125500:
 	ld	[%i0 + 20], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125505
+	bne	be_else.26647
 	nop
 	ld	[%i0 + 12], %o5
 	ld	[%o5 + 28], %o4
 	cmp	%o4, -1
-	bne	be_else.125507
+	bne	be_else.26649
 	nop
 	set	0, %o5
-	b	be_cont.125508
+	b	be_cont.26650
 	nop
-be_else.125507:
+be_else.26649:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -5452,7 +5452,7 @@ be_else.125507:
 	ld	[%i0 + 20], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125512
+	bne	be_else.26652
 	nop
 	set	8, %i2
 	ld	[%i0 + 12], %i3
@@ -5463,50 +5463,50 @@ be_else.125507:
 	sub	%i0, 24, %i0
 	ld	[%i0 + 20], %o7
 	mov	%i2, %o5
-	b	be_cont.125513
+	b	be_cont.26653
 	nop
-be_else.125512:
+be_else.26652:
 	set	1, %o5
-be_cont.125513:
-be_cont.125508:
-	b	be_cont.125506
+be_cont.26653:
+be_cont.26650:
+	b	be_cont.26648
 	nop
-be_else.125505:
+be_else.26647:
 	set	1, %o5
-be_cont.125506:
-be_cont.125501:
-	b	be_cont.125499
+be_cont.26648:
+be_cont.26645:
+	b	be_cont.26643
 	nop
-be_else.125498:
+be_else.26642:
 	set	1, %o5
-be_cont.125499:
-be_cont.125494:
-	b	be_cont.125492
+be_cont.26643:
+be_cont.26640:
+	b	be_cont.26638
 	nop
-be_else.125491:
+be_else.26637:
 	set	1, %o5
-be_cont.125492:
-be_cont.125487:
-	b	be_cont.125485
+be_cont.26638:
+be_cont.26635:
+	b	be_cont.26633
 	nop
-be_else.125484:
+be_else.26632:
 	set	1, %o5
-be_cont.125485:
-be_cont.125480:
-	b	be_cont.125478
+be_cont.26633:
+be_cont.26630:
+	b	be_cont.26628
 	nop
-be_else.125477:
+be_else.26627:
 	set	1, %o5
-be_cont.125478:
-be_cont.125473:
-	b	be_cont.125471
+be_cont.26628:
+be_cont.26625:
+	b	be_cont.26623
 	nop
-be_else.125470:
+be_else.26622:
 	set	1, %o5
-be_cont.125471:
-be_cont.125466:
+be_cont.26623:
+be_cont.26620:
 	cmp	%o5, 0
-	bne	be_else.125515
+	bne	be_else.26655
 	nop
 	ld	[%i0 + 8], %o5
 	add	%o5, 1, %o5
@@ -5515,24 +5515,24 @@ be_cont.125466:
 	ld	[%i3 + %o4], %o4
 	ld	[%o4 + 0], %i2
 	cmp	%i2, -1
-	bne	be_else.125516
+	bne	be_else.26656
 	nop
 	set	0, %i2
 	retl
 	nop
-be_else.125516:
+be_else.26656:
 	cmp	%i2, 99
-	bne	be_else.125517
+	bne	be_else.26657
 	nop
 	st	%o5, [%i0 + 16]
 	ld	[%o4 + 4], %o5
 	cmp	%o5, -1
-	bne	be_else.125521
+	bne	be_else.26658
 	nop
 	set	0, %o5
-	b	be_cont.125522
+	b	be_cont.26659
 	nop
-be_else.125521:
+be_else.26658:
 	st	%o4, [%i0 + 20]
 	set	min_caml_and_net, %o4
 	sll	%o5, 2, %o5
@@ -5546,17 +5546,17 @@ be_else.125521:
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125526
+	bne	be_else.26661
 	nop
 	ld	[%i0 + 20], %o5
 	ld	[%o5 + 8], %o4
 	cmp	%o4, -1
-	bne	be_else.125528
+	bne	be_else.26663
 	nop
 	set	0, %o5
-	b	be_cont.125529
+	b	be_cont.26664
 	nop
-be_else.125528:
+be_else.26663:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -5569,17 +5569,17 @@ be_else.125528:
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125533
+	bne	be_else.26666
 	nop
 	ld	[%i0 + 20], %o5
 	ld	[%o5 + 12], %o4
 	cmp	%o4, -1
-	bne	be_else.125535
+	bne	be_else.26668
 	nop
 	set	0, %o5
-	b	be_cont.125536
+	b	be_cont.26669
 	nop
-be_else.125535:
+be_else.26668:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -5592,17 +5592,17 @@ be_else.125535:
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125540
+	bne	be_else.26671
 	nop
 	ld	[%i0 + 20], %o5
 	ld	[%o5 + 16], %o4
 	cmp	%o4, -1
-	bne	be_else.125542
+	bne	be_else.26673
 	nop
 	set	0, %o5
-	b	be_cont.125543
+	b	be_cont.26674
 	nop
-be_else.125542:
+be_else.26673:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -5615,17 +5615,17 @@ be_else.125542:
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125547
+	bne	be_else.26676
 	nop
 	ld	[%i0 + 20], %o5
 	ld	[%o5 + 20], %o4
 	cmp	%o4, -1
-	bne	be_else.125549
+	bne	be_else.26678
 	nop
 	set	0, %o5
-	b	be_cont.125550
+	b	be_cont.26679
 	nop
-be_else.125549:
+be_else.26678:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -5638,17 +5638,17 @@ be_else.125549:
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125554
+	bne	be_else.26681
 	nop
 	ld	[%i0 + 20], %o5
 	ld	[%o5 + 24], %o4
 	cmp	%o4, -1
-	bne	be_else.125556
+	bne	be_else.26683
 	nop
 	set	0, %o5
-	b	be_cont.125557
+	b	be_cont.26684
 	nop
-be_else.125556:
+be_else.26683:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -5661,7 +5661,7 @@ be_else.125556:
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125561
+	bne	be_else.26686
 	nop
 	set	7, %i2
 	ld	[%i0 + 20], %i3
@@ -5672,44 +5672,44 @@ be_else.125556:
 	sub	%i0, 32, %i0
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
-	b	be_cont.125562
+	b	be_cont.26687
 	nop
-be_else.125561:
+be_else.26686:
 	set	1, %o5
-be_cont.125562:
-be_cont.125557:
-	b	be_cont.125555
+be_cont.26687:
+be_cont.26684:
+	b	be_cont.26682
 	nop
-be_else.125554:
+be_else.26681:
 	set	1, %o5
-be_cont.125555:
-be_cont.125550:
-	b	be_cont.125548
+be_cont.26682:
+be_cont.26679:
+	b	be_cont.26677
 	nop
-be_else.125547:
+be_else.26676:
 	set	1, %o5
-be_cont.125548:
-be_cont.125543:
-	b	be_cont.125541
+be_cont.26677:
+be_cont.26674:
+	b	be_cont.26672
 	nop
-be_else.125540:
+be_else.26671:
 	set	1, %o5
-be_cont.125541:
-be_cont.125536:
-	b	be_cont.125534
+be_cont.26672:
+be_cont.26669:
+	b	be_cont.26667
 	nop
-be_else.125533:
+be_else.26666:
 	set	1, %o5
-be_cont.125534:
-be_cont.125529:
-	b	be_cont.125527
+be_cont.26667:
+be_cont.26664:
+	b	be_cont.26662
 	nop
-be_else.125526:
+be_else.26661:
 	set	1, %o5
-be_cont.125527:
-be_cont.125522:
+be_cont.26662:
+be_cont.26659:
 	cmp	%o5, 0
-	bne	be_else.125564
+	bne	be_else.26689
 	nop
 	ld	[%i0 + 16], %o5
 	add	%o5, 1, %i2
@@ -5717,11 +5717,11 @@ be_cont.125522:
 	ld	[%i0 + 0], %i4
 	b	shadow_check_one_or_matrix.3429
 	nop
-be_else.125564:
+be_else.26689:
 	set	1, %i2
 	retl
 	nop
-be_else.125517:
+be_else.26657:
 	st	%o4, [%i0 + 20]
 	st	%o5, [%i0 + 16]
 	set	min_caml_light, %i3
@@ -5733,7 +5733,7 @@ be_else.125517:
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125570
+	bne	be_else.26691
 	nop
 	ld	[%i0 + 16], %o5
 	add	%o5, 1, %i2
@@ -5741,14 +5741,14 @@ be_else.125517:
 	ld	[%i0 + 0], %i4
 	b	shadow_check_one_or_matrix.3429
 	nop
-be_else.125570:
-	set	l.11380, %o5
+be_else.26691:
+	set	l.11390, %o5
 	ldd	[%o5 + 0], %f14
 	set	min_caml_solver_dist, %o5
 	ldd	[%o5 + 0], %f12
 	fcmpd	%f14, %f12
 	nop
-	fbg	fble_else.125571
+	fbg	fble_else.26692
 	nop
 	ld	[%i0 + 16], %o5
 	add	%o5, 1, %i2
@@ -5756,16 +5756,16 @@ be_else.125570:
 	ld	[%i0 + 0], %i4
 	b	shadow_check_one_or_matrix.3429
 	nop
-fble_else.125571:
+fble_else.26692:
 	ld	[%i0 + 20], %o5
 	ld	[%o5 + 4], %o4
 	cmp	%o4, -1
-	bne	be_else.125575
+	bne	be_else.26693
 	nop
 	set	0, %o5
-	b	be_cont.125576
+	b	be_cont.26694
 	nop
-be_else.125575:
+be_else.26693:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -5778,17 +5778,17 @@ be_else.125575:
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125580
+	bne	be_else.26696
 	nop
 	ld	[%i0 + 20], %o5
 	ld	[%o5 + 8], %o4
 	cmp	%o4, -1
-	bne	be_else.125582
+	bne	be_else.26698
 	nop
 	set	0, %o5
-	b	be_cont.125583
+	b	be_cont.26699
 	nop
-be_else.125582:
+be_else.26698:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -5801,17 +5801,17 @@ be_else.125582:
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125587
+	bne	be_else.26701
 	nop
 	ld	[%i0 + 20], %o5
 	ld	[%o5 + 12], %o4
 	cmp	%o4, -1
-	bne	be_else.125589
+	bne	be_else.26703
 	nop
 	set	0, %o5
-	b	be_cont.125590
+	b	be_cont.26704
 	nop
-be_else.125589:
+be_else.26703:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -5824,17 +5824,17 @@ be_else.125589:
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125594
+	bne	be_else.26706
 	nop
 	ld	[%i0 + 20], %o5
 	ld	[%o5 + 16], %o4
 	cmp	%o4, -1
-	bne	be_else.125596
+	bne	be_else.26708
 	nop
 	set	0, %o5
-	b	be_cont.125597
+	b	be_cont.26709
 	nop
-be_else.125596:
+be_else.26708:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -5847,17 +5847,17 @@ be_else.125596:
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125601
+	bne	be_else.26711
 	nop
 	ld	[%i0 + 20], %o5
 	ld	[%o5 + 20], %o4
 	cmp	%o4, -1
-	bne	be_else.125603
+	bne	be_else.26713
 	nop
 	set	0, %o5
-	b	be_cont.125604
+	b	be_cont.26714
 	nop
-be_else.125603:
+be_else.26713:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -5870,17 +5870,17 @@ be_else.125603:
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125608
+	bne	be_else.26716
 	nop
 	ld	[%i0 + 20], %o5
 	ld	[%o5 + 24], %o4
 	cmp	%o4, -1
-	bne	be_else.125610
+	bne	be_else.26718
 	nop
 	set	0, %o5
-	b	be_cont.125611
+	b	be_cont.26719
 	nop
-be_else.125610:
+be_else.26718:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -5893,7 +5893,7 @@ be_else.125610:
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125615
+	bne	be_else.26721
 	nop
 	set	7, %i2
 	ld	[%i0 + 20], %i3
@@ -5904,44 +5904,44 @@ be_else.125610:
 	sub	%i0, 32, %i0
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
-	b	be_cont.125616
+	b	be_cont.26722
 	nop
-be_else.125615:
+be_else.26721:
 	set	1, %o5
-be_cont.125616:
-be_cont.125611:
-	b	be_cont.125609
+be_cont.26722:
+be_cont.26719:
+	b	be_cont.26717
 	nop
-be_else.125608:
+be_else.26716:
 	set	1, %o5
-be_cont.125609:
-be_cont.125604:
-	b	be_cont.125602
+be_cont.26717:
+be_cont.26714:
+	b	be_cont.26712
 	nop
-be_else.125601:
+be_else.26711:
 	set	1, %o5
-be_cont.125602:
-be_cont.125597:
-	b	be_cont.125595
+be_cont.26712:
+be_cont.26709:
+	b	be_cont.26707
 	nop
-be_else.125594:
+be_else.26706:
 	set	1, %o5
-be_cont.125595:
-be_cont.125590:
-	b	be_cont.125588
+be_cont.26707:
+be_cont.26704:
+	b	be_cont.26702
 	nop
-be_else.125587:
+be_else.26701:
 	set	1, %o5
-be_cont.125588:
-be_cont.125583:
-	b	be_cont.125581
+be_cont.26702:
+be_cont.26699:
+	b	be_cont.26697
 	nop
-be_else.125580:
+be_else.26696:
 	set	1, %o5
-be_cont.125581:
-be_cont.125576:
+be_cont.26697:
+be_cont.26694:
 	cmp	%o5, 0
-	bne	be_else.125618
+	bne	be_else.26724
 	nop
 	ld	[%i0 + 16], %o5
 	add	%o5, 1, %i2
@@ -5949,15 +5949,15 @@ be_cont.125576:
 	ld	[%i0 + 0], %i4
 	b	shadow_check_one_or_matrix.3429
 	nop
-be_else.125618:
+be_else.26724:
 	set	1, %i2
 	retl
 	nop
-be_else.125515:
+be_else.26655:
 	set	1, %i2
 	retl
 	nop
-be_else.125461:
+be_else.26618:
 	st	%o5, [%i0 + 12]
 	st	%i4, [%i0 + 0]
 	st	%i3, [%i0 + 4]
@@ -5986,7 +5986,7 @@ be_else.125461:
 	std	%f14, [%o5 + 16]
 	ld	[%i2 + 4], %o5
 	cmp	%o5, 1
-	bne	be_else.125626
+	bne	be_else.26725
 	nop
 	st	%o7, [%i0 + 28]
 	call	solver_rect.2890
@@ -5994,11 +5994,11 @@ be_else.125461:
 	sub	%i0, 32, %i0
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
-	b	be_cont.125627
+	b	be_cont.26726
 	nop
-be_else.125626:
+be_else.26725:
 	cmp	%o5, 2
-	bne	be_else.125629
+	bne	be_else.26728
 	nop
 	ldd	[%i3 + 0], %f14
 	ld	[%i2 + 16], %o5
@@ -6018,12 +6018,12 @@ be_else.125626:
 	ldd	[%o5 + 0], %f12
 	fcmpd	%f14, %f12
 	nop
-	fbg	fble_else.125631
+	fbg	fble_else.26730
 	nop
 	set	0, %o5
-	b	fble_cont.125632
+	b	fble_cont.26731
 	nop
-fble_else.125631:
+fble_else.26730:
 	set	min_caml_solver_w_vec, %o5
 	ldd	[%o5 + 0], %f12
 	ld	[%i2 + 16], %o5
@@ -6046,20 +6046,20 @@ fble_else.125631:
 	fnegs	%f14, %f14
 	std	%f14, [%o5 + 0]
 	set	1, %o5
-fble_cont.125632:
-	b	be_cont.125630
+fble_cont.26731:
+	b	be_cont.26729
 	nop
-be_else.125629:
+be_else.26728:
 	st	%o7, [%i0 + 28]
 	call	solver_second.3180
 	add	%i0, 32, %i0	! delay slot
 	sub	%i0, 32, %i0
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
-be_cont.125630:
-be_cont.125627:
+be_cont.26729:
+be_cont.26726:
 	cmp	%o5, 0
-	bne	be_else.125635
+	bne	be_else.26733
 	nop
 	ld	[%i0 + 8], %o5
 	add	%o5, 1, %o5
@@ -6068,24 +6068,24 @@ be_cont.125627:
 	ld	[%i3 + %o4], %o4
 	ld	[%o4 + 0], %i2
 	cmp	%i2, -1
-	bne	be_else.125636
+	bne	be_else.26734
 	nop
 	set	0, %i2
 	retl
 	nop
-be_else.125636:
+be_else.26734:
 	cmp	%i2, 99
-	bne	be_else.125637
+	bne	be_else.26735
 	nop
 	st	%o5, [%i0 + 24]
 	ld	[%o4 + 4], %o5
 	cmp	%o5, -1
-	bne	be_else.125641
+	bne	be_else.26736
 	nop
 	set	0, %o5
-	b	be_cont.125642
+	b	be_cont.26737
 	nop
-be_else.125641:
+be_else.26736:
 	st	%o4, [%i0 + 28]
 	set	min_caml_and_net, %o4
 	sll	%o5, 2, %o5
@@ -6099,17 +6099,17 @@ be_else.125641:
 	ld	[%i0 + 36], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125646
+	bne	be_else.26739
 	nop
 	ld	[%i0 + 28], %o5
 	ld	[%o5 + 8], %o4
 	cmp	%o4, -1
-	bne	be_else.125648
+	bne	be_else.26741
 	nop
 	set	0, %o5
-	b	be_cont.125649
+	b	be_cont.26742
 	nop
-be_else.125648:
+be_else.26741:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -6122,17 +6122,17 @@ be_else.125648:
 	ld	[%i0 + 36], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125653
+	bne	be_else.26744
 	nop
 	ld	[%i0 + 28], %o5
 	ld	[%o5 + 12], %o4
 	cmp	%o4, -1
-	bne	be_else.125655
+	bne	be_else.26746
 	nop
 	set	0, %o5
-	b	be_cont.125656
+	b	be_cont.26747
 	nop
-be_else.125655:
+be_else.26746:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -6145,17 +6145,17 @@ be_else.125655:
 	ld	[%i0 + 36], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125660
+	bne	be_else.26749
 	nop
 	ld	[%i0 + 28], %o5
 	ld	[%o5 + 16], %o4
 	cmp	%o4, -1
-	bne	be_else.125662
+	bne	be_else.26751
 	nop
 	set	0, %o5
-	b	be_cont.125663
+	b	be_cont.26752
 	nop
-be_else.125662:
+be_else.26751:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -6168,17 +6168,17 @@ be_else.125662:
 	ld	[%i0 + 36], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125667
+	bne	be_else.26754
 	nop
 	ld	[%i0 + 28], %o5
 	ld	[%o5 + 20], %o4
 	cmp	%o4, -1
-	bne	be_else.125669
+	bne	be_else.26756
 	nop
 	set	0, %o5
-	b	be_cont.125670
+	b	be_cont.26757
 	nop
-be_else.125669:
+be_else.26756:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -6191,17 +6191,17 @@ be_else.125669:
 	ld	[%i0 + 36], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125674
+	bne	be_else.26759
 	nop
 	ld	[%i0 + 28], %o5
 	ld	[%o5 + 24], %o4
 	cmp	%o4, -1
-	bne	be_else.125676
+	bne	be_else.26761
 	nop
 	set	0, %o5
-	b	be_cont.125677
+	b	be_cont.26762
 	nop
-be_else.125676:
+be_else.26761:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -6214,7 +6214,7 @@ be_else.125676:
 	ld	[%i0 + 36], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125681
+	bne	be_else.26764
 	nop
 	set	7, %i2
 	ld	[%i0 + 28], %i3
@@ -6225,44 +6225,44 @@ be_else.125676:
 	sub	%i0, 40, %i0
 	ld	[%i0 + 36], %o7
 	mov	%i2, %o5
-	b	be_cont.125682
+	b	be_cont.26765
 	nop
-be_else.125681:
+be_else.26764:
 	set	1, %o5
-be_cont.125682:
-be_cont.125677:
-	b	be_cont.125675
+be_cont.26765:
+be_cont.26762:
+	b	be_cont.26760
 	nop
-be_else.125674:
+be_else.26759:
 	set	1, %o5
-be_cont.125675:
-be_cont.125670:
-	b	be_cont.125668
+be_cont.26760:
+be_cont.26757:
+	b	be_cont.26755
 	nop
-be_else.125667:
+be_else.26754:
 	set	1, %o5
-be_cont.125668:
-be_cont.125663:
-	b	be_cont.125661
+be_cont.26755:
+be_cont.26752:
+	b	be_cont.26750
 	nop
-be_else.125660:
+be_else.26749:
 	set	1, %o5
-be_cont.125661:
-be_cont.125656:
-	b	be_cont.125654
+be_cont.26750:
+be_cont.26747:
+	b	be_cont.26745
 	nop
-be_else.125653:
+be_else.26744:
 	set	1, %o5
-be_cont.125654:
-be_cont.125649:
-	b	be_cont.125647
+be_cont.26745:
+be_cont.26742:
+	b	be_cont.26740
 	nop
-be_else.125646:
+be_else.26739:
 	set	1, %o5
-be_cont.125647:
-be_cont.125642:
+be_cont.26740:
+be_cont.26737:
 	cmp	%o5, 0
-	bne	be_else.125684
+	bne	be_else.26767
 	nop
 	ld	[%i0 + 24], %o5
 	add	%o5, 1, %i2
@@ -6270,11 +6270,11 @@ be_cont.125642:
 	ld	[%i0 + 0], %i4
 	b	shadow_check_one_or_matrix.3429
 	nop
-be_else.125684:
+be_else.26767:
 	set	1, %i2
 	retl
 	nop
-be_else.125637:
+be_else.26735:
 	st	%o4, [%i0 + 28]
 	st	%o5, [%i0 + 24]
 	set	min_caml_light, %i3
@@ -6286,7 +6286,7 @@ be_else.125637:
 	ld	[%i0 + 36], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125690
+	bne	be_else.26769
 	nop
 	ld	[%i0 + 24], %o5
 	add	%o5, 1, %i2
@@ -6294,14 +6294,14 @@ be_else.125637:
 	ld	[%i0 + 0], %i4
 	b	shadow_check_one_or_matrix.3429
 	nop
-be_else.125690:
-	set	l.11380, %o5
+be_else.26769:
+	set	l.11390, %o5
 	ldd	[%o5 + 0], %f14
 	set	min_caml_solver_dist, %o5
 	ldd	[%o5 + 0], %f12
 	fcmpd	%f14, %f12
 	nop
-	fbg	fble_else.125691
+	fbg	fble_else.26770
 	nop
 	ld	[%i0 + 24], %o5
 	add	%o5, 1, %i2
@@ -6309,16 +6309,16 @@ be_else.125690:
 	ld	[%i0 + 0], %i4
 	b	shadow_check_one_or_matrix.3429
 	nop
-fble_else.125691:
+fble_else.26770:
 	ld	[%i0 + 28], %o5
 	ld	[%o5 + 4], %o4
 	cmp	%o4, -1
-	bne	be_else.125695
+	bne	be_else.26771
 	nop
 	set	0, %o5
-	b	be_cont.125696
+	b	be_cont.26772
 	nop
-be_else.125695:
+be_else.26771:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -6331,17 +6331,17 @@ be_else.125695:
 	ld	[%i0 + 36], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125700
+	bne	be_else.26774
 	nop
 	ld	[%i0 + 28], %o5
 	ld	[%o5 + 8], %o4
 	cmp	%o4, -1
-	bne	be_else.125702
+	bne	be_else.26776
 	nop
 	set	0, %o5
-	b	be_cont.125703
+	b	be_cont.26777
 	nop
-be_else.125702:
+be_else.26776:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -6354,17 +6354,17 @@ be_else.125702:
 	ld	[%i0 + 36], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125707
+	bne	be_else.26779
 	nop
 	ld	[%i0 + 28], %o5
 	ld	[%o5 + 12], %o4
 	cmp	%o4, -1
-	bne	be_else.125709
+	bne	be_else.26781
 	nop
 	set	0, %o5
-	b	be_cont.125710
+	b	be_cont.26782
 	nop
-be_else.125709:
+be_else.26781:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -6377,17 +6377,17 @@ be_else.125709:
 	ld	[%i0 + 36], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125714
+	bne	be_else.26784
 	nop
 	ld	[%i0 + 28], %o5
 	ld	[%o5 + 16], %o4
 	cmp	%o4, -1
-	bne	be_else.125716
+	bne	be_else.26786
 	nop
 	set	0, %o5
-	b	be_cont.125717
+	b	be_cont.26787
 	nop
-be_else.125716:
+be_else.26786:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -6400,17 +6400,17 @@ be_else.125716:
 	ld	[%i0 + 36], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125721
+	bne	be_else.26789
 	nop
 	ld	[%i0 + 28], %o5
 	ld	[%o5 + 20], %o4
 	cmp	%o4, -1
-	bne	be_else.125723
+	bne	be_else.26791
 	nop
 	set	0, %o5
-	b	be_cont.125724
+	b	be_cont.26792
 	nop
-be_else.125723:
+be_else.26791:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -6423,17 +6423,17 @@ be_else.125723:
 	ld	[%i0 + 36], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125728
+	bne	be_else.26794
 	nop
 	ld	[%i0 + 28], %o5
 	ld	[%o5 + 24], %o4
 	cmp	%o4, -1
-	bne	be_else.125730
+	bne	be_else.26796
 	nop
 	set	0, %o5
-	b	be_cont.125731
+	b	be_cont.26797
 	nop
-be_else.125730:
+be_else.26796:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -6446,7 +6446,7 @@ be_else.125730:
 	ld	[%i0 + 36], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125735
+	bne	be_else.26799
 	nop
 	set	7, %i2
 	ld	[%i0 + 28], %i3
@@ -6457,44 +6457,44 @@ be_else.125730:
 	sub	%i0, 40, %i0
 	ld	[%i0 + 36], %o7
 	mov	%i2, %o5
-	b	be_cont.125736
+	b	be_cont.26800
 	nop
-be_else.125735:
+be_else.26799:
 	set	1, %o5
-be_cont.125736:
-be_cont.125731:
-	b	be_cont.125729
+be_cont.26800:
+be_cont.26797:
+	b	be_cont.26795
 	nop
-be_else.125728:
+be_else.26794:
 	set	1, %o5
-be_cont.125729:
-be_cont.125724:
-	b	be_cont.125722
+be_cont.26795:
+be_cont.26792:
+	b	be_cont.26790
 	nop
-be_else.125721:
+be_else.26789:
 	set	1, %o5
-be_cont.125722:
-be_cont.125717:
-	b	be_cont.125715
+be_cont.26790:
+be_cont.26787:
+	b	be_cont.26785
 	nop
-be_else.125714:
+be_else.26784:
 	set	1, %o5
-be_cont.125715:
-be_cont.125710:
-	b	be_cont.125708
+be_cont.26785:
+be_cont.26782:
+	b	be_cont.26780
 	nop
-be_else.125707:
+be_else.26779:
 	set	1, %o5
-be_cont.125708:
-be_cont.125703:
-	b	be_cont.125701
+be_cont.26780:
+be_cont.26777:
+	b	be_cont.26775
 	nop
-be_else.125700:
+be_else.26774:
 	set	1, %o5
-be_cont.125701:
-be_cont.125696:
+be_cont.26775:
+be_cont.26772:
 	cmp	%o5, 0
-	bne	be_else.125738
+	bne	be_else.26802
 	nop
 	ld	[%i0 + 24], %o5
 	add	%o5, 1, %i2
@@ -6502,18 +6502,18 @@ be_cont.125696:
 	ld	[%i0 + 0], %i4
 	b	shadow_check_one_or_matrix.3429
 	nop
-be_else.125738:
+be_else.26802:
 	set	1, %i2
 	retl
 	nop
-be_else.125635:
-	set	l.11380, %o5
+be_else.26733:
+	set	l.11390, %o5
 	ldd	[%o5 + 0], %f14
 	set	min_caml_solver_dist, %o5
 	ldd	[%o5 + 0], %f12
 	fcmpd	%f14, %f12
 	nop
-	fbg	fble_else.125739
+	fbg	fble_else.26803
 	nop
 	ld	[%i0 + 8], %o5
 	add	%o5, 1, %o5
@@ -6522,24 +6522,24 @@ be_else.125635:
 	ld	[%i3 + %o4], %o4
 	ld	[%o4 + 0], %i2
 	cmp	%i2, -1
-	bne	be_else.125740
+	bne	be_else.26804
 	nop
 	set	0, %i2
 	retl
 	nop
-be_else.125740:
+be_else.26804:
 	cmp	%i2, 99
-	bne	be_else.125741
+	bne	be_else.26805
 	nop
 	st	%o5, [%i0 + 32]
 	ld	[%o4 + 4], %o5
 	cmp	%o5, -1
-	bne	be_else.125745
+	bne	be_else.26806
 	nop
 	set	0, %o5
-	b	be_cont.125746
+	b	be_cont.26807
 	nop
-be_else.125745:
+be_else.26806:
 	st	%o4, [%i0 + 36]
 	set	min_caml_and_net, %o4
 	sll	%o5, 2, %o5
@@ -6553,17 +6553,17 @@ be_else.125745:
 	ld	[%i0 + 44], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125750
+	bne	be_else.26809
 	nop
 	ld	[%i0 + 36], %o5
 	ld	[%o5 + 8], %o4
 	cmp	%o4, -1
-	bne	be_else.125752
+	bne	be_else.26811
 	nop
 	set	0, %o5
-	b	be_cont.125753
+	b	be_cont.26812
 	nop
-be_else.125752:
+be_else.26811:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -6576,17 +6576,17 @@ be_else.125752:
 	ld	[%i0 + 44], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125757
+	bne	be_else.26814
 	nop
 	ld	[%i0 + 36], %o5
 	ld	[%o5 + 12], %o4
 	cmp	%o4, -1
-	bne	be_else.125759
+	bne	be_else.26816
 	nop
 	set	0, %o5
-	b	be_cont.125760
+	b	be_cont.26817
 	nop
-be_else.125759:
+be_else.26816:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -6599,17 +6599,17 @@ be_else.125759:
 	ld	[%i0 + 44], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125764
+	bne	be_else.26819
 	nop
 	ld	[%i0 + 36], %o5
 	ld	[%o5 + 16], %o4
 	cmp	%o4, -1
-	bne	be_else.125766
+	bne	be_else.26821
 	nop
 	set	0, %o5
-	b	be_cont.125767
+	b	be_cont.26822
 	nop
-be_else.125766:
+be_else.26821:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -6622,17 +6622,17 @@ be_else.125766:
 	ld	[%i0 + 44], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125771
+	bne	be_else.26824
 	nop
 	ld	[%i0 + 36], %o5
 	ld	[%o5 + 20], %o4
 	cmp	%o4, -1
-	bne	be_else.125773
+	bne	be_else.26826
 	nop
 	set	0, %o5
-	b	be_cont.125774
+	b	be_cont.26827
 	nop
-be_else.125773:
+be_else.26826:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -6645,17 +6645,17 @@ be_else.125773:
 	ld	[%i0 + 44], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125778
+	bne	be_else.26829
 	nop
 	ld	[%i0 + 36], %o5
 	ld	[%o5 + 24], %o4
 	cmp	%o4, -1
-	bne	be_else.125780
+	bne	be_else.26831
 	nop
 	set	0, %o5
-	b	be_cont.125781
+	b	be_cont.26832
 	nop
-be_else.125780:
+be_else.26831:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -6668,7 +6668,7 @@ be_else.125780:
 	ld	[%i0 + 44], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125785
+	bne	be_else.26834
 	nop
 	set	7, %i2
 	ld	[%i0 + 36], %i3
@@ -6679,44 +6679,44 @@ be_else.125780:
 	sub	%i0, 48, %i0
 	ld	[%i0 + 44], %o7
 	mov	%i2, %o5
-	b	be_cont.125786
+	b	be_cont.26835
 	nop
-be_else.125785:
+be_else.26834:
 	set	1, %o5
-be_cont.125786:
-be_cont.125781:
-	b	be_cont.125779
+be_cont.26835:
+be_cont.26832:
+	b	be_cont.26830
 	nop
-be_else.125778:
+be_else.26829:
 	set	1, %o5
-be_cont.125779:
-be_cont.125774:
-	b	be_cont.125772
+be_cont.26830:
+be_cont.26827:
+	b	be_cont.26825
 	nop
-be_else.125771:
+be_else.26824:
 	set	1, %o5
-be_cont.125772:
-be_cont.125767:
-	b	be_cont.125765
+be_cont.26825:
+be_cont.26822:
+	b	be_cont.26820
 	nop
-be_else.125764:
+be_else.26819:
 	set	1, %o5
-be_cont.125765:
-be_cont.125760:
-	b	be_cont.125758
+be_cont.26820:
+be_cont.26817:
+	b	be_cont.26815
 	nop
-be_else.125757:
+be_else.26814:
 	set	1, %o5
-be_cont.125758:
-be_cont.125753:
-	b	be_cont.125751
+be_cont.26815:
+be_cont.26812:
+	b	be_cont.26810
 	nop
-be_else.125750:
+be_else.26809:
 	set	1, %o5
-be_cont.125751:
-be_cont.125746:
+be_cont.26810:
+be_cont.26807:
 	cmp	%o5, 0
-	bne	be_else.125788
+	bne	be_else.26837
 	nop
 	ld	[%i0 + 32], %o5
 	add	%o5, 1, %i2
@@ -6724,11 +6724,11 @@ be_cont.125746:
 	ld	[%i0 + 0], %i4
 	b	shadow_check_one_or_matrix.3429
 	nop
-be_else.125788:
+be_else.26837:
 	set	1, %i2
 	retl
 	nop
-be_else.125741:
+be_else.26805:
 	st	%o4, [%i0 + 36]
 	st	%o5, [%i0 + 32]
 	set	min_caml_light, %i3
@@ -6740,7 +6740,7 @@ be_else.125741:
 	ld	[%i0 + 44], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125794
+	bne	be_else.26839
 	nop
 	ld	[%i0 + 32], %o5
 	add	%o5, 1, %i2
@@ -6748,14 +6748,14 @@ be_else.125741:
 	ld	[%i0 + 0], %i4
 	b	shadow_check_one_or_matrix.3429
 	nop
-be_else.125794:
-	set	l.11380, %o5
+be_else.26839:
+	set	l.11390, %o5
 	ldd	[%o5 + 0], %f14
 	set	min_caml_solver_dist, %o5
 	ldd	[%o5 + 0], %f12
 	fcmpd	%f14, %f12
 	nop
-	fbg	fble_else.125795
+	fbg	fble_else.26840
 	nop
 	ld	[%i0 + 32], %o5
 	add	%o5, 1, %i2
@@ -6763,16 +6763,16 @@ be_else.125794:
 	ld	[%i0 + 0], %i4
 	b	shadow_check_one_or_matrix.3429
 	nop
-fble_else.125795:
+fble_else.26840:
 	ld	[%i0 + 36], %o5
 	ld	[%o5 + 4], %o4
 	cmp	%o4, -1
-	bne	be_else.125799
+	bne	be_else.26841
 	nop
 	set	0, %o5
-	b	be_cont.125800
+	b	be_cont.26842
 	nop
-be_else.125799:
+be_else.26841:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -6785,17 +6785,17 @@ be_else.125799:
 	ld	[%i0 + 44], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125804
+	bne	be_else.26844
 	nop
 	ld	[%i0 + 36], %o5
 	ld	[%o5 + 8], %o4
 	cmp	%o4, -1
-	bne	be_else.125806
+	bne	be_else.26846
 	nop
 	set	0, %o5
-	b	be_cont.125807
+	b	be_cont.26847
 	nop
-be_else.125806:
+be_else.26846:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -6808,17 +6808,17 @@ be_else.125806:
 	ld	[%i0 + 44], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125811
+	bne	be_else.26849
 	nop
 	ld	[%i0 + 36], %o5
 	ld	[%o5 + 12], %o4
 	cmp	%o4, -1
-	bne	be_else.125813
+	bne	be_else.26851
 	nop
 	set	0, %o5
-	b	be_cont.125814
+	b	be_cont.26852
 	nop
-be_else.125813:
+be_else.26851:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -6831,17 +6831,17 @@ be_else.125813:
 	ld	[%i0 + 44], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125818
+	bne	be_else.26854
 	nop
 	ld	[%i0 + 36], %o5
 	ld	[%o5 + 16], %o4
 	cmp	%o4, -1
-	bne	be_else.125820
+	bne	be_else.26856
 	nop
 	set	0, %o5
-	b	be_cont.125821
+	b	be_cont.26857
 	nop
-be_else.125820:
+be_else.26856:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -6854,17 +6854,17 @@ be_else.125820:
 	ld	[%i0 + 44], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125825
+	bne	be_else.26859
 	nop
 	ld	[%i0 + 36], %o5
 	ld	[%o5 + 20], %o4
 	cmp	%o4, -1
-	bne	be_else.125827
+	bne	be_else.26861
 	nop
 	set	0, %o5
-	b	be_cont.125828
+	b	be_cont.26862
 	nop
-be_else.125827:
+be_else.26861:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -6877,17 +6877,17 @@ be_else.125827:
 	ld	[%i0 + 44], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125832
+	bne	be_else.26864
 	nop
 	ld	[%i0 + 36], %o5
 	ld	[%o5 + 24], %o4
 	cmp	%o4, -1
-	bne	be_else.125834
+	bne	be_else.26866
 	nop
 	set	0, %o5
-	b	be_cont.125835
+	b	be_cont.26867
 	nop
-be_else.125834:
+be_else.26866:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -6900,7 +6900,7 @@ be_else.125834:
 	ld	[%i0 + 44], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125839
+	bne	be_else.26869
 	nop
 	set	7, %i2
 	ld	[%i0 + 36], %i3
@@ -6911,44 +6911,44 @@ be_else.125834:
 	sub	%i0, 48, %i0
 	ld	[%i0 + 44], %o7
 	mov	%i2, %o5
-	b	be_cont.125840
+	b	be_cont.26870
 	nop
-be_else.125839:
+be_else.26869:
 	set	1, %o5
-be_cont.125840:
-be_cont.125835:
-	b	be_cont.125833
+be_cont.26870:
+be_cont.26867:
+	b	be_cont.26865
 	nop
-be_else.125832:
+be_else.26864:
 	set	1, %o5
-be_cont.125833:
-be_cont.125828:
-	b	be_cont.125826
+be_cont.26865:
+be_cont.26862:
+	b	be_cont.26860
 	nop
-be_else.125825:
+be_else.26859:
 	set	1, %o5
-be_cont.125826:
-be_cont.125821:
-	b	be_cont.125819
+be_cont.26860:
+be_cont.26857:
+	b	be_cont.26855
 	nop
-be_else.125818:
+be_else.26854:
 	set	1, %o5
-be_cont.125819:
-be_cont.125814:
-	b	be_cont.125812
+be_cont.26855:
+be_cont.26852:
+	b	be_cont.26850
 	nop
-be_else.125811:
+be_else.26849:
 	set	1, %o5
-be_cont.125812:
-be_cont.125807:
-	b	be_cont.125805
+be_cont.26850:
+be_cont.26847:
+	b	be_cont.26845
 	nop
-be_else.125804:
+be_else.26844:
 	set	1, %o5
-be_cont.125805:
-be_cont.125800:
+be_cont.26845:
+be_cont.26842:
 	cmp	%o5, 0
-	bne	be_else.125842
+	bne	be_else.26872
 	nop
 	ld	[%i0 + 32], %o5
 	add	%o5, 1, %i2
@@ -6956,20 +6956,20 @@ be_cont.125800:
 	ld	[%i0 + 0], %i4
 	b	shadow_check_one_or_matrix.3429
 	nop
-be_else.125842:
+be_else.26872:
 	set	1, %i2
 	retl
 	nop
-fble_else.125739:
+fble_else.26803:
 	ld	[%i0 + 12], %o5
 	ld	[%o5 + 4], %o4
 	cmp	%o4, -1
-	bne	be_else.125846
+	bne	be_else.26873
 	nop
 	set	0, %o5
-	b	be_cont.125847
+	b	be_cont.26874
 	nop
-be_else.125846:
+be_else.26873:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -6982,17 +6982,17 @@ be_else.125846:
 	ld	[%i0 + 44], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125851
+	bne	be_else.26876
 	nop
 	ld	[%i0 + 12], %o5
 	ld	[%o5 + 8], %o4
 	cmp	%o4, -1
-	bne	be_else.125853
+	bne	be_else.26878
 	nop
 	set	0, %o5
-	b	be_cont.125854
+	b	be_cont.26879
 	nop
-be_else.125853:
+be_else.26878:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -7005,17 +7005,17 @@ be_else.125853:
 	ld	[%i0 + 44], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125858
+	bne	be_else.26881
 	nop
 	ld	[%i0 + 12], %o5
 	ld	[%o5 + 12], %o4
 	cmp	%o4, -1
-	bne	be_else.125860
+	bne	be_else.26883
 	nop
 	set	0, %o5
-	b	be_cont.125861
+	b	be_cont.26884
 	nop
-be_else.125860:
+be_else.26883:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -7028,17 +7028,17 @@ be_else.125860:
 	ld	[%i0 + 44], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125865
+	bne	be_else.26886
 	nop
 	ld	[%i0 + 12], %o5
 	ld	[%o5 + 16], %o4
 	cmp	%o4, -1
-	bne	be_else.125867
+	bne	be_else.26888
 	nop
 	set	0, %o5
-	b	be_cont.125868
+	b	be_cont.26889
 	nop
-be_else.125867:
+be_else.26888:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -7051,17 +7051,17 @@ be_else.125867:
 	ld	[%i0 + 44], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125872
+	bne	be_else.26891
 	nop
 	ld	[%i0 + 12], %o5
 	ld	[%o5 + 20], %o4
 	cmp	%o4, -1
-	bne	be_else.125874
+	bne	be_else.26893
 	nop
 	set	0, %o5
-	b	be_cont.125875
+	b	be_cont.26894
 	nop
-be_else.125874:
+be_else.26893:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -7074,17 +7074,17 @@ be_else.125874:
 	ld	[%i0 + 44], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125879
+	bne	be_else.26896
 	nop
 	ld	[%i0 + 12], %o5
 	ld	[%o5 + 24], %o4
 	cmp	%o4, -1
-	bne	be_else.125881
+	bne	be_else.26898
 	nop
 	set	0, %o5
-	b	be_cont.125882
+	b	be_cont.26899
 	nop
-be_else.125881:
+be_else.26898:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -7097,17 +7097,17 @@ be_else.125881:
 	ld	[%i0 + 44], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125886
+	bne	be_else.26901
 	nop
 	ld	[%i0 + 12], %o5
 	ld	[%o5 + 28], %o4
 	cmp	%o4, -1
-	bne	be_else.125888
+	bne	be_else.26903
 	nop
 	set	0, %o5
-	b	be_cont.125889
+	b	be_cont.26904
 	nop
-be_else.125888:
+be_else.26903:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -7120,7 +7120,7 @@ be_else.125888:
 	ld	[%i0 + 44], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125893
+	bne	be_else.26906
 	nop
 	set	8, %i2
 	ld	[%i0 + 12], %i3
@@ -7131,50 +7131,50 @@ be_else.125888:
 	sub	%i0, 48, %i0
 	ld	[%i0 + 44], %o7
 	mov	%i2, %o5
-	b	be_cont.125894
+	b	be_cont.26907
 	nop
-be_else.125893:
+be_else.26906:
 	set	1, %o5
-be_cont.125894:
-be_cont.125889:
-	b	be_cont.125887
+be_cont.26907:
+be_cont.26904:
+	b	be_cont.26902
 	nop
-be_else.125886:
+be_else.26901:
 	set	1, %o5
-be_cont.125887:
-be_cont.125882:
-	b	be_cont.125880
+be_cont.26902:
+be_cont.26899:
+	b	be_cont.26897
 	nop
-be_else.125879:
+be_else.26896:
 	set	1, %o5
-be_cont.125880:
-be_cont.125875:
-	b	be_cont.125873
+be_cont.26897:
+be_cont.26894:
+	b	be_cont.26892
 	nop
-be_else.125872:
+be_else.26891:
 	set	1, %o5
-be_cont.125873:
-be_cont.125868:
-	b	be_cont.125866
+be_cont.26892:
+be_cont.26889:
+	b	be_cont.26887
 	nop
-be_else.125865:
+be_else.26886:
 	set	1, %o5
-be_cont.125866:
-be_cont.125861:
-	b	be_cont.125859
+be_cont.26887:
+be_cont.26884:
+	b	be_cont.26882
 	nop
-be_else.125858:
+be_else.26881:
 	set	1, %o5
-be_cont.125859:
-be_cont.125854:
-	b	be_cont.125852
+be_cont.26882:
+be_cont.26879:
+	b	be_cont.26877
 	nop
-be_else.125851:
+be_else.26876:
 	set	1, %o5
-be_cont.125852:
-be_cont.125847:
+be_cont.26877:
+be_cont.26874:
 	cmp	%o5, 0
-	bne	be_else.125896
+	bne	be_else.26909
 	nop
 	ld	[%i0 + 8], %o5
 	add	%o5, 1, %o5
@@ -7183,24 +7183,24 @@ be_cont.125847:
 	ld	[%i3 + %o4], %o4
 	ld	[%o4 + 0], %i2
 	cmp	%i2, -1
-	bne	be_else.125897
+	bne	be_else.26910
 	nop
 	set	0, %i2
 	retl
 	nop
-be_else.125897:
+be_else.26910:
 	cmp	%i2, 99
-	bne	be_else.125898
+	bne	be_else.26911
 	nop
 	st	%o5, [%i0 + 40]
 	ld	[%o4 + 4], %o5
 	cmp	%o5, -1
-	bne	be_else.125902
+	bne	be_else.26912
 	nop
 	set	0, %o5
-	b	be_cont.125903
+	b	be_cont.26913
 	nop
-be_else.125902:
+be_else.26912:
 	st	%o4, [%i0 + 44]
 	set	min_caml_and_net, %o4
 	sll	%o5, 2, %o5
@@ -7214,17 +7214,17 @@ be_else.125902:
 	ld	[%i0 + 52], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125907
+	bne	be_else.26915
 	nop
 	ld	[%i0 + 44], %o5
 	ld	[%o5 + 8], %o4
 	cmp	%o4, -1
-	bne	be_else.125909
+	bne	be_else.26917
 	nop
 	set	0, %o5
-	b	be_cont.125910
+	b	be_cont.26918
 	nop
-be_else.125909:
+be_else.26917:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -7237,17 +7237,17 @@ be_else.125909:
 	ld	[%i0 + 52], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125914
+	bne	be_else.26920
 	nop
 	ld	[%i0 + 44], %o5
 	ld	[%o5 + 12], %o4
 	cmp	%o4, -1
-	bne	be_else.125916
+	bne	be_else.26922
 	nop
 	set	0, %o5
-	b	be_cont.125917
+	b	be_cont.26923
 	nop
-be_else.125916:
+be_else.26922:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -7260,17 +7260,17 @@ be_else.125916:
 	ld	[%i0 + 52], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125921
+	bne	be_else.26925
 	nop
 	ld	[%i0 + 44], %o5
 	ld	[%o5 + 16], %o4
 	cmp	%o4, -1
-	bne	be_else.125923
+	bne	be_else.26927
 	nop
 	set	0, %o5
-	b	be_cont.125924
+	b	be_cont.26928
 	nop
-be_else.125923:
+be_else.26927:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -7283,17 +7283,17 @@ be_else.125923:
 	ld	[%i0 + 52], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125928
+	bne	be_else.26930
 	nop
 	ld	[%i0 + 44], %o5
 	ld	[%o5 + 20], %o4
 	cmp	%o4, -1
-	bne	be_else.125930
+	bne	be_else.26932
 	nop
 	set	0, %o5
-	b	be_cont.125931
+	b	be_cont.26933
 	nop
-be_else.125930:
+be_else.26932:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -7306,17 +7306,17 @@ be_else.125930:
 	ld	[%i0 + 52], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125935
+	bne	be_else.26935
 	nop
 	ld	[%i0 + 44], %o5
 	ld	[%o5 + 24], %o4
 	cmp	%o4, -1
-	bne	be_else.125937
+	bne	be_else.26937
 	nop
 	set	0, %o5
-	b	be_cont.125938
+	b	be_cont.26938
 	nop
-be_else.125937:
+be_else.26937:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -7329,7 +7329,7 @@ be_else.125937:
 	ld	[%i0 + 52], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125942
+	bne	be_else.26940
 	nop
 	set	7, %i2
 	ld	[%i0 + 44], %i3
@@ -7340,44 +7340,44 @@ be_else.125937:
 	sub	%i0, 56, %i0
 	ld	[%i0 + 52], %o7
 	mov	%i2, %o5
-	b	be_cont.125943
+	b	be_cont.26941
 	nop
-be_else.125942:
+be_else.26940:
 	set	1, %o5
-be_cont.125943:
-be_cont.125938:
-	b	be_cont.125936
+be_cont.26941:
+be_cont.26938:
+	b	be_cont.26936
 	nop
-be_else.125935:
+be_else.26935:
 	set	1, %o5
-be_cont.125936:
-be_cont.125931:
-	b	be_cont.125929
+be_cont.26936:
+be_cont.26933:
+	b	be_cont.26931
 	nop
-be_else.125928:
+be_else.26930:
 	set	1, %o5
-be_cont.125929:
-be_cont.125924:
-	b	be_cont.125922
+be_cont.26931:
+be_cont.26928:
+	b	be_cont.26926
 	nop
-be_else.125921:
+be_else.26925:
 	set	1, %o5
-be_cont.125922:
-be_cont.125917:
-	b	be_cont.125915
+be_cont.26926:
+be_cont.26923:
+	b	be_cont.26921
 	nop
-be_else.125914:
+be_else.26920:
 	set	1, %o5
-be_cont.125915:
-be_cont.125910:
-	b	be_cont.125908
+be_cont.26921:
+be_cont.26918:
+	b	be_cont.26916
 	nop
-be_else.125907:
+be_else.26915:
 	set	1, %o5
-be_cont.125908:
-be_cont.125903:
+be_cont.26916:
+be_cont.26913:
 	cmp	%o5, 0
-	bne	be_else.125945
+	bne	be_else.26943
 	nop
 	ld	[%i0 + 40], %o5
 	add	%o5, 1, %i2
@@ -7385,11 +7385,11 @@ be_cont.125903:
 	ld	[%i0 + 0], %i4
 	b	shadow_check_one_or_matrix.3429
 	nop
-be_else.125945:
+be_else.26943:
 	set	1, %i2
 	retl
 	nop
-be_else.125898:
+be_else.26911:
 	st	%o4, [%i0 + 44]
 	st	%o5, [%i0 + 40]
 	set	min_caml_light, %i3
@@ -7401,7 +7401,7 @@ be_else.125898:
 	ld	[%i0 + 52], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125951
+	bne	be_else.26945
 	nop
 	ld	[%i0 + 40], %o5
 	add	%o5, 1, %i2
@@ -7409,14 +7409,14 @@ be_else.125898:
 	ld	[%i0 + 0], %i4
 	b	shadow_check_one_or_matrix.3429
 	nop
-be_else.125951:
-	set	l.11380, %o5
+be_else.26945:
+	set	l.11390, %o5
 	ldd	[%o5 + 0], %f14
 	set	min_caml_solver_dist, %o5
 	ldd	[%o5 + 0], %f12
 	fcmpd	%f14, %f12
 	nop
-	fbg	fble_else.125952
+	fbg	fble_else.26946
 	nop
 	ld	[%i0 + 40], %o5
 	add	%o5, 1, %i2
@@ -7424,16 +7424,16 @@ be_else.125951:
 	ld	[%i0 + 0], %i4
 	b	shadow_check_one_or_matrix.3429
 	nop
-fble_else.125952:
+fble_else.26946:
 	ld	[%i0 + 44], %o5
 	ld	[%o5 + 4], %o4
 	cmp	%o4, -1
-	bne	be_else.125956
+	bne	be_else.26947
 	nop
 	set	0, %o5
-	b	be_cont.125957
+	b	be_cont.26948
 	nop
-be_else.125956:
+be_else.26947:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -7446,17 +7446,17 @@ be_else.125956:
 	ld	[%i0 + 52], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125961
+	bne	be_else.26950
 	nop
 	ld	[%i0 + 44], %o5
 	ld	[%o5 + 8], %o4
 	cmp	%o4, -1
-	bne	be_else.125963
+	bne	be_else.26952
 	nop
 	set	0, %o5
-	b	be_cont.125964
+	b	be_cont.26953
 	nop
-be_else.125963:
+be_else.26952:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -7469,17 +7469,17 @@ be_else.125963:
 	ld	[%i0 + 52], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125968
+	bne	be_else.26955
 	nop
 	ld	[%i0 + 44], %o5
 	ld	[%o5 + 12], %o4
 	cmp	%o4, -1
-	bne	be_else.125970
+	bne	be_else.26957
 	nop
 	set	0, %o5
-	b	be_cont.125971
+	b	be_cont.26958
 	nop
-be_else.125970:
+be_else.26957:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -7492,17 +7492,17 @@ be_else.125970:
 	ld	[%i0 + 52], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125975
+	bne	be_else.26960
 	nop
 	ld	[%i0 + 44], %o5
 	ld	[%o5 + 16], %o4
 	cmp	%o4, -1
-	bne	be_else.125977
+	bne	be_else.26962
 	nop
 	set	0, %o5
-	b	be_cont.125978
+	b	be_cont.26963
 	nop
-be_else.125977:
+be_else.26962:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -7515,17 +7515,17 @@ be_else.125977:
 	ld	[%i0 + 52], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125982
+	bne	be_else.26965
 	nop
 	ld	[%i0 + 44], %o5
 	ld	[%o5 + 20], %o4
 	cmp	%o4, -1
-	bne	be_else.125984
+	bne	be_else.26967
 	nop
 	set	0, %o5
-	b	be_cont.125985
+	b	be_cont.26968
 	nop
-be_else.125984:
+be_else.26967:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -7538,17 +7538,17 @@ be_else.125984:
 	ld	[%i0 + 52], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125989
+	bne	be_else.26970
 	nop
 	ld	[%i0 + 44], %o5
 	ld	[%o5 + 24], %o4
 	cmp	%o4, -1
-	bne	be_else.125991
+	bne	be_else.26972
 	nop
 	set	0, %o5
-	b	be_cont.125992
+	b	be_cont.26973
 	nop
-be_else.125991:
+be_else.26972:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -7561,7 +7561,7 @@ be_else.125991:
 	ld	[%i0 + 52], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.125996
+	bne	be_else.26975
 	nop
 	set	7, %i2
 	ld	[%i0 + 44], %i3
@@ -7572,44 +7572,44 @@ be_else.125991:
 	sub	%i0, 56, %i0
 	ld	[%i0 + 52], %o7
 	mov	%i2, %o5
-	b	be_cont.125997
+	b	be_cont.26976
 	nop
-be_else.125996:
+be_else.26975:
 	set	1, %o5
-be_cont.125997:
-be_cont.125992:
-	b	be_cont.125990
+be_cont.26976:
+be_cont.26973:
+	b	be_cont.26971
 	nop
-be_else.125989:
+be_else.26970:
 	set	1, %o5
-be_cont.125990:
-be_cont.125985:
-	b	be_cont.125983
+be_cont.26971:
+be_cont.26968:
+	b	be_cont.26966
 	nop
-be_else.125982:
+be_else.26965:
 	set	1, %o5
-be_cont.125983:
-be_cont.125978:
-	b	be_cont.125976
+be_cont.26966:
+be_cont.26963:
+	b	be_cont.26961
 	nop
-be_else.125975:
+be_else.26960:
 	set	1, %o5
-be_cont.125976:
-be_cont.125971:
-	b	be_cont.125969
+be_cont.26961:
+be_cont.26958:
+	b	be_cont.26956
 	nop
-be_else.125968:
+be_else.26955:
 	set	1, %o5
-be_cont.125969:
-be_cont.125964:
-	b	be_cont.125962
+be_cont.26956:
+be_cont.26953:
+	b	be_cont.26951
 	nop
-be_else.125961:
+be_else.26950:
 	set	1, %o5
-be_cont.125962:
-be_cont.125957:
+be_cont.26951:
+be_cont.26948:
 	cmp	%o5, 0
-	bne	be_else.125999
+	bne	be_else.26978
 	nop
 	ld	[%i0 + 40], %o5
 	add	%o5, 1, %i2
@@ -7617,11 +7617,11 @@ be_cont.125957:
 	ld	[%i0 + 0], %i4
 	b	shadow_check_one_or_matrix.3429
 	nop
-be_else.125999:
+be_else.26978:
 	set	1, %i2
 	retl
 	nop
-be_else.125896:
+be_else.26909:
 	set	1, %i2
 	retl
 	nop
@@ -7629,11 +7629,11 @@ solve_each_element.3459:
 	sll	%i2, 2, %o5
 	ld	[%i3 + %o5], %o5
 	cmp	%o5, -1
-	bne	be_else.126000
+	bne	be_else.26979
 	nop
 	retl
 	nop
-be_else.126000:
+be_else.26979:
 	st	%i2, [%i0 + 0]
 	st	%i3, [%i0 + 4]
 	st	%o5, [%i0 + 8]
@@ -7662,7 +7662,7 @@ be_else.126000:
 	std	%f14, [%o5 + 16]
 	ld	[%i2 + 4], %o5
 	cmp	%o5, 1
-	bne	be_else.126008
+	bne	be_else.26981
 	nop
 	st	%o7, [%i0 + 12]
 	call	solver_rect.2890
@@ -7670,11 +7670,11 @@ be_else.126000:
 	sub	%i0, 16, %i0
 	ld	[%i0 + 12], %o7
 	mov	%i2, %o5
-	b	be_cont.126009
+	b	be_cont.26982
 	nop
-be_else.126008:
+be_else.26981:
 	cmp	%o5, 2
-	bne	be_else.126011
+	bne	be_else.26984
 	nop
 	ldd	[%i3 + 0], %f14
 	ld	[%i2 + 16], %o5
@@ -7694,12 +7694,12 @@ be_else.126008:
 	ldd	[%o5 + 0], %f12
 	fcmpd	%f14, %f12
 	nop
-	fbg	fble_else.126013
+	fbg	fble_else.26986
 	nop
 	set	0, %o5
-	b	fble_cont.126014
+	b	fble_cont.26987
 	nop
-fble_else.126013:
+fble_else.26986:
 	set	min_caml_solver_w_vec, %o5
 	ldd	[%o5 + 0], %f12
 	ld	[%i2 + 16], %o5
@@ -7722,20 +7722,20 @@ fble_else.126013:
 	fnegs	%f14, %f14
 	std	%f14, [%o5 + 0]
 	set	1, %o5
-fble_cont.126014:
-	b	be_cont.126012
+fble_cont.26987:
+	b	be_cont.26985
 	nop
-be_else.126011:
+be_else.26984:
 	st	%o7, [%i0 + 12]
 	call	solver_second.3180
 	add	%i0, 16, %i0	! delay slot
 	sub	%i0, 16, %i0
 	ld	[%i0 + 12], %o7
 	mov	%i2, %o5
-be_cont.126012:
-be_cont.126009:
+be_cont.26985:
+be_cont.26982:
 	cmp	%o5, 0
-	bne	be_else.126018
+	bne	be_else.26989
 	nop
 	set	min_caml_objects, %o5
 	ld	[%i0 + 8], %o4
@@ -7743,40 +7743,40 @@ be_cont.126009:
 	ld	[%o5 + %o4], %o5
 	ld	[%o5 + 24], %o5
 	cmp	%o5, 0
-	bne	be_else.126020
+	bne	be_else.26991
 	nop
 	set	min_caml_end_flag, %o5
 	set	1, %o4
 	st	%o4, [%o5 + 0]
-	b	be_cont.126021
+	b	be_cont.26992
 	nop
-be_else.126020:
-be_cont.126021:
-	b	be_cont.126019
+be_else.26991:
+be_cont.26992:
+	b	be_cont.26990
 	nop
-be_else.126018:
+be_else.26989:
 	set	min_caml_solver_dist, %o4
 	ldd	[%o4 + 0], %f14
-	set	l.11380, %o4
+	set	l.11390, %o4
 	ldd	[%o4 + 0], %f12
 	fcmpd	%f14, %f12
 	nop
-	fbg	fble_else.126022
+	fbg	fble_else.26993
 	nop
-	b	fble_cont.126023
+	b	fble_cont.26994
 	nop
-fble_else.126022:
+fble_else.26993:
 	set	min_caml_tmin, %o4
 	ldd	[%o4 + 0], %f12
 	fcmpd	%f12, %f14
 	nop
-	fbg	fble_else.126024
+	fbg	fble_else.26995
 	nop
-	b	fble_cont.126025
+	b	fble_cont.26996
 	nop
-fble_else.126024:
+fble_else.26995:
 	st	%o5, [%i0 + 12]
-	set	l.11298, %o5
+	set	l.11308, %o5
 	ldd	[%o5 + 0], %f12
 	faddd	%f14, %f12, %f14
 	std	%f14, [%i0 + 16]
@@ -7807,12 +7807,12 @@ fble_else.126024:
 	ld	[%i0 + 4], %i3
 	ld	[%i3 + 0], %o5
 	cmp	%o5, -1
-	bne	be_else.126032
+	bne	be_else.26997
 	nop
 	set	1, %o5
-	b	be_cont.126033
+	b	be_cont.26998
 	nop
-be_else.126032:
+be_else.26997:
 	set	min_caml_objects, %o4
 	sll	%o5, 2, %o5
 	ld	[%o4 + %o5], %i2
@@ -7823,17 +7823,17 @@ be_else.126032:
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.126036
+	bne	be_else.27000
 	nop
 	ld	[%i0 + 4], %i3
 	ld	[%i3 + 4], %o5
 	cmp	%o5, -1
-	bne	be_else.126038
+	bne	be_else.27002
 	nop
 	set	1, %o5
-	b	be_cont.126039
+	b	be_cont.27003
 	nop
-be_else.126038:
+be_else.27002:
 	set	min_caml_objects, %o4
 	sll	%o5, 2, %o5
 	ld	[%o4 + %o5], %i2
@@ -7860,7 +7860,7 @@ be_else.126038:
 	std	%f14, [%o5 + 16]
 	ld	[%i2 + 4], %o5
 	cmp	%o5, 1
-	bne	be_else.126044
+	bne	be_else.27004
 	nop
 	st	%i2, [%i0 + 24]
 	ld	[%i2 + 16], %o5
@@ -7878,12 +7878,12 @@ be_else.126038:
 	ldd	[%i0 + 32], %f12
 	fcmpd	%f12, %f14
 	nop
-	fbg	fble_else.126050
+	fbg	fble_else.27008
 	nop
 	set	0, %o5
-	b	fble_cont.126051
+	b	fble_cont.27009
 	nop
-fble_else.126050:
+fble_else.27008:
 	ld	[%i0 + 24], %o5
 	ld	[%o5 + 16], %o5
 	ldd	[%o5 + 8], %f14
@@ -7900,12 +7900,12 @@ fble_else.126050:
 	ldd	[%i0 + 40], %f12
 	fcmpd	%f12, %f14
 	nop
-	fbg	fble_else.126055
+	fbg	fble_else.27011
 	nop
 	set	0, %o5
-	b	fble_cont.126056
+	b	fble_cont.27012
 	nop
-fble_else.126055:
+fble_else.27011:
 	ld	[%i0 + 24], %o5
 	ld	[%o5 + 16], %o5
 	ldd	[%o5 + 16], %f14
@@ -7922,41 +7922,41 @@ fble_else.126055:
 	ldd	[%i0 + 48], %f12
 	fcmpd	%f12, %f14
 	nop
-	fbg	fble_else.126059
+	fbg	fble_else.27014
 	nop
 	set	0, %o5
-	b	fble_cont.126060
+	b	fble_cont.27015
 	nop
-fble_else.126059:
+fble_else.27014:
 	set	1, %o5
-fble_cont.126060:
-fble_cont.126056:
-fble_cont.126051:
+fble_cont.27015:
+fble_cont.27012:
+fble_cont.27009:
 	cmp	%o5, 0
-	bne	be_else.126061
+	bne	be_else.27016
 	nop
 	ld	[%i0 + 24], %o5
 	ld	[%o5 + 24], %o5
 	cmp	%o5, 0
-	bne	be_else.126063
+	bne	be_else.27018
 	nop
 	set	1, %o5
-	b	be_cont.126064
+	b	be_cont.27019
 	nop
-be_else.126063:
+be_else.27018:
 	set	0, %o5
-be_cont.126064:
-	b	be_cont.126062
+be_cont.27019:
+	b	be_cont.27017
 	nop
-be_else.126061:
+be_else.27016:
 	ld	[%i0 + 24], %o5
 	ld	[%o5 + 24], %o5
-be_cont.126062:
-	b	be_cont.126045
+be_cont.27017:
+	b	be_cont.27005
 	nop
-be_else.126044:
+be_else.27004:
 	cmp	%o5, 2
-	bne	be_else.126065
+	bne	be_else.27020
 	nop
 	ld	[%i2 + 16], %o5
 	ldd	[%o5 + 0], %f14
@@ -7979,63 +7979,63 @@ be_else.126044:
 	ldd	[%o5 + 0], %f12
 	fcmpd	%f12, %f14
 	nop
-	fbg	fble_else.126067
+	fbg	fble_else.27022
 	nop
 	set	0, %o5
-	b	fble_cont.126068
+	b	fble_cont.27023
 	nop
-fble_else.126067:
+fble_else.27022:
 	set	1, %o5
-fble_cont.126068:
+fble_cont.27023:
 	ld	[%i2 + 24], %o4
 	cmp	%o4, 0
-	bne	be_else.126069
+	bne	be_else.27024
 	nop
-	b	be_cont.126070
+	b	be_cont.27025
 	nop
-be_else.126069:
+be_else.27024:
 	cmp	%o5, 0
-	bne	be_else.126071
+	bne	be_else.27026
 	nop
 	set	1, %o5
-	b	be_cont.126072
+	b	be_cont.27027
 	nop
-be_else.126071:
+be_else.27026:
 	set	0, %o5
-be_cont.126072:
-be_cont.126070:
+be_cont.27027:
+be_cont.27025:
 	cmp	%o5, 0
-	bne	be_else.126073
+	bne	be_else.27028
 	nop
 	set	1, %o5
-	b	be_cont.126074
+	b	be_cont.27029
 	nop
-be_else.126073:
+be_else.27028:
 	set	0, %o5
-be_cont.126074:
-	b	be_cont.126066
+be_cont.27029:
+	b	be_cont.27021
 	nop
-be_else.126065:
+be_else.27020:
 	st	%o7, [%i0 + 60]
 	call	is_second_outside.3299
 	add	%i0, 64, %i0	! delay slot
 	sub	%i0, 64, %i0
 	ld	[%i0 + 60], %o7
 	mov	%i2, %o5
-be_cont.126066:
-be_cont.126045:
+be_cont.27021:
+be_cont.27005:
 	cmp	%o5, 0
-	bne	be_else.126076
+	bne	be_else.27031
 	nop
 	ld	[%i0 + 4], %i3
 	ld	[%i3 + 8], %o5
 	cmp	%o5, -1
-	bne	be_else.126078
+	bne	be_else.27033
 	nop
 	set	1, %o5
-	b	be_cont.126079
+	b	be_cont.27034
 	nop
-be_else.126078:
+be_else.27033:
 	set	min_caml_objects, %o4
 	sll	%o5, 2, %o5
 	ld	[%o4 + %o5], %i2
@@ -8046,7 +8046,7 @@ be_else.126078:
 	ld	[%i0 + 60], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.126082
+	bne	be_else.27036
 	nop
 	set	3, %i2
 	ld	[%i0 + 4], %i3
@@ -8056,30 +8056,30 @@ be_else.126078:
 	sub	%i0, 64, %i0
 	ld	[%i0 + 60], %o7
 	mov	%i2, %o5
-	b	be_cont.126083
+	b	be_cont.27037
 	nop
-be_else.126082:
+be_else.27036:
 	set	0, %o5
-be_cont.126083:
-be_cont.126079:
-	b	be_cont.126077
+be_cont.27037:
+be_cont.27034:
+	b	be_cont.27032
 	nop
-be_else.126076:
+be_else.27031:
 	set	0, %o5
-be_cont.126077:
-be_cont.126039:
-	b	be_cont.126037
+be_cont.27032:
+be_cont.27003:
+	b	be_cont.27001
 	nop
-be_else.126036:
+be_else.27000:
 	set	0, %o5
-be_cont.126037:
-be_cont.126033:
+be_cont.27001:
+be_cont.26998:
 	cmp	%o5, 0
-	bne	be_else.126085
+	bne	be_else.27039
 	nop
-	b	be_cont.126086
+	b	be_cont.27040
 	nop
-be_else.126085:
+be_else.27039:
 	set	min_caml_tmin, %o5
 	ldd	[%i0 + 16], %f14
 	std	%f14, [%o5 + 0]
@@ -8101,32 +8101,32 @@ be_else.126085:
 	set	min_caml_crashed_object, %o5
 	ld	[%i0 + 8], %o4
 	st	%o4, [%o5 + 0]
-be_cont.126086:
-fble_cont.126025:
-fble_cont.126023:
-be_cont.126019:
+be_cont.27040:
+fble_cont.26996:
+fble_cont.26994:
+be_cont.26990:
 	set	min_caml_end_flag, %o5
 	ld	[%o5 + 0], %o5
 	cmp	%o5, 0
-	bne	be_else.126093
+	bne	be_else.27041
 	nop
 	ld	[%i0 + 0], %o5
 	add	%o5, 1, %i2
 	ld	[%i0 + 4], %i3
 	b	solve_each_element.3459
 	nop
-be_else.126093:
+be_else.27041:
 	retl
 	nop
 solve_one_or_network.3553:
 	sll	%i2, 2, %o5
 	ld	[%i3 + %o5], %o5
 	cmp	%o5, -1
-	bne	be_else.126095
+	bne	be_else.27043
 	nop
 	retl
 	nop
-be_else.126095:
+be_else.27043:
 	st	%i3, [%i0 + 0]
 	st	%i2, [%i0 + 4]
 	set	min_caml_and_net, %o4
@@ -8147,11 +8147,11 @@ be_else.126095:
 	ld	[%i0 + 0], %o3
 	ld	[%o3 + %o4], %o4
 	cmp	%o4, -1
-	bne	be_else.126103
+	bne	be_else.27046
 	nop
 	retl
 	nop
-be_else.126103:
+be_else.27046:
 	st	%o5, [%i0 + 8]
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
@@ -8171,11 +8171,11 @@ be_else.126103:
 	ld	[%i0 + 0], %o3
 	ld	[%o3 + %o4], %o4
 	cmp	%o4, -1
-	bne	be_else.126111
+	bne	be_else.27049
 	nop
 	retl
 	nop
-be_else.126111:
+be_else.27049:
 	st	%o5, [%i0 + 12]
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
@@ -8195,11 +8195,11 @@ be_else.126111:
 	ld	[%i0 + 0], %o3
 	ld	[%o3 + %o4], %o4
 	cmp	%o4, -1
-	bne	be_else.126119
+	bne	be_else.27052
 	nop
 	retl
 	nop
-be_else.126119:
+be_else.27052:
 	st	%o5, [%i0 + 16]
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
@@ -8223,23 +8223,23 @@ trace_or_matrix.3568:
 	ld	[%i3 + %o5], %o5
 	ld	[%o5 + 0], %o4
 	cmp	%o4, -1
-	bne	be_else.126127
+	bne	be_else.27055
 	nop
 	retl
 	nop
-be_else.126127:
+be_else.27055:
 	st	%i3, [%i0 + 0]
 	st	%i2, [%i0 + 4]
 	cmp	%o4, 99
-	bne	be_else.126132
+	bne	be_else.27057
 	nop
 	ld	[%o5 + 4], %o4
 	cmp	%o4, -1
-	bne	be_else.126134
+	bne	be_else.27059
 	nop
-	b	be_cont.126135
+	b	be_cont.27060
 	nop
-be_else.126134:
+be_else.27059:
 	st	%o5, [%i0 + 8]
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
@@ -8256,11 +8256,11 @@ be_else.126134:
 	ld	[%i0 + 8], %o5
 	ld	[%o5 + 8], %o4
 	cmp	%o4, -1
-	bne	be_else.126141
+	bne	be_else.27062
 	nop
-	b	be_cont.126142
+	b	be_cont.27063
 	nop
-be_else.126141:
+be_else.27062:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -8276,11 +8276,11 @@ be_else.126141:
 	ld	[%i0 + 8], %o5
 	ld	[%o5 + 12], %o4
 	cmp	%o4, -1
-	bne	be_else.126148
+	bne	be_else.27065
 	nop
-	b	be_cont.126149
+	b	be_cont.27066
 	nop
-be_else.126148:
+be_else.27065:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -8300,12 +8300,12 @@ be_else.126148:
 	add	%i0, 16, %i0	! delay slot
 	sub	%i0, 16, %i0
 	ld	[%i0 + 12], %o7
-be_cont.126149:
-be_cont.126142:
-be_cont.126135:
-	b	be_cont.126133
+be_cont.27066:
+be_cont.27063:
+be_cont.27060:
+	b	be_cont.27058
 	nop
-be_else.126132:
+be_else.27057:
 	st	%o5, [%i0 + 8]
 	set	min_caml_vscan, %i3
 	set	min_caml_viewpoint, %o5
@@ -8332,7 +8332,7 @@ be_else.126132:
 	std	%f14, [%o4 + 16]
 	ld	[%i2 + 4], %o5
 	cmp	%o5, 1
-	bne	be_else.126160
+	bne	be_else.27069
 	nop
 	st	%o7, [%i0 + 12]
 	call	solver_rect.2890
@@ -8340,11 +8340,11 @@ be_else.126132:
 	sub	%i0, 16, %i0
 	ld	[%i0 + 12], %o7
 	mov	%i2, %o5
-	b	be_cont.126161
+	b	be_cont.27070
 	nop
-be_else.126160:
+be_else.27069:
 	cmp	%o5, 2
-	bne	be_else.126163
+	bne	be_else.27072
 	nop
 	ldd	[%i3 + 0], %f14
 	ld	[%i2 + 16], %o5
@@ -8364,12 +8364,12 @@ be_else.126160:
 	ldd	[%o5 + 0], %f12
 	fcmpd	%f14, %f12
 	nop
-	fbg	fble_else.126165
+	fbg	fble_else.27074
 	nop
 	set	0, %o5
-	b	fble_cont.126166
+	b	fble_cont.27075
 	nop
-fble_else.126165:
+fble_else.27074:
 	set	min_caml_solver_w_vec, %o5
 	ldd	[%o5 + 0], %f12
 	ld	[%i2 + 16], %o5
@@ -8392,43 +8392,43 @@ fble_else.126165:
 	fnegs	%f14, %f14
 	std	%f14, [%o5 + 0]
 	set	1, %o5
-fble_cont.126166:
-	b	be_cont.126164
+fble_cont.27075:
+	b	be_cont.27073
 	nop
-be_else.126163:
+be_else.27072:
 	st	%o7, [%i0 + 12]
 	call	solver_second.3180
 	add	%i0, 16, %i0	! delay slot
 	sub	%i0, 16, %i0
 	ld	[%i0 + 12], %o7
 	mov	%i2, %o5
-be_cont.126164:
-be_cont.126161:
+be_cont.27073:
+be_cont.27070:
 	cmp	%o5, 0
-	bne	be_else.126169
+	bne	be_else.27077
 	nop
-	b	be_cont.126170
+	b	be_cont.27078
 	nop
-be_else.126169:
+be_else.27077:
 	set	min_caml_solver_dist, %o5
 	ldd	[%o5 + 0], %f14
 	set	min_caml_tmin, %o5
 	ldd	[%o5 + 0], %f12
 	fcmpd	%f12, %f14
 	nop
-	fbg	fble_else.126171
+	fbg	fble_else.27079
 	nop
-	b	fble_cont.126172
+	b	fble_cont.27080
 	nop
-fble_else.126171:
+fble_else.27079:
 	ld	[%i0 + 8], %o5
 	ld	[%o5 + 4], %o4
 	cmp	%o4, -1
-	bne	be_else.126173
+	bne	be_else.27081
 	nop
-	b	be_cont.126174
+	b	be_cont.27082
 	nop
-be_else.126173:
+be_else.27081:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -8444,11 +8444,11 @@ be_else.126173:
 	ld	[%i0 + 8], %o5
 	ld	[%o5 + 8], %o4
 	cmp	%o4, -1
-	bne	be_else.126180
+	bne	be_else.27084
 	nop
-	b	be_cont.126181
+	b	be_cont.27085
 	nop
-be_else.126180:
+be_else.27084:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -8464,11 +8464,11 @@ be_else.126180:
 	ld	[%i0 + 8], %o5
 	ld	[%o5 + 12], %o4
 	cmp	%o4, -1
-	bne	be_else.126187
+	bne	be_else.27087
 	nop
-	b	be_cont.126188
+	b	be_cont.27088
 	nop
-be_else.126187:
+be_else.27087:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -8488,12 +8488,12 @@ be_else.126187:
 	add	%i0, 16, %i0	! delay slot
 	sub	%i0, 16, %i0
 	ld	[%i0 + 12], %o7
-be_cont.126188:
-be_cont.126181:
-be_cont.126174:
-fble_cont.126172:
-be_cont.126170:
-be_cont.126133:
+be_cont.27088:
+be_cont.27085:
+be_cont.27082:
+fble_cont.27080:
+be_cont.27078:
+be_cont.27058:
 	ld	[%i0 + 4], %o5
 	add	%o5, 1, %o5
 	sll	%o5, 2, %o4
@@ -8501,22 +8501,22 @@ be_cont.126133:
 	ld	[%i3 + %o4], %o4
 	ld	[%o4 + 0], %i2
 	cmp	%i2, -1
-	bne	be_else.126196
+	bne	be_else.27091
 	nop
 	retl
 	nop
-be_else.126196:
+be_else.27091:
 	st	%o5, [%i0 + 12]
 	cmp	%i2, 99
-	bne	be_else.126201
+	bne	be_else.27093
 	nop
 	ld	[%o4 + 4], %o5
 	cmp	%o5, -1
-	bne	be_else.126203
+	bne	be_else.27095
 	nop
-	b	be_cont.126204
+	b	be_cont.27096
 	nop
-be_else.126203:
+be_else.27095:
 	st	%o4, [%i0 + 16]
 	set	min_caml_and_net, %o4
 	sll	%o5, 2, %o5
@@ -8533,11 +8533,11 @@ be_else.126203:
 	ld	[%i0 + 16], %o5
 	ld	[%o5 + 8], %o4
 	cmp	%o4, -1
-	bne	be_else.126210
+	bne	be_else.27098
 	nop
-	b	be_cont.126211
+	b	be_cont.27099
 	nop
-be_else.126210:
+be_else.27098:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -8557,11 +8557,11 @@ be_else.126210:
 	add	%i0, 24, %i0	! delay slot
 	sub	%i0, 24, %i0
 	ld	[%i0 + 20], %o7
-be_cont.126211:
-be_cont.126204:
-	b	be_cont.126202
+be_cont.27099:
+be_cont.27096:
+	b	be_cont.27094
 	nop
-be_else.126201:
+be_else.27093:
 	st	%o4, [%i0 + 16]
 	set	min_caml_vscan, %i3
 	set	min_caml_viewpoint, %i4
@@ -8572,30 +8572,30 @@ be_else.126201:
 	ld	[%i0 + 20], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.126220
+	bne	be_else.27103
 	nop
-	b	be_cont.126221
+	b	be_cont.27104
 	nop
-be_else.126220:
+be_else.27103:
 	set	min_caml_solver_dist, %o5
 	ldd	[%o5 + 0], %f14
 	set	min_caml_tmin, %o5
 	ldd	[%o5 + 0], %f12
 	fcmpd	%f12, %f14
 	nop
-	fbg	fble_else.126222
+	fbg	fble_else.27105
 	nop
-	b	fble_cont.126223
+	b	fble_cont.27106
 	nop
-fble_else.126222:
+fble_else.27105:
 	ld	[%i0 + 16], %o5
 	ld	[%o5 + 4], %o4
 	cmp	%o4, -1
-	bne	be_else.126224
+	bne	be_else.27107
 	nop
-	b	be_cont.126225
+	b	be_cont.27108
 	nop
-be_else.126224:
+be_else.27107:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -8611,11 +8611,11 @@ be_else.126224:
 	ld	[%i0 + 16], %o5
 	ld	[%o5 + 8], %o4
 	cmp	%o4, -1
-	bne	be_else.126231
+	bne	be_else.27110
 	nop
-	b	be_cont.126232
+	b	be_cont.27111
 	nop
-be_else.126231:
+be_else.27110:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -8635,11 +8635,11 @@ be_else.126231:
 	add	%i0, 24, %i0	! delay slot
 	sub	%i0, 24, %i0
 	ld	[%i0 + 20], %o7
-be_cont.126232:
-be_cont.126225:
-fble_cont.126223:
-be_cont.126221:
-be_cont.126202:
+be_cont.27111:
+be_cont.27108:
+fble_cont.27106:
+be_cont.27104:
+be_cont.27094:
 	ld	[%i0 + 12], %o5
 	add	%o5, 1, %i2
 	ld	[%i0 + 0], %i3
@@ -8649,7 +8649,7 @@ get_nvector_rect.3608:
 	set	min_caml_intsec_rectside, %o5
 	ld	[%o5 + 0], %o5
 	cmp	%o5, 1
-	bne	be_else.126240
+	bne	be_else.27114
 	nop
 	set	min_caml_nvector, %o5
 	set	min_caml_vscan, %o4
@@ -8658,16 +8658,16 @@ get_nvector_rect.3608:
 	ldd	[%o4 + 0], %f12
 	fcmpd	%f14, %f12
 	nop
-	fbg	fble_else.126241
+	fbg	fble_else.27115
 	nop
-	set	l.10793, %o4
+	set	l.10803, %o4
 	ldd	[%o4 + 0], %f14
-	b	fble_cont.126242
+	b	fble_cont.27116
 	nop
-fble_else.126241:
-	set	l.10791, %o4
+fble_else.27115:
+	set	l.10801, %o4
 	ldd	[%o4 + 0], %f14
-fble_cont.126242:
+fble_cont.27116:
 	fnegs	%f14, %f14
 	std	%f14, [%o5 + 0]
 	set	min_caml_nvector, %o5
@@ -8680,9 +8680,9 @@ fble_cont.126242:
 	std	%f14, [%o5 + 16]
 	retl
 	nop
-be_else.126240:
+be_else.27114:
 	cmp	%o5, 2
-	bne	be_else.126246
+	bne	be_else.27118
 	nop
 	set	min_caml_nvector, %o5
 	set	l.10753, %o4
@@ -8695,16 +8695,16 @@ be_else.126240:
 	ldd	[%o4 + 0], %f12
 	fcmpd	%f14, %f12
 	nop
-	fbg	fble_else.126248
+	fbg	fble_else.27119
 	nop
-	set	l.10793, %o4
+	set	l.10803, %o4
 	ldd	[%o4 + 0], %f14
-	b	fble_cont.126249
+	b	fble_cont.27120
 	nop
-fble_else.126248:
-	set	l.10791, %o4
+fble_else.27119:
+	set	l.10801, %o4
 	ldd	[%o4 + 0], %f14
-fble_cont.126249:
+fble_cont.27120:
 	fnegs	%f14, %f14
 	std	%f14, [%o5 + 8]
 	set	min_caml_nvector, %o5
@@ -8713,9 +8713,9 @@ fble_cont.126249:
 	std	%f14, [%o5 + 16]
 	retl
 	nop
-be_else.126246:
+be_else.27118:
 	cmp	%o5, 3
-	bne	be_else.126252
+	bne	be_else.27122
 	nop
 	set	min_caml_nvector, %o5
 	set	l.10753, %o4
@@ -8732,21 +8732,21 @@ be_else.126246:
 	ldd	[%o4 + 0], %f12
 	fcmpd	%f14, %f12
 	nop
-	fbg	fble_else.126255
+	fbg	fble_else.27123
 	nop
-	set	l.10793, %o4
+	set	l.10803, %o4
 	ldd	[%o4 + 0], %f14
-	b	fble_cont.126256
+	b	fble_cont.27124
 	nop
-fble_else.126255:
-	set	l.10791, %o4
+fble_else.27123:
+	set	l.10801, %o4
 	ldd	[%o4 + 0], %f14
-fble_cont.126256:
+fble_cont.27124:
 	fnegs	%f14, %f14
 	std	%f14, [%o5 + 16]
 	retl
 	nop
-be_else.126252:
+be_else.27122:
 	retl
 	nop
 get_nvector_second_norot.3677:
@@ -8798,13 +8798,13 @@ get_nvector_second_norot.3677:
 	fmovs	%f1, %f15
 	ld	[%i0 + 4], %o5
 	cmp	%o5, 0
-	bne	be_else.126265
+	bne	be_else.27128
 	nop
-	b	be_cont.126266
+	b	be_cont.27129
 	nop
-be_else.126265:
+be_else.27128:
 	fnegs	%f14, %f14
-be_cont.126266:
+be_cont.27129:
 	ld	[%i0 + 0], %o5
 	ldd	[%o5 + 0], %f12
 	fdivd	%f12, %f14, %f12
@@ -8853,7 +8853,7 @@ get_nvector_second_rot.3709:
 	ldd	[%o4 + 8], %f8
 	fmuld	%f10, %f8, %f10
 	faddd	%f12, %f10, %f12
-	set	l.10876, %o4
+	set	l.10886, %o4
 	ldd	[%o4 + 0], %f10
 	fdivd	%f12, %f10, %f12
 	faddd	%f14, %f12, %f14
@@ -8875,7 +8875,7 @@ get_nvector_second_rot.3709:
 	ldd	[%o4 + 0], %f8
 	fmuld	%f10, %f8, %f10
 	faddd	%f12, %f10, %f12
-	set	l.10876, %o4
+	set	l.10886, %o4
 	ldd	[%o4 + 0], %f10
 	fdivd	%f12, %f10, %f12
 	faddd	%f14, %f12, %f14
@@ -8897,7 +8897,7 @@ get_nvector_second_rot.3709:
 	ldd	[%o4 + 0], %f8
 	fmuld	%f10, %f8, %f10
 	faddd	%f12, %f10, %f12
-	set	l.10876, %o4
+	set	l.10886, %o4
 	ldd	[%o4 + 0], %f10
 	fdivd	%f12, %f10, %f12
 	faddd	%f14, %f12, %f14
@@ -8923,13 +8923,13 @@ get_nvector_second_rot.3709:
 	fmovs	%f1, %f15
 	ld	[%i0 + 4], %o5
 	cmp	%o5, 0
-	bne	be_else.126279
+	bne	be_else.27132
 	nop
-	b	be_cont.126280
+	b	be_cont.27133
 	nop
-be_else.126279:
+be_else.27132:
 	fnegs	%f14, %f14
-be_cont.126280:
+be_cont.27133:
 	ld	[%i0 + 0], %o5
 	ldd	[%o5 + 0], %f12
 	fdivd	%f12, %f14, %f12
@@ -8957,7 +8957,7 @@ utexture.3807:
 	ldd	[%o3 + 16], %f14
 	std	%f14, [%o4 + 16]
 	cmp	%o5, 1
-	bne	be_else.126287
+	bne	be_else.27135
 	nop
 	st	%i2, [%i0 + 0]
 	st	%i3, [%i0 + 4]
@@ -8966,7 +8966,7 @@ utexture.3807:
 	ldd	[%o5 + 0], %f12
 	fsubd	%f14, %f12, %f14
 	std	%f14, [%i0 + 8]
-	set	l.11824, %o5
+	set	l.11834, %o5
 	ldd	[%o5 + 0], %f12
 	fmuld	%f14, %f12, %f0
 	st	%o7, [%i0 + 20]
@@ -8976,23 +8976,23 @@ utexture.3807:
 	ld	[%i0 + 20], %o7
 	fmovs	%f0, %f14
 	fmovs	%f1, %f15
-	set	l.11826, %o5
+	set	l.11836, %o5
 	ldd	[%o5 + 0], %f12
 	fmuld	%f14, %f12, %f14
-	set	l.11804, %o5
+	set	l.11814, %o5
 	ldd	[%o5 + 0], %f12
 	ldd	[%i0 + 8], %f10
 	fsubd	%f10, %f14, %f14
 	fcmpd	%f12, %f14
 	nop
-	fbg	fble_else.126292
+	fbg	fble_else.27137
 	nop
 	set	0, %o5
-	b	fble_cont.126293
+	b	fble_cont.27138
 	nop
-fble_else.126292:
+fble_else.27137:
 	set	1, %o5
-fble_cont.126293:
+fble_cont.27138:
 	st	%o5, [%i0 + 16]
 	ld	[%i0 + 4], %o5
 	ldd	[%o5 + 16], %f14
@@ -9001,7 +9001,7 @@ fble_cont.126293:
 	ldd	[%o5 + 16], %f12
 	fsubd	%f14, %f12, %f14
 	std	%f14, [%i0 + 24]
-	set	l.11824, %o5
+	set	l.11834, %o5
 	ldd	[%o5 + 0], %f12
 	fmuld	%f14, %f12, %f0
 	st	%o7, [%i0 + 36]
@@ -9011,63 +9011,63 @@ fble_cont.126293:
 	ld	[%i0 + 36], %o7
 	fmovs	%f0, %f14
 	fmovs	%f1, %f15
-	set	l.11826, %o5
+	set	l.11836, %o5
 	ldd	[%o5 + 0], %f12
 	fmuld	%f14, %f12, %f14
-	set	l.11804, %o5
+	set	l.11814, %o5
 	ldd	[%o5 + 0], %f12
 	ldd	[%i0 + 24], %f10
 	fsubd	%f10, %f14, %f14
 	fcmpd	%f12, %f14
 	nop
-	fbg	fble_else.126298
+	fbg	fble_else.27141
 	nop
 	set	0, %o5
-	b	fble_cont.126299
+	b	fble_cont.27142
 	nop
-fble_else.126298:
+fble_else.27141:
 	set	1, %o5
-fble_cont.126299:
+fble_cont.27142:
 	set	min_caml_texture_color, %o4
 	ld	[%i0 + 16], %o3
 	cmp	%o3, 0
-	bne	be_else.126300
+	bne	be_else.27143
 	nop
 	cmp	%o5, 0
-	bne	be_else.126302
+	bne	be_else.27145
 	nop
-	set	l.11808, %o5
+	set	l.11818, %o5
 	ldd	[%o5 + 0], %f14
-	b	be_cont.126303
+	b	be_cont.27146
 	nop
-be_else.126302:
+be_else.27145:
 	set	l.10753, %o5
 	ldd	[%o5 + 0], %f14
-be_cont.126303:
-	b	be_cont.126301
+be_cont.27146:
+	b	be_cont.27144
 	nop
-be_else.126300:
+be_else.27143:
 	cmp	%o5, 0
-	bne	be_else.126304
+	bne	be_else.27147
 	nop
 	set	l.10753, %o5
 	ldd	[%o5 + 0], %f14
-	b	be_cont.126305
+	b	be_cont.27148
 	nop
-be_else.126304:
-	set	l.11808, %o5
+be_else.27147:
+	set	l.11818, %o5
 	ldd	[%o5 + 0], %f14
-be_cont.126305:
-be_cont.126301:
+be_cont.27148:
+be_cont.27144:
 	std	%f14, [%o4 + 8]
 	retl
 	nop
-be_else.126287:
+be_else.27135:
 	cmp	%o5, 2
-	bne	be_else.126307
+	bne	be_else.27150
 	nop
 	ldd	[%i3 + 8], %f14
-	set	l.11815, %o5
+	set	l.11825, %o5
 	ldd	[%o5 + 0], %f12
 	fmuld	%f14, %f12, %f0
 	st	%o7, [%i0 + 36]
@@ -9079,23 +9079,23 @@ be_else.126287:
 	fmovs	%f1, %f15
 	fmuld	%f14, %f14, %f14
 	set	min_caml_texture_color, %o5
-	set	l.11808, %o4
+	set	l.11818, %o4
 	ldd	[%o4 + 0], %f12
 	fmuld	%f12, %f14, %f12
 	std	%f12, [%o5 + 0]
 	set	min_caml_texture_color, %o5
-	set	l.11808, %o4
+	set	l.11818, %o4
 	ldd	[%o4 + 0], %f12
-	set	l.10791, %o4
+	set	l.10801, %o4
 	ldd	[%o4 + 0], %f10
 	fsubd	%f10, %f14, %f14
 	fmuld	%f12, %f14, %f14
 	std	%f14, [%o5 + 8]
 	retl
 	nop
-be_else.126307:
+be_else.27150:
 	cmp	%o5, 3
-	bne	be_else.126311
+	bne	be_else.27153
 	nop
 	ldd	[%i3 + 0], %f14
 	ld	[%i2 + 20], %o5
@@ -9115,7 +9115,7 @@ be_else.126307:
 	ld	[%i0 + 36], %o7
 	fmovs	%f0, %f14
 	fmovs	%f1, %f15
-	set	l.11804, %o5
+	set	l.11814, %o5
 	ldd	[%o5 + 0], %f12
 	fdivd	%f14, %f12, %f0
 	std	%f0, [%i0 + 32]
@@ -9128,7 +9128,7 @@ be_else.126307:
 	fmovs	%f1, %f15
 	ldd	[%i0 + 32], %f12
 	fsubd	%f12, %f14, %f14
-	set	l.11806, %o5
+	set	l.11816, %o5
 	ldd	[%o5 + 0], %f12
 	fmuld	%f14, %f12, %f0
 	st	%o7, [%i0 + 44]
@@ -9140,23 +9140,23 @@ be_else.126307:
 	fmovs	%f1, %f15
 	fmuld	%f14, %f14, %f14
 	set	min_caml_texture_color, %o5
-	set	l.11808, %o4
+	set	l.11818, %o4
 	ldd	[%o4 + 0], %f12
 	fmuld	%f14, %f12, %f12
 	std	%f12, [%o5 + 8]
 	set	min_caml_texture_color, %o5
-	set	l.10791, %o4
+	set	l.10801, %o4
 	ldd	[%o4 + 0], %f12
 	fsubd	%f12, %f14, %f14
-	set	l.11808, %o4
+	set	l.11818, %o4
 	ldd	[%o4 + 0], %f12
 	fmuld	%f14, %f12, %f14
 	std	%f14, [%o5 + 16]
 	retl
 	nop
-be_else.126311:
+be_else.27153:
 	cmp	%o5, 4
-	bne	be_else.126318
+	bne	be_else.27158
 	nop
 	st	%i2, [%i0 + 0]
 	st	%i3, [%i0 + 4]
@@ -9208,7 +9208,7 @@ be_else.126311:
 	fmovs	%f0, %f14
 	fmovs	%f1, %f15
 	std	%f14, [%i0 + 72]
-	set	l.11778, %o5
+	set	l.11788, %o5
 	ldd	[%o5 + 0], %f14
 	std	%f14, [%i0 + 80]
 	ldd	[%i0 + 48], %f0
@@ -9222,7 +9222,7 @@ be_else.126311:
 	ldd	[%i0 + 80], %f12
 	fcmpd	%f12, %f14
 	nop
-	fbg	fble_else.126331
+	fbg	fble_else.27163
 	nop
 	ldd	[%i0 + 48], %f14
 	ldd	[%i0 + 64], %f12
@@ -9239,15 +9239,15 @@ be_else.126311:
 	ld	[%i0 + 92], %o7
 	fmovs	%f0, %f14
 	fmovs	%f1, %f15
-	set	l.11782, %o5
+	set	l.11792, %o5
 	ldd	[%o5 + 0], %f12
 	fmuld	%f14, %f12, %f14
-	b	fble_cont.126332
+	b	fble_cont.27164
 	nop
-fble_else.126331:
-	set	l.11780, %o5
+fble_else.27163:
+	set	l.11790, %o5
 	ldd	[%o5 + 0], %f14
-fble_cont.126332:
+fble_cont.27164:
 	fmovs	%f14, %f0
 	fmovs	%f15, %f1
 	std	%f0, [%i0 + 88]
@@ -9280,7 +9280,7 @@ fble_cont.126332:
 	ldd	[%i0 + 104], %f12
 	fmuld	%f12, %f14, %f14
 	std	%f14, [%i0 + 112]
-	set	l.11778, %o5
+	set	l.11788, %o5
 	ldd	[%o5 + 0], %f14
 	std	%f14, [%i0 + 120]
 	ldd	[%i0 + 88], %f0
@@ -9294,7 +9294,7 @@ fble_cont.126332:
 	ldd	[%i0 + 120], %f12
 	fcmpd	%f12, %f14
 	nop
-	fbg	fble_else.126343
+	fbg	fble_else.27170
 	nop
 	ldd	[%i0 + 72], %f14
 	ldd	[%i0 + 112], %f12
@@ -9311,15 +9311,15 @@ fble_cont.126332:
 	ld	[%i0 + 132], %o7
 	fmovs	%f0, %f14
 	fmovs	%f1, %f15
-	set	l.11782, %o5
+	set	l.11792, %o5
 	ldd	[%o5 + 0], %f12
 	fmuld	%f14, %f12, %f14
-	b	fble_cont.126344
+	b	fble_cont.27171
 	nop
-fble_else.126343:
-	set	l.11780, %o5
+fble_else.27170:
+	set	l.11790, %o5
 	ldd	[%o5 + 0], %f14
-fble_cont.126344:
+fble_cont.27171:
 	fmovs	%f14, %f0
 	fmovs	%f15, %f1
 	std	%f0, [%i0 + 128]
@@ -9332,15 +9332,15 @@ fble_cont.126344:
 	fmovs	%f1, %f15
 	ldd	[%i0 + 128], %f12
 	fsubd	%f12, %f14, %f14
-	set	l.11790, %o5
+	set	l.11800, %o5
 	ldd	[%o5 + 0], %f12
-	set	l.11792, %o5
+	set	l.11802, %o5
 	ldd	[%o5 + 0], %f10
 	ldd	[%i0 + 96], %f8
 	fsubd	%f10, %f8, %f10
 	fmuld	%f10, %f10, %f10
 	fsubd	%f12, %f10, %f12
-	set	l.11792, %o5
+	set	l.11802, %o5
 	ldd	[%o5 + 0], %f10
 	fsubd	%f10, %f14, %f14
 	fmuld	%f14, %f14, %f14
@@ -9350,28 +9350,28 @@ fble_cont.126344:
 	ldd	[%o4 + 0], %f12
 	fcmpd	%f14, %f12
 	nop
-	fbg	fble_else.126349
+	fbg	fble_else.27175
 	nop
 	set	l.10753, %o4
 	ldd	[%o4 + 0], %f14
-	b	fble_cont.126350
+	b	fble_cont.27176
 	nop
-fble_else.126349:
-	set	l.11796, %o4
+fble_else.27175:
+	set	l.11806, %o4
 	ldd	[%o4 + 0], %f12
 	fmuld	%f14, %f12, %f14
-fble_cont.126350:
+fble_cont.27176:
 	std	%f14, [%o5 + 16]
 	retl
 	nop
-be_else.126318:
+be_else.27158:
 	retl
 	nop
 raytracing.4014:
 	std	%f0, [%i0 + 0]
 	st	%i2, [%i0 + 8]
 	set	min_caml_tmin, %o5
-	set	l.11839, %o4
+	set	l.11849, %o4
 	ldd	[%o4 + 0], %f14
 	std	%f14, [%o5 + 0]
 	set	0, %i2
@@ -9384,39 +9384,39 @@ raytracing.4014:
 	ld	[%i0 + 12], %o7
 	set	min_caml_tmin, %o5
 	ldd	[%o5 + 0], %f14
-	set	l.11380, %o5
+	set	l.11390, %o5
 	ldd	[%o5 + 0], %f12
 	fcmpd	%f14, %f12
 	nop
-	fbg	fble_else.126359
+	fbg	fble_else.27180
 	nop
 	set	0, %o5
-	b	fble_cont.126360
+	b	fble_cont.27181
 	nop
-fble_else.126359:
-	set	l.11845, %o5
+fble_else.27180:
+	set	l.11855, %o5
 	ldd	[%o5 + 0], %f12
 	fcmpd	%f12, %f14
 	nop
-	fbg	fble_else.126361
+	fbg	fble_else.27182
 	nop
 	set	0, %o5
-	b	fble_cont.126362
+	b	fble_cont.27183
 	nop
-fble_else.126361:
+fble_else.27182:
 	set	1, %o5
-fble_cont.126362:
-fble_cont.126360:
+fble_cont.27183:
+fble_cont.27181:
 	cmp	%o5, 0
-	bne	be_else.126364
+	bne	be_else.27184
 	nop
 	ld	[%i0 + 8], %o4
 	cmp	%o4, 0
-	bne	be_else.126366
+	bne	be_else.27186
 	nop
-	b	be_cont.126367
+	b	be_cont.27187
 	nop
-be_else.126366:
+be_else.27186:
 	set	min_caml_vscan, %o4
 	set	min_caml_light, %o3
 	ldd	[%o4 + 0], %f14
@@ -9435,11 +9435,11 @@ be_else.126366:
 	ldd	[%o4 + 0], %f12
 	fcmpd	%f14, %f12
 	nop
-	fbg	fble_else.126368
+	fbg	fble_else.27188
 	nop
-	b	fble_cont.126369
+	b	fble_cont.27189
 	nop
-fble_else.126368:
+fble_else.27188:
 	fmuld	%f14, %f14, %f12
 	fmuld	%f12, %f14, %f14
 	ldd	[%i0 + 0], %f12
@@ -9462,18 +9462,18 @@ fble_else.126368:
 	ldd	[%o3 + 16], %f12
 	faddd	%f12, %f14, %f14
 	std	%f14, [%o4 + 16]
-fble_cont.126369:
-be_cont.126367:
-	b	be_cont.126365
+fble_cont.27189:
+be_cont.27187:
+	b	be_cont.27185
 	nop
-be_else.126364:
-be_cont.126365:
+be_else.27184:
+be_cont.27185:
 	cmp	%o5, 0
-	bne	be_else.126373
+	bne	be_else.27190
 	nop
 	retl
 	nop
-be_else.126373:
+be_else.27190:
 	set	min_caml_objects, %o5
 	set	min_caml_crashed_object, %o4
 	ld	[%o4 + 0], %o4
@@ -9483,18 +9483,18 @@ be_else.126373:
 	set	min_caml_crashed_point, %i3
 	ld	[%i2 + 4], %o5
 	cmp	%o5, 1
-	bne	be_else.126379
+	bne	be_else.27192
 	nop
 	st	%o7, [%i0 + 20]
 	call	get_nvector_rect.3608
 	add	%i0, 24, %i0	! delay slot
 	sub	%i0, 24, %i0
 	ld	[%i0 + 20], %o7
-	b	be_cont.126380
+	b	be_cont.27193
 	nop
-be_else.126379:
+be_else.27192:
 	cmp	%o5, 2
-	bne	be_else.126383
+	bne	be_else.27195
 	nop
 	set	min_caml_nvector, %o5
 	ld	[%i2 + 16], %o4
@@ -9511,54 +9511,54 @@ be_else.126379:
 	ldd	[%o4 + 16], %f14
 	fnegs	%f14, %f14
 	std	%f14, [%o5 + 16]
-	b	be_cont.126384
+	b	be_cont.27196
 	nop
-be_else.126383:
+be_else.27195:
 	ld	[%i2 + 12], %o5
 	cmp	%o5, 0
-	bne	be_else.126387
+	bne	be_else.27197
 	nop
 	st	%o7, [%i0 + 20]
 	call	get_nvector_second_norot.3677
 	add	%i0, 24, %i0	! delay slot
 	sub	%i0, 24, %i0
 	ld	[%i0 + 20], %o7
-	b	be_cont.126388
+	b	be_cont.27198
 	nop
-be_else.126387:
+be_else.27197:
 	st	%o7, [%i0 + 20]
 	call	get_nvector_second_rot.3709
 	add	%i0, 24, %i0	! delay slot
 	sub	%i0, 24, %i0
 	ld	[%i0 + 20], %o7
-be_cont.126388:
-be_cont.126384:
-be_cont.126380:
+be_cont.27198:
+be_cont.27196:
+be_cont.27193:
 	set	min_caml_or_net, %o5
 	ld	[%o5 + 0], %i3
 	set	min_caml_crashed_point, %i4
 	ld	[%i3 + 0], %o5
 	ld	[%o5 + 0], %i2
 	cmp	%i2, -1
-	bne	be_else.126392
+	bne	be_else.27201
 	nop
 	set	0, %o5
-	b	be_cont.126393
+	b	be_cont.27202
 	nop
-be_else.126392:
+be_else.27201:
 	cmp	%i2, 99
-	bne	be_else.126394
+	bne	be_else.27203
 	nop
 	st	%i4, [%i0 + 16]
 	st	%i3, [%i0 + 20]
 	ld	[%o5 + 4], %o4
 	cmp	%o4, -1
-	bne	be_else.126398
+	bne	be_else.27205
 	nop
 	set	0, %o5
-	b	be_cont.126399
+	b	be_cont.27206
 	nop
-be_else.126398:
+be_else.27205:
 	st	%o5, [%i0 + 24]
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
@@ -9571,17 +9571,17 @@ be_else.126398:
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.126403
+	bne	be_else.27208
 	nop
 	ld	[%i0 + 24], %o5
 	ld	[%o5 + 8], %o4
 	cmp	%o4, -1
-	bne	be_else.126405
+	bne	be_else.27210
 	nop
 	set	0, %o5
-	b	be_cont.126406
+	b	be_cont.27211
 	nop
-be_else.126405:
+be_else.27210:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -9594,17 +9594,17 @@ be_else.126405:
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.126410
+	bne	be_else.27213
 	nop
 	ld	[%i0 + 24], %o5
 	ld	[%o5 + 12], %o4
 	cmp	%o4, -1
-	bne	be_else.126412
+	bne	be_else.27215
 	nop
 	set	0, %o5
-	b	be_cont.126413
+	b	be_cont.27216
 	nop
-be_else.126412:
+be_else.27215:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -9617,17 +9617,17 @@ be_else.126412:
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.126417
+	bne	be_else.27218
 	nop
 	ld	[%i0 + 24], %o5
 	ld	[%o5 + 16], %o4
 	cmp	%o4, -1
-	bne	be_else.126419
+	bne	be_else.27220
 	nop
 	set	0, %o5
-	b	be_cont.126420
+	b	be_cont.27221
 	nop
-be_else.126419:
+be_else.27220:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -9640,17 +9640,17 @@ be_else.126419:
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.126424
+	bne	be_else.27223
 	nop
 	ld	[%i0 + 24], %o5
 	ld	[%o5 + 20], %o4
 	cmp	%o4, -1
-	bne	be_else.126426
+	bne	be_else.27225
 	nop
 	set	0, %o5
-	b	be_cont.126427
+	b	be_cont.27226
 	nop
-be_else.126426:
+be_else.27225:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -9663,17 +9663,17 @@ be_else.126426:
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.126431
+	bne	be_else.27228
 	nop
 	ld	[%i0 + 24], %o5
 	ld	[%o5 + 24], %o4
 	cmp	%o4, -1
-	bne	be_else.126433
+	bne	be_else.27230
 	nop
 	set	0, %o5
-	b	be_cont.126434
+	b	be_cont.27231
 	nop
-be_else.126433:
+be_else.27230:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -9686,7 +9686,7 @@ be_else.126433:
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.126438
+	bne	be_else.27233
 	nop
 	set	7, %i2
 	ld	[%i0 + 24], %i3
@@ -9697,44 +9697,44 @@ be_else.126433:
 	sub	%i0, 32, %i0
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
-	b	be_cont.126439
+	b	be_cont.27234
 	nop
-be_else.126438:
+be_else.27233:
 	set	1, %o5
-be_cont.126439:
-be_cont.126434:
-	b	be_cont.126432
+be_cont.27234:
+be_cont.27231:
+	b	be_cont.27229
 	nop
-be_else.126431:
+be_else.27228:
 	set	1, %o5
-be_cont.126432:
-be_cont.126427:
-	b	be_cont.126425
+be_cont.27229:
+be_cont.27226:
+	b	be_cont.27224
 	nop
-be_else.126424:
+be_else.27223:
 	set	1, %o5
-be_cont.126425:
-be_cont.126420:
-	b	be_cont.126418
+be_cont.27224:
+be_cont.27221:
+	b	be_cont.27219
 	nop
-be_else.126417:
+be_else.27218:
 	set	1, %o5
-be_cont.126418:
-be_cont.126413:
-	b	be_cont.126411
+be_cont.27219:
+be_cont.27216:
+	b	be_cont.27214
 	nop
-be_else.126410:
+be_else.27213:
 	set	1, %o5
-be_cont.126411:
-be_cont.126406:
-	b	be_cont.126404
+be_cont.27214:
+be_cont.27211:
+	b	be_cont.27209
 	nop
-be_else.126403:
+be_else.27208:
 	set	1, %o5
-be_cont.126404:
-be_cont.126399:
+be_cont.27209:
+be_cont.27206:
 	cmp	%o5, 0
-	bne	be_else.126441
+	bne	be_else.27236
 	nop
 	set	1, %i2
 	ld	[%i0 + 20], %i3
@@ -9745,14 +9745,14 @@ be_cont.126399:
 	sub	%i0, 32, %i0
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
-	b	be_cont.126442
+	b	be_cont.27237
 	nop
-be_else.126441:
+be_else.27236:
 	set	1, %o5
-be_cont.126442:
-	b	be_cont.126395
+be_cont.27237:
+	b	be_cont.27204
 	nop
-be_else.126394:
+be_else.27203:
 	st	%o5, [%i0 + 24]
 	st	%i4, [%i0 + 16]
 	st	%i3, [%i0 + 20]
@@ -9764,7 +9764,7 @@ be_else.126394:
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.126448
+	bne	be_else.27240
 	nop
 	set	1, %i2
 	ld	[%i0 + 20], %i3
@@ -9775,16 +9775,16 @@ be_else.126394:
 	sub	%i0, 32, %i0
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
-	b	be_cont.126449
+	b	be_cont.27241
 	nop
-be_else.126448:
-	set	l.11380, %o5
+be_else.27240:
+	set	l.11390, %o5
 	ldd	[%o5 + 0], %f14
 	set	min_caml_solver_dist, %o5
 	ldd	[%o5 + 0], %f12
 	fcmpd	%f14, %f12
 	nop
-	fbg	fble_else.126451
+	fbg	fble_else.27243
 	nop
 	set	1, %i2
 	ld	[%i0 + 20], %i3
@@ -9795,18 +9795,18 @@ be_else.126448:
 	sub	%i0, 32, %i0
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
-	b	fble_cont.126452
+	b	fble_cont.27244
 	nop
-fble_else.126451:
+fble_else.27243:
 	ld	[%i0 + 24], %o5
 	ld	[%o5 + 4], %o4
 	cmp	%o4, -1
-	bne	be_else.126456
+	bne	be_else.27246
 	nop
 	set	0, %o5
-	b	be_cont.126457
+	b	be_cont.27247
 	nop
-be_else.126456:
+be_else.27246:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -9819,17 +9819,17 @@ be_else.126456:
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.126461
+	bne	be_else.27249
 	nop
 	ld	[%i0 + 24], %o5
 	ld	[%o5 + 8], %o4
 	cmp	%o4, -1
-	bne	be_else.126463
+	bne	be_else.27251
 	nop
 	set	0, %o5
-	b	be_cont.126464
+	b	be_cont.27252
 	nop
-be_else.126463:
+be_else.27251:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -9842,17 +9842,17 @@ be_else.126463:
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.126468
+	bne	be_else.27254
 	nop
 	ld	[%i0 + 24], %o5
 	ld	[%o5 + 12], %o4
 	cmp	%o4, -1
-	bne	be_else.126470
+	bne	be_else.27256
 	nop
 	set	0, %o5
-	b	be_cont.126471
+	b	be_cont.27257
 	nop
-be_else.126470:
+be_else.27256:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -9865,17 +9865,17 @@ be_else.126470:
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.126475
+	bne	be_else.27259
 	nop
 	ld	[%i0 + 24], %o5
 	ld	[%o5 + 16], %o4
 	cmp	%o4, -1
-	bne	be_else.126477
+	bne	be_else.27261
 	nop
 	set	0, %o5
-	b	be_cont.126478
+	b	be_cont.27262
 	nop
-be_else.126477:
+be_else.27261:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -9888,17 +9888,17 @@ be_else.126477:
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.126482
+	bne	be_else.27264
 	nop
 	ld	[%i0 + 24], %o5
 	ld	[%o5 + 20], %o4
 	cmp	%o4, -1
-	bne	be_else.126484
+	bne	be_else.27266
 	nop
 	set	0, %o5
-	b	be_cont.126485
+	b	be_cont.27267
 	nop
-be_else.126484:
+be_else.27266:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -9911,17 +9911,17 @@ be_else.126484:
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.126489
+	bne	be_else.27269
 	nop
 	ld	[%i0 + 24], %o5
 	ld	[%o5 + 24], %o4
 	cmp	%o4, -1
-	bne	be_else.126491
+	bne	be_else.27271
 	nop
 	set	0, %o5
-	b	be_cont.126492
+	b	be_cont.27272
 	nop
-be_else.126491:
+be_else.27271:
 	set	min_caml_and_net, %o5
 	sll	%o4, 2, %o4
 	ld	[%o5 + %o4], %i3
@@ -9934,7 +9934,7 @@ be_else.126491:
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.126496
+	bne	be_else.27274
 	nop
 	set	7, %i2
 	ld	[%i0 + 24], %i3
@@ -9945,44 +9945,44 @@ be_else.126491:
 	sub	%i0, 32, %i0
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
-	b	be_cont.126497
+	b	be_cont.27275
 	nop
-be_else.126496:
+be_else.27274:
 	set	1, %o5
-be_cont.126497:
-be_cont.126492:
-	b	be_cont.126490
+be_cont.27275:
+be_cont.27272:
+	b	be_cont.27270
 	nop
-be_else.126489:
+be_else.27269:
 	set	1, %o5
-be_cont.126490:
-be_cont.126485:
-	b	be_cont.126483
+be_cont.27270:
+be_cont.27267:
+	b	be_cont.27265
 	nop
-be_else.126482:
+be_else.27264:
 	set	1, %o5
-be_cont.126483:
-be_cont.126478:
-	b	be_cont.126476
+be_cont.27265:
+be_cont.27262:
+	b	be_cont.27260
 	nop
-be_else.126475:
+be_else.27259:
 	set	1, %o5
-be_cont.126476:
-be_cont.126471:
-	b	be_cont.126469
+be_cont.27260:
+be_cont.27257:
+	b	be_cont.27255
 	nop
-be_else.126468:
+be_else.27254:
 	set	1, %o5
-be_cont.126469:
-be_cont.126464:
-	b	be_cont.126462
+be_cont.27255:
+be_cont.27252:
+	b	be_cont.27250
 	nop
-be_else.126461:
+be_else.27249:
 	set	1, %o5
-be_cont.126462:
-be_cont.126457:
+be_cont.27250:
+be_cont.27247:
 	cmp	%o5, 0
-	bne	be_else.126499
+	bne	be_else.27277
 	nop
 	set	1, %i2
 	ld	[%i0 + 20], %i3
@@ -9993,17 +9993,17 @@ be_cont.126457:
 	sub	%i0, 32, %i0
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
-	b	be_cont.126500
+	b	be_cont.27278
 	nop
-be_else.126499:
+be_else.27277:
 	set	1, %o5
-be_cont.126500:
-fble_cont.126452:
-be_cont.126449:
-be_cont.126395:
-be_cont.126393:
+be_cont.27278:
+fble_cont.27244:
+be_cont.27241:
+be_cont.27204:
+be_cont.27202:
 	cmp	%o5, 0
-	bne	be_else.126502
+	bne	be_else.27280
 	nop
 	set	min_caml_nvector, %o5
 	set	min_caml_light, %o4
@@ -10023,29 +10023,29 @@ be_cont.126393:
 	ldd	[%o5 + 0], %f12
 	fcmpd	%f12, %f14
 	nop
-	fbg	fble_else.126506
+	fbg	fble_else.27282
 	nop
-	set	l.11906, %o5
+	set	l.11916, %o5
 	ldd	[%o5 + 0], %f12
 	faddd	%f14, %f12, %f14
-	b	fble_cont.126507
+	b	fble_cont.27283
 	nop
-fble_else.126506:
-	set	l.11906, %o5
+fble_else.27282:
+	set	l.11916, %o5
 	ldd	[%o5 + 0], %f14
-fble_cont.126507:
+fble_cont.27283:
 	ldd	[%i0 + 0], %f12
 	fmuld	%f14, %f12, %f14
 	ld	[%i0 + 12], %i2
 	ld	[%i2 + 28], %o5
 	ldd	[%o5 + 0], %f12
 	fmuld	%f14, %f12, %f14
-	b	be_cont.126503
+	b	be_cont.27281
 	nop
-be_else.126502:
+be_else.27280:
 	set	l.10753, %o5
 	ldd	[%o5 + 0], %f14
-be_cont.126503:
+be_cont.27281:
 	std	%f14, [%i0 + 32]
 	set	min_caml_crashed_point, %i3
 	ld	[%i0 + 12], %i2
@@ -10074,19 +10074,19 @@ be_cont.126503:
 	std	%f14, [%o5 + 16]
 	ld	[%i0 + 8], %o5
 	cmp	%o5, 4
-	bg	ble_else.126516
+	bg	ble_else.27286
 	nop
-	set	l.11919, %o4
+	set	l.11929, %o4
 	ldd	[%o4 + 0], %f14
 	ldd	[%i0 + 0], %f12
 	fcmpd	%f12, %f14
 	nop
-	fbg	fble_else.126517
+	fbg	fble_else.27287
 	nop
 	retl
 	nop
-fble_else.126517:
-	set	l.11921, %o4
+fble_else.27287:
+	set	l.11931, %o4
 	ldd	[%o4 + 0], %f14
 	set	min_caml_vscan, %o4
 	set	min_caml_nvector, %o3
@@ -10122,7 +10122,7 @@ fble_else.126517:
 	ld	[%i0 + 12], %o4
 	ld	[%o4 + 8], %o3
 	cmp	%o3, 1
-	bne	be_else.126522
+	bne	be_else.27289
 	nop
 	set	l.10753, %o5
 	ldd	[%o5 + 0], %f14
@@ -10130,11 +10130,11 @@ fble_else.126517:
 	ldd	[%o5 + 8], %f8
 	fcmpd	%f14, %f8
 	nop
-	fbne	fbe_else.126523
+	fbne	fbe_else.27290
 	nop
 	retl
 	nop
-fbe_else.126523:
+fbe_else.27290:
 	set	min_caml_vscan, %o5
 	set	min_caml_light, %o3
 	ldd	[%o5 + 0], %f14
@@ -10153,11 +10153,11 @@ fbe_else.126523:
 	ldd	[%o5 + 0], %f8
 	fcmpd	%f14, %f8
 	nop
-	fbg	fble_else.126525
+	fbg	fble_else.27292
 	nop
 	retl
 	nop
-fble_else.126525:
+fble_else.27292:
 	fmuld	%f14, %f14, %f14
 	fmuld	%f14, %f14, %f14
 	fmuld	%f14, %f12, %f14
@@ -10182,9 +10182,9 @@ fble_else.126525:
 	std	%f14, [%o5 + 16]
 	retl
 	nop
-be_else.126522:
+be_else.27289:
 	cmp	%o3, 2
-	bne	be_else.126530
+	bne	be_else.27295
 	nop
 	set	min_caml_viewpoint, %o3
 	set	min_caml_crashed_point, %o2
@@ -10198,7 +10198,7 @@ be_else.126522:
 	set	min_caml_crashed_point, %o2
 	ldd	[%o2 + 16], %f14
 	std	%f14, [%o3 + 16]
-	set	l.10791, %o3
+	set	l.10801, %o3
 	ldd	[%o3 + 0], %f14
 	ld	[%o4 + 28], %o4
 	ldd	[%o4 + 0], %f10
@@ -10207,21 +10207,21 @@ be_else.126522:
 	add	%o5, 1, %i2
 	b	raytracing.4014
 	nop
-be_else.126530:
+be_else.27295:
 	retl
 	nop
-ble_else.126516:
+ble_else.27286:
 	retl
 	nop
 scan_point.4202:
 	set	min_caml_size, %o5
 	ld	[%o5 + 0], %o5
 	cmp	%o5, %i2
-	bg	ble_else.126536
+	bg	ble_else.27298
 	nop
 	retl
 	nop
-ble_else.126536:
+ble_else.27298:
 	st	%i2, [%i0 + 0]
 	st	%o7, [%i0 + 4]
 	call	min_caml_float_of_int
@@ -10315,7 +10315,7 @@ ble_else.126536:
 	ldd	[%o4 + 0], %f14
 	std	%f14, [%o5 + 16]
 	set	0, %i2
-	set	l.10791, %o5
+	set	l.10801, %o5
 	ldd	[%o5 + 0], %f0
 	st	%o7, [%i0 + 4]
 	call	raytracing.4014
@@ -10331,13 +10331,13 @@ ble_else.126536:
 	ld	[%i0 + 4], %o7
 	mov	%i2, %o5
 	cmp	%o5, 255
-	bg	ble_else.126557
+	bg	ble_else.27304
 	nop
-	b	ble_cont.126558
+	b	ble_cont.27305
 	nop
-ble_else.126557:
+ble_else.27304:
 	set	255, %o5
-ble_cont.126558:
+ble_cont.27305:
 	mov	%o5, %i2
 	st	%o7, [%i0 + 4]
 	call	min_caml_print_byte
@@ -10353,13 +10353,13 @@ ble_cont.126558:
 	ld	[%i0 + 4], %o7
 	mov	%i2, %o5
 	cmp	%o5, 255
-	bg	ble_else.126563
+	bg	ble_else.27308
 	nop
-	b	ble_cont.126564
+	b	ble_cont.27309
 	nop
-ble_else.126563:
+ble_else.27308:
 	set	255, %o5
-ble_cont.126564:
+ble_cont.27309:
 	mov	%o5, %i2
 	st	%o7, [%i0 + 4]
 	call	min_caml_print_byte
@@ -10375,13 +10375,13 @@ ble_cont.126564:
 	ld	[%i0 + 4], %o7
 	mov	%i2, %o5
 	cmp	%o5, 255
-	bg	ble_else.126569
+	bg	ble_else.27312
 	nop
-	b	ble_cont.126570
+	b	ble_cont.27313
 	nop
-ble_else.126569:
+ble_else.27312:
 	set	255, %o5
-ble_cont.126570:
+ble_cont.27313:
 	mov	%o5, %i2
 	st	%o7, [%i0 + 4]
 	call	min_caml_print_byte
@@ -10396,17 +10396,17 @@ scan_line.4317:
 	set	min_caml_size, %o5
 	ld	[%o5 + 0], %o5
 	cmp	%o5, %i2
-	bg	ble_else.126574
+	bg	ble_else.27315
 	nop
 	retl
 	nop
-ble_else.126574:
+ble_else.27315:
 	st	%i2, [%i0 + 0]
 	set	min_caml_scan_sscany, %o5
 	st	%o5, [%i0 + 4]
 	set	min_caml_scan_offset, %o5
 	ldd	[%o5 + 0], %f14
-	set	l.10791, %o5
+	set	l.10801, %o5
 	ldd	[%o5 + 0], %f12
 	fsubd	%f14, %f12, %f14
 	std	%f14, [%i0 + 8]
@@ -10428,7 +10428,7 @@ ble_else.126574:
 	set	min_caml_scan_sscany, %o4
 	ldd	[%o4 + 0], %f14
 	fmuld	%f14, %f14, %f14
-	set	l.12004, %o4
+	set	l.12014, %o4
 	ldd	[%o4 + 0], %f12
 	faddd	%f14, %f12, %f14
 	std	%f14, [%o5 + 0]
@@ -10488,11 +10488,11 @@ min_caml_start:
 	ld	[%i0 + 4], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.126595
+	bne	be_else.27321
 	nop
-	b	be_cont.126596
+	b	be_cont.27322
 	nop
-be_else.126595:
+be_else.27321:
 	set	1, %i2
 	st	%o7, [%i0 + 4]
 	call	read_nth_object.2384
@@ -10501,11 +10501,11 @@ be_else.126595:
 	ld	[%i0 + 4], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.126598
+	bne	be_else.27324
 	nop
-	b	be_cont.126599
+	b	be_cont.27325
 	nop
-be_else.126598:
+be_else.27324:
 	set	2, %i2
 	st	%o7, [%i0 + 4]
 	call	read_nth_object.2384
@@ -10514,11 +10514,11 @@ be_else.126598:
 	ld	[%i0 + 4], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.126601
+	bne	be_else.27327
 	nop
-	b	be_cont.126602
+	b	be_cont.27328
 	nop
-be_else.126601:
+be_else.27327:
 	set	3, %i2
 	st	%o7, [%i0 + 4]
 	call	read_nth_object.2384
@@ -10527,21 +10527,21 @@ be_else.126601:
 	ld	[%i0 + 4], %o7
 	mov	%i2, %o5
 	cmp	%o5, 0
-	bne	be_else.126604
+	bne	be_else.27330
 	nop
-	b	be_cont.126605
+	b	be_cont.27331
 	nop
-be_else.126604:
+be_else.27330:
 	set	4, %i2
 	st	%o7, [%i0 + 4]
 	call	read_object.2832
 	add	%i0, 8, %i0	! delay slot
 	sub	%i0, 8, %i0
 	ld	[%i0 + 4], %o7
-be_cont.126605:
-be_cont.126602:
-be_cont.126599:
-be_cont.126596:
+be_cont.27331:
+be_cont.27328:
+be_cont.27325:
+be_cont.27322:
 	st	%o7, [%i0 + 4]
 	call	min_caml_read_int
 	add	%i0, 8, %i0	! delay slot
@@ -10549,7 +10549,7 @@ be_cont.126596:
 	ld	[%i0 + 4], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.126609
+	bne	be_else.27334
 	nop
 	set	1, %i2
 	set	-1, %i3
@@ -10559,9 +10559,9 @@ be_cont.126596:
 	sub	%i0, 8, %i0
 	ld	[%i0 + 4], %o7
 	mov	%i2, %o5
-	b	be_cont.126610
+	b	be_cont.27335
 	nop
-be_else.126609:
+be_else.27334:
 	st	%o5, [%i0 + 0]
 	st	%o7, [%i0 + 4]
 	call	min_caml_read_int
@@ -10570,7 +10570,7 @@ be_else.126609:
 	ld	[%i0 + 4], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.126615
+	bne	be_else.27338
 	nop
 	set	2, %i2
 	set	-1, %i3
@@ -10580,9 +10580,9 @@ be_else.126609:
 	sub	%i0, 8, %i0
 	ld	[%i0 + 4], %o7
 	mov	%i2, %o5
-	b	be_cont.126616
+	b	be_cont.27339
 	nop
-be_else.126615:
+be_else.27338:
 	st	%o5, [%i0 + 4]
 	st	%o7, [%i0 + 12]
 	call	min_caml_read_int
@@ -10591,7 +10591,7 @@ be_else.126615:
 	ld	[%i0 + 12], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.126621
+	bne	be_else.27342
 	nop
 	set	3, %i2
 	set	-1, %i3
@@ -10601,9 +10601,9 @@ be_else.126615:
 	sub	%i0, 16, %i0
 	ld	[%i0 + 12], %o7
 	mov	%i2, %o5
-	b	be_cont.126622
+	b	be_cont.27343
 	nop
-be_else.126621:
+be_else.27342:
 	st	%o5, [%i0 + 8]
 	st	%o7, [%i0 + 12]
 	call	min_caml_read_int
@@ -10612,7 +10612,7 @@ be_else.126621:
 	ld	[%i0 + 12], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.126627
+	bne	be_else.27346
 	nop
 	set	4, %i2
 	set	-1, %i3
@@ -10622,9 +10622,9 @@ be_else.126621:
 	sub	%i0, 16, %i0
 	ld	[%i0 + 12], %o7
 	mov	%i2, %o5
-	b	be_cont.126628
+	b	be_cont.27347
 	nop
-be_else.126627:
+be_else.27346:
 	st	%o5, [%i0 + 12]
 	set	4, %i2
 	st	%o7, [%i0 + 20]
@@ -10635,23 +10635,23 @@ be_else.126627:
 	mov	%i2, %o5
 	ld	[%i0 + 12], %o4
 	st	%o4, [%o5 + 12]
-be_cont.126628:
+be_cont.27347:
 	ld	[%i0 + 8], %o4
 	st	%o4, [%o5 + 8]
-be_cont.126622:
+be_cont.27343:
 	ld	[%i0 + 4], %o4
 	st	%o4, [%o5 + 4]
-be_cont.126616:
+be_cont.27339:
 	ld	[%i0 + 0], %o4
 	st	%o4, [%o5 + 0]
-be_cont.126610:
+be_cont.27335:
 	ld	[%o5 + 0], %o4
 	cmp	%o4, -1
-	bne	be_else.126637
+	bne	be_else.27350
 	nop
-	b	be_cont.126638
+	b	be_cont.27351
 	nop
-be_else.126637:
+be_else.27350:
 	set	min_caml_and_net, %o4
 	st	%o5, [%o4 + 0]
 	set	1, %i2
@@ -10660,7 +10660,7 @@ be_else.126637:
 	add	%i0, 24, %i0	! delay slot
 	sub	%i0, 24, %i0
 	ld	[%i0 + 20], %o7
-be_cont.126638:
+be_cont.27351:
 	set	min_caml_or_net, %o5
 	st	%o5, [%i0 + 16]
 	st	%o7, [%i0 + 20]
@@ -10670,7 +10670,7 @@ be_cont.126638:
 	ld	[%i0 + 20], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.126644
+	bne	be_else.27354
 	nop
 	set	1, %i2
 	set	-1, %i3
@@ -10680,9 +10680,9 @@ be_cont.126638:
 	sub	%i0, 24, %i0
 	ld	[%i0 + 20], %o7
 	mov	%i2, %o5
-	b	be_cont.126645
+	b	be_cont.27355
 	nop
-be_else.126644:
+be_else.27354:
 	st	%o5, [%i0 + 20]
 	st	%o7, [%i0 + 28]
 	call	min_caml_read_int
@@ -10691,7 +10691,7 @@ be_else.126644:
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.126650
+	bne	be_else.27358
 	nop
 	set	2, %i2
 	set	-1, %i3
@@ -10701,9 +10701,9 @@ be_else.126644:
 	sub	%i0, 32, %i0
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
-	b	be_cont.126651
+	b	be_cont.27359
 	nop
-be_else.126650:
+be_else.27358:
 	st	%o5, [%i0 + 24]
 	st	%o7, [%i0 + 28]
 	call	min_caml_read_int
@@ -10712,7 +10712,7 @@ be_else.126650:
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.126656
+	bne	be_else.27362
 	nop
 	set	3, %i2
 	set	-1, %i3
@@ -10722,9 +10722,9 @@ be_else.126650:
 	sub	%i0, 32, %i0
 	ld	[%i0 + 28], %o7
 	mov	%i2, %o5
-	b	be_cont.126657
+	b	be_cont.27363
 	nop
-be_else.126656:
+be_else.27362:
 	st	%o5, [%i0 + 28]
 	st	%o7, [%i0 + 36]
 	call	min_caml_read_int
@@ -10733,7 +10733,7 @@ be_else.126656:
 	ld	[%i0 + 36], %o7
 	mov	%i2, %o5
 	cmp	%o5, -1
-	bne	be_else.126662
+	bne	be_else.27366
 	nop
 	set	4, %i2
 	set	-1, %i3
@@ -10743,9 +10743,9 @@ be_else.126656:
 	sub	%i0, 40, %i0
 	ld	[%i0 + 36], %o7
 	mov	%i2, %o5
-	b	be_cont.126663
+	b	be_cont.27367
 	nop
-be_else.126662:
+be_else.27366:
 	st	%o5, [%i0 + 32]
 	set	4, %i2
 	st	%o7, [%i0 + 36]
@@ -10756,20 +10756,20 @@ be_else.126662:
 	mov	%i2, %o5
 	ld	[%i0 + 32], %o4
 	st	%o4, [%o5 + 12]
-be_cont.126663:
+be_cont.27367:
 	ld	[%i0 + 28], %o4
 	st	%o4, [%o5 + 8]
-be_cont.126657:
+be_cont.27363:
 	ld	[%i0 + 24], %o4
 	st	%o4, [%o5 + 4]
-be_cont.126651:
+be_cont.27359:
 	ld	[%i0 + 20], %o4
 	st	%o4, [%o5 + 0]
-be_cont.126645:
+be_cont.27355:
 	mov	%o5, %i3
 	ld	[%i3 + 0], %o5
 	cmp	%o5, -1
-	bne	be_else.126671
+	bne	be_else.27370
 	nop
 	set	1, %i2
 	st	%o7, [%i0 + 36]
@@ -10778,9 +10778,9 @@ be_cont.126645:
 	sub	%i0, 40, %i0
 	ld	[%i0 + 36], %o7
 	mov	%i2, %o5
-	b	be_cont.126672
+	b	be_cont.27371
 	nop
-be_else.126671:
+be_else.27370:
 	st	%i3, [%i0 + 36]
 	set	1, %i2
 	st	%o7, [%i0 + 44]
@@ -10791,7 +10791,7 @@ be_else.126671:
 	mov	%i2, %o5
 	ld	[%i0 + 36], %o4
 	st	%o4, [%o5 + 0]
-be_cont.126672:
+be_cont.27371:
 	ld	[%i0 + 16], %o4
 	st	%o5, [%o4 + 0]
 	set	80, %i2
@@ -10860,12 +10860,12 @@ be_cont.126672:
 	fmovs	%f0, %f14
 	fmovs	%f1, %f15
 	set	min_caml_scan_d, %o5
-	set	l.12034, %o4
+	set	l.12044, %o4
 	ldd	[%o4 + 0], %f12
 	fdivd	%f12, %f14, %f12
 	std	%f12, [%o5 + 0]
 	set	min_caml_scan_offset, %o5
-	set	l.10876, %o4
+	set	l.10886, %o4
 	ldd	[%o4 + 0], %f12
 	fdivd	%f14, %f12, %f14
 	std	%f14, [%o5 + 0]

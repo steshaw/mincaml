@@ -18,10 +18,10 @@ ppmdiff: ppm.ml diff.ml
 
 %.mincaml.ppm: %.sld min-rt.min-caml
 	time ./min-rt.min-caml < $< > $@
-min-rt.min-caml: min-rt.s globals.s min-caml/libmincaml.s min-caml/stub.c
+min-rt.min-caml: min-rt.s globals.s ../libmincaml.s ../stub.c
 	gcc -g -O2 -Wall $^ -lm -o min-rt.min-caml
-min-rt.s: min-rt.ml min-caml/min-caml.opt
-	min-caml/min-caml.opt -inline 100 min-rt
+min-rt.s: min-rt.ml ../min-caml.opt
+	../min-caml.opt -inline 100 min-rt
 
 %.gcc.ppm: %.sld raytrace
 	echo 768 > $<_
