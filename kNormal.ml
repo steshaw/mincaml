@@ -133,7 +133,7 @@ let rec g env = function (* K正規化ルーチン本体 (caml2html: knormal_g) *)
 	       fundefs,
 	     e2'),
       t2
-  | Syntax.App(Syntax.Var(f), e2s) when not (M.mem f env) && M.mem f !Typing.extenv -> (* 外部関数の呼び出し (caml2html: knormal_extfunapp) *)
+  | Syntax.App(Syntax.Var(f), e2s) when not (M.mem f env) -> (* 外部関数の呼び出し (caml2html: knormal_extfunapp) *)
       (match M.find f !Typing.extenv with
       | Type.Fun(_, t) ->
 	  let rec bind xs = function (* "xs" are identifiers for the arguments *)

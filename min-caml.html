@@ -822,7 +822,7 @@ rule token = parse
 <a name="knormal_extfunapp"></a>               fundefs,
              e2'),
       t2
-  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Syntax</span>.<span style="color:#0033cc">App</span>(<span style="color:#0033cc">Syntax</span>.<span style="color:#0033cc">Var</span>(f), e2s) <span style="color:#77aaaa">when</span> not (<span style="color:#0033cc">M</span>.mem f env) &amp;&amp; <span style="color:#0033cc">M</span>.mem f !<span style="color:#0033cc">Typing</span>.extenv -&gt; <span style="color:#990000">(* 外部関数の呼び出し *)</span>
+  <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Syntax</span>.<span style="color:#0033cc">App</span>(<span style="color:#0033cc">Syntax</span>.<span style="color:#0033cc">Var</span>(f), e2s) <span style="color:#77aaaa">when</span> not (<span style="color:#0033cc">M</span>.mem f env) -&gt; <span style="color:#990000">(* 外部関数の呼び出し *)</span>
       (<span style="color:#77aaaa">match</span> <span style="color:#0033cc">M</span>.find f !<span style="color:#0033cc">Typing</span>.extenv <span style="color:#77aaaa">with</span>
       <span style="color:#77aaaa">|</span> <span style="color:#0033cc">Type</span>.<span style="color:#0033cc">Fun</span>(_, t) -&gt;
           <span style="color:green">let</span> <span style="color:green">rec</span> bind xs = <span style="color:green">function</span> <span style="color:#990000">(* "xs" are identifiers for the arguments *)</span>
