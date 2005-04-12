@@ -32,15 +32,15 @@ let rec g env = function (* インライン展開ルーチン本体 (caml2html: inline_g) *)
 	  fundefs in
       LetRec(fundefs', g env e2)
   | App(x, ys) when M.mem x env -> (* 関数適用の場合 (caml2html: inline_app) *)
-      let (args, body) = M.find x env in
+      let (zs, e) = M.find x env in
       Format.eprintf "inlining %s@." x;
-      let env =
+      let env' =
 	List.fold_left2
-	  (fun env (z, t) y -> M.add z y env)
+	  (fun env' (z, t) y -> M.add z y env')
 	  M.empty
-	  args
+	  zs
 	  ys in
-      Alpha.g env body
+      Alpha.g env' e
   | LetTuple(xts, y, e) -> LetTuple(xts, y, g env e)
   | e -> e
 

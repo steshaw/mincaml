@@ -145,8 +145,8 @@ let rec g env = function (* K正規化ルーチン本体 (caml2html: knormal_g) *)
       | _ -> assert false)
   | Syntax.App(e1, e2s) ->
       (match g env e1 with
-      | e1', Type.Fun(_, t) as et1 ->
-	  insert_let et1
+      | _, Type.Fun(_, t) as g_e1 ->
+	  insert_let g_e1
 	    (fun f ->
 	      let rec bind xs = function (* "xs" are identifiers for the arguments *)
 		| [] -> App(f, xs), t
@@ -159,8 +159,8 @@ let rec g env = function (* K正規化ルーチン本体 (caml2html: knormal_g) *)
       let rec bind xs ts = function (* "xs" and "ts" are identifiers and types for the elements *)
 	| [] -> Tuple(xs), Type.Tuple(ts)
 	| e :: es ->
-	    let _, t as et = g env e in
-	    insert_let et
+	    let _, t as g_e = g env e in
+	    insert_let g_e
 	      (fun x -> bind (xs @ [x]) (ts @ [t]) es) in
       bind [] [] es
   | Syntax.LetTuple(xts, e1, e2) ->
@@ -171,8 +171,8 @@ let rec g env = function (* K正規化ルーチン本体 (caml2html: knormal_g) *)
   | Syntax.Array(e1, e2) ->
       insert_let (g env e1)
 	(fun x ->
-	  let _, t2 as et2 = g env e2 in
-	  insert_let et2
+	  let _, t2 as g_e2 = g env e2 in
+	  insert_let g_e2
 	    (fun y ->
 	      let l =
 		match t2 with
@@ -181,8 +181,8 @@ let rec g env = function (* K正規化ルーチン本体 (caml2html: knormal_g) *)
 	      ExtFunApp(l, [x; y]), Type.Array(t2)))
   | Syntax.Get(e1, e2) ->
       (match g env e1 with
-      |	e1', Type.Array(t) as et1 ->
-	  insert_let et1
+      |	_, Type.Array(t) as g_e1 ->
+	  insert_let g_e1
 	    (fun x -> insert_let (g env e2)
 		(fun y -> Get(x, y), t))
       | _ -> assert false)
