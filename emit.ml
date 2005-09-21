@@ -31,22 +31,16 @@ let pp_id_or_imm = function
 (* 関数呼び出しのために引数を並べ替える(register shuffling) (caml2html: emit_shuffle) *)
 let rec shuffle sw xys =
   (* remove identical moves *)
-  let id, xys = List.partition (fun (x, y) -> x = y) xys in
+  let _, xys = List.partition (fun (x, y) -> x = y) xys in
   (* find acyclic moves *)
-  let xys, acyc = List.partition (fun (_, y) -> List.mem_assoc y xys) xys in
-  match xys, acyc with
+  match List.partition (fun (_, y) -> List.mem_assoc y xys) xys with
   | [], [] -> []
-  | (x, y) :: xys, [] ->
-      (* no acyclic moves; resolve a cyclic move *)
-      (y, sw) ::
-      (x, y) ::
-      shuffle
-	sw
-	(List.map
-	   (function
-	     | (y', z) when y = y' -> (sw, z)
-	     | yz -> yz)
-	   xys)
+  | (x, y) :: xys, [] -> (* no acyclic moves; resolve a cyclic move *)
+      (y, sw) :: (x, y) :: shuffle sw (List.map
+					 (function
+					   | (y', z) when y = y' -> (sw, z)
+					   | yz -> yz)
+					 xys)
   | xys, acyc -> acyc @ shuffle sw xys
 
 type dest = Tail | NonTail of Id.t (* 末尾かどうかを表すデータ型 (caml2html: emit_dest) *)

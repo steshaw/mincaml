@@ -99,15 +99,13 @@ let forget_list xs e =
     e
     xs
 let insert_forget xs exp t =
-  let constr =
-    match t with
-    | Type.Unit -> (fun a -> Nop)
-    | Type.Float -> (fun a -> FMovD(a))
-    | _ -> (fun a -> Mov(a)) in
   let a = Id.gentmp t in
-  ToSpill(Let((a, t), exp,
-	      forget_list xs (Ans(constr a))),
-	  xs)
+  let m =
+    match t with
+    | Type.Unit -> Nop
+    | Type.Float -> FMovD(a)
+    | _ -> Mov(a) in
+  ToSpill(Let((a, t), exp, forget_list xs (Ans(m))), xs)
 
 let rec g dest cont regenv = function (* 命令列のレジスタ割り当て (caml2html: regalloc_g) *)
   | Ans(exp) -> g'_and_unspill dest cont regenv exp
