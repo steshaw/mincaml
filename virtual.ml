@@ -80,12 +80,8 @@ let rec g env = function (* 式の仮想マシンコード生成 (caml2html: virtual_g) *)
 	expand
 	  (List.map (fun y -> (y, M.find y env)) ys)
 	  (4, e2')
-	  (fun y offset store_fv ->
-	    seq(StDF(y, x, C(offset)),
-		store_fv))
-	  (fun y _ offset store_fv ->
-	    seq(St(y, x, C(offset)),
-		store_fv)) in
+	  (fun y offset store_fv -> seq(StDF(y, x, C(offset)), store_fv))
+	  (fun y _ offset store_fv -> seq(St(y, x, C(offset)), store_fv)) in
       Let((x, t), Mov(reg_hp),
 	  Let((reg_hp, Type.Int), Add(reg_hp, C(align offset)),
 	      let z = Id.genid "l" in
@@ -99,43 +95,28 @@ let rec g env = function (* 式の仮想マシンコード生成 (caml2html: virtual_g) *)
       let (int, float) = separate (List.map (fun y -> (y, M.find y env)) ys) in
       Ans(CallDir(Id.L(x), int, float))
   | Closure.Tuple(xs) -> (* 組の生成 (caml2html: virtual_tuple) *)
-      let (offset, store) = (* コードを挿入する関数 *)
+      let y = Id.genid "t" in
+      let (offset, store) =
 	expand
 	  (List.map (fun x -> (x, M.find x env)) xs)
-	  (0, (fun e0 -> e0))
-	  (fun x offset store ->
-	    fun e0 ->
-	      store
-		(seq(StDF(x, reg_hp, C(offset)),
-		     e0)))
-	  (fun x _ offset store ->
-	    fun e0 ->
-	      store
-		(seq(St(x, reg_hp, C(offset)),
-		     e0))) in
-      let y = Id.genid "t" in
-      store
-	(Let((y, Type.Tuple(List.map (fun x -> M.find x env) xs)), Mov(reg_hp),
-	     Let((reg_hp, Type.Int), Add(reg_hp, C(align offset)),
-		 Ans(Mov(y)))))
+	  (0, Ans(Mov(y)))
+	  (fun x offset store -> seq(StDF(x, y, C(offset)), store))
+	  (fun x _ offset store -> seq(St(x, y, C(offset)), store)) in
+      Let((y, Type.Tuple(List.map (fun x -> M.find x env) xs)), Mov(reg_hp),
+	  Let((reg_hp, Type.Int), Add(reg_hp, C(align offset)),
+	      store))
   | Closure.LetTuple(xts, y, e2) ->
-      let (offset, load) = (* コードを挿入する関数 *)
+      let (offset, load) =
 	expand
 	  xts
-	  (0, (fun e0 -> e0))
+	  (0, g (M.add_list xts env) e2)
 	  (fun x offset load ->
 	    if not (S.mem x (Closure.fv e2)) then load else (* [XX] a little ad hoc optimization *)
-	    fun e0 ->
-	      load
-		(fletd(x, LdDF(y, C(offset)),
-		       e0)))
+	    fletd(x, LdDF(y, C(offset)), load))
 	  (fun x t offset load ->
 	    if not (S.mem x (Closure.fv e2)) then load else (* [XX] a little ad hoc optimization *)
-	    fun e0 ->
-	      load
-		(Let((x, t), Ld(y, C(offset)),
-		     e0))) in
-      load (g (M.add_list xts env) e2)
+	    Let((x, t), Ld(y, C(offset)), load)) in
+      load
   | Closure.Get(x, y) -> (* 配列の読み出し (caml2html: virtual_get) *)
       let offset = Id.genid "o" in
       (match M.find x env with
@@ -166,23 +147,13 @@ let h { Closure.name = (Id.L(x), t); Closure.args = yts; Closure.formal_fv = zts
   let (offset, load) = (* コードを挿入する関数 *)
     expand
       zts
-      (4, (fun e0 -> e0))
-      (fun z offset load ->
-	fun e0 ->
-	  load
-	    (fletd(z, LdDF(reg_cl, C(offset)),
-		   e0)))
-      (fun z t offset load ->
-	fun e0 ->
-	  load
-	    (Let((z, t), Ld(reg_cl, C(offset)),
-		 e0))) in
-  let e' = load (g (M.add_list yts (M.add_list zts M.empty)) e) in
-  let t2 =
-    match t with
-    | Type.Fun(_, t2) -> t2
-    | _ -> assert false in
-  { name = Id.L(x); args = int; fargs = float; body = e'; ret = t2 }
+      (4, g (M.add_list yts (M.add_list zts M.empty)) e)
+      (fun z offset load -> fletd(z, LdDF(reg_cl, C(offset)), load))
+      (fun z t offset load -> Let((z, t), Ld(reg_cl, C(offset)), load)) in
+  match t with
+  | Type.Fun(_, t2) ->
+      { name = Id.L(x); args = int; fargs = float; body = load; ret = t2 }
+  | _ -> assert false
 
 (* プログラム全体の仮想マシンコード生成 (caml2html: virtual_f) *)
 let f (Closure.Prog(fundefs, e)) =
