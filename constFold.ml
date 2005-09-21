@@ -32,12 +32,8 @@ let rec g env = function (* 定数畳み込みルーチン本体 (caml2html: constfold_g) *)
       let e1' = g env e1 in
       let e2' = g (M.add x e1' env) e2 in
       Let((x, t), e1', e2')
-  | LetRec(bindings, e2) ->
-      LetRec(List.map
-	       (fun { name = x; args = ys; body = e1 } ->
-		 { name = x; args = ys; body = g env e1 })
-	       bindings,
-	     g env e2)
+  | LetRec({ name = x; args = ys; body = e1 }, e2) ->
+      LetRec({ name = x; args = ys; body = g env e1 }, g env e2)
   | LetTuple(xts, y, e) when memt y env ->
       List.fold_left2
 	(fun e' xt z -> Let(xt, Var(z), e'))

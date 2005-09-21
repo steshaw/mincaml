@@ -16,7 +16,7 @@ type t = (* K正規化後の式 (caml2html: knormal_t) *)
   | IfLE of Id.t * Id.t * t * t (* 比較 + 分岐 *)
   | Let of (Id.t * Type.t) * t * t
   | Var of Id.t
-  | LetRec of fundef list * t
+  | LetRec of fundef * t
   | App of Id.t * Id.t list
   | Tuple of Id.t list
   | LetTuple of (Id.t * Type.t) list * Id.t * t
@@ -33,15 +33,9 @@ let rec fv = function (* 式に出現する（自由な）変数 (caml2html: knormal_fv) *)
   | IfEq(x, y, e1, e2) | IfLE(x, y, e1, e2) -> S.add x (S.add y (S.union (fv e1) (fv e2)))
   | Let((x, t), e1, e2) -> S.union (fv e1) (S.remove x (fv e2))
   | Var(x) -> S.singleton x
-  | LetRec(fundefs, e2) ->
-      let (xs, zs) =
-	List.fold_left
-	  (fun (xs, zs) { name = (x, t); args = yts; body = e1 } ->
-	    (S.add x xs,
-	     S.union zs (S.diff (fv e1) (S.of_list (List.map fst yts)))))
-	  (S.empty, S.empty)
-	  fundefs in
-      S.diff (S.union zs (fv e2)) xs
+  | LetRec({ name = (x, t); args = yts; body = e1 }, e2) ->
+      let zs = S.diff (fv e1) (S.of_list (List.map fst yts)) in
+      S.diff (S.union zs (fv e2)) (S.singleton x)
   | App(x, ys) -> S.of_list (x :: ys)
   | Tuple(xs) | ExtFunApp(_, xs) -> S.of_list xs
   | Put(x, y, z) -> S.of_list [x; y; z]
@@ -120,19 +114,11 @@ let rec g env = function (* K正規化ルーチン本体 (caml2html: knormal_g) *)
       (match M.find x !Typing.extenv with
       | Type.Array(_) as t -> ExtArray x, t
       | _ -> failwith (Printf.sprintf "external variable %s does not have an array type" x))
-  | Syntax.LetRec(fundefs, e2) ->
-      let env' =
-	M.add_list
-	  (List.map (fun fundef -> fundef.Syntax.name) fundefs)
-	  env in
+  | Syntax.LetRec({ Syntax.name = (x, t); Syntax.args = yts; Syntax.body = e1 }, e2) ->
+      let env' = M.add x t env in
       let e2', t2 = g env' e2 in
-      LetRec(List.map
-	       (fun { Syntax.name = xt; Syntax.args = yts; Syntax.body = e1 } ->
-		 let e1', t1 = g (M.add_list yts env') e1 in
-		 { name = xt; args = yts; body = e1' })
-	       fundefs,
-	     e2'),
-      t2
+      let e1', t1 = g (M.add_list yts env') e1 in
+      LetRec({ name = (x, t); args = yts; body = e1' }, e2'), t2
   | Syntax.App(Syntax.Var(f), e2s) when not (M.mem f env) -> (* 外部関数の呼び出し (caml2html: knormal_extfunapp) *)
       (match M.find f !Typing.extenv with
       | Type.Fun(_, t) ->

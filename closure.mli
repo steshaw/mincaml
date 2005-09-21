@@ -15,7 +15,7 @@ type t =
   | IfLE of Id.t * Id.t * t * t
   | Let of (Id.t * Type.t) * t * t
   | Var of Id.t
-  | MakeCls of ((Id.t * Type.t) * closure) list * t
+  | MakeCls of (Id.t * Type.t) * closure * t
   | AppCls of Id.t * Id.t list
   | AppDir of Id.l * Id.t list
   | Tuple of Id.t list

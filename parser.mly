@@ -28,7 +28,6 @@ let addtyp x = (x, Type.gentyp ())
 %token LET
 %token IN
 %token REC
-%token AND
 %token COMMA
 %token ARRAY_CREATE
 %token DOT
@@ -115,7 +114,7 @@ exp: /* 一般の式 (caml2html: parser_exp) */
 | LET IDENT EQUAL exp IN exp
     %prec prec_let
     { Let(addtyp $2, $4, $6) }
-| LET REC fundefs IN exp
+| LET REC fundef IN exp
     %prec prec_let
     { LetRec($3, $5) }
 | exp actual_args
@@ -137,12 +136,6 @@ exp: /* 一般の式 (caml2html: parser_exp) */
 	(Printf.sprintf "parse error near characters %d-%d"
 	   (Parsing.symbol_start ())
 	   (Parsing.symbol_end ())) }
-
-fundefs:
-| fundef AND fundefs
-    { $1 :: $3 }
-| fundef
-    { [$1] }
 
 fundef:
 | IDENT formal_args EQUAL exp

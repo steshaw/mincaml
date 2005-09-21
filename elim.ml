@@ -16,19 +16,14 @@ let rec f = function (* 不要定義削除ルーチン本体 (caml2html: elim_f) *)
       if effect e1' || S.mem x live then Let((x, t), e1', e2') else
       (Format.eprintf "eliminating variable %s@." x;
        e2')
-  | LetRec(fundefs, e2) -> (* let recの場合 (caml2html: elim_letrec) *)
-      let fundefs' =
-	List.map
-	  (fun { name = xt; args = yts; body = e } ->
-	    { name = xt; args = yts; body = f e })
-	  fundefs in
+  | LetRec({ name = (x, t); args = yts; body = e1 }, e2) -> (* let recの場合 (caml2html: elim_letrec) *)
       let e2' = f e2 in
       let live = fv e2' in
-      let xts = List.map (fun fundef -> fundef.name) fundefs' in
-      let xs = List.map fst xts in
-      if List.exists (fun x -> S.mem x live) xs then LetRec(fundefs', e2') else
-      (Format.eprintf "eliminating function(s) %s@." (Id.pp_list xs);
-       e2')
+      if S.mem x live then
+	LetRec({ name = (x, t); args = yts; body = f e1 }, e2')
+      else
+	(Format.eprintf "eliminating function %s@." x;
+	 e2')
   | LetTuple(xts, y, e) ->
       let xs = List.map fst xts in
       let e' = f e in

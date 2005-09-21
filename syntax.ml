@@ -19,7 +19,7 @@ type t = (* MinCamlの構文を表現するデータ型 (caml2html: syntax_t) *)
   | If of t * t * t
   | Let of (Id.t * Type.t) * t * t
   | Var of Id.t
-  | LetRec of fundef list * t (* mutual recursion *)
+  | LetRec of fundef * t
   | App of t * t list
   | Tuple of t list
   | LetTuple of (Id.t * Type.t) list * t * t

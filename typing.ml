@@ -38,13 +38,10 @@ let rec deref_term = function
   | FDiv(e1, e2) -> FDiv(deref_term e1, deref_term e2)
   | If(e1, e2, e3) -> If(deref_term e1, deref_term e2, deref_term e3)
   | Let(xt, e1, e2) -> Let(deref_id_typ xt, deref_term e1, deref_term e2)
-  | LetRec(fundefs, e2) ->
-      LetRec(List.map
-	       (fun { name = xt; args = yts; body = e1 } ->
-		 { name = deref_id_typ xt;
-		   args = List.map deref_id_typ yts;
-		   body = deref_term e1 })
-	       fundefs,
+  | LetRec({ name = xt; args = yts; body = e1 }, e2) ->
+      LetRec({ name = deref_id_typ xt;
+	       args = List.map deref_id_typ yts;
+	       body = deref_term e1 },
 	     deref_term e2)
   | App(e, es) -> App(deref_term e, List.map deref_term es)
   | Tuple(es) -> Tuple(List.map deref_term es)
@@ -128,15 +125,9 @@ let rec g env e = (* 型推論ルーチン (caml2html: typing_g) *)
 	let t = Type.gentyp () in
 	extenv := M.add x t !extenv;
 	t
-    | LetRec(fundefs, e2) -> (* let recの型推論 (caml2html: typing_letrec) *)
-	let env =
-	  M.add_list
-	    (List.map (fun fundef -> fundef.name) fundefs)
-	    env in
-	List.iter
-	  (fun { name = (x, t); args = yts; body = e1 } ->
-	    unify t (Type.Fun(List.map snd yts, g (M.add_list yts env) e1)))
-	  fundefs;
+    | LetRec({ name = (x, t); args = yts; body = e1 }, e2) -> (* let recの型推論 (caml2html: typing_letrec) *)
+	let env = M.add x t env in
+	unify t (Type.Fun(List.map snd yts, g (M.add_list yts env) e1));
 	g env e2
     | App(e, es) -> (* 関数適用の型推論 (caml2html: typing_app) *)
 	let t = Type.gentyp () in

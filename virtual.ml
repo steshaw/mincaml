@@ -26,7 +26,7 @@ let expand xts ini addf addi =
     xts
     ini
     (fun (offset, acc) x ->
-      let offset = align offset  in
+      let offset = align offset in
       (offset + 8, addf x offset acc))
     (fun (offset, acc) x t ->
       (offset + 4, addi x t offset acc))
@@ -73,41 +73,25 @@ let rec g env = function (* 式の仮想マシンコード生成 (caml2html: virtual_g) *)
       | Type.Unit -> Ans(Nop)
       | Type.Float -> Ans(FMovD(x))
       | _ -> Ans(Mov(x)))
-  | Closure.MakeCls(bindings, e2) -> (* クロージャの生成 (caml2html: virtual_makecls) *)
+  | Closure.MakeCls((x, t), { Closure.entry = l; Closure.actual_fv = ys }, e2) -> (* クロージャの生成 (caml2html: virtual_makecls) *)
       (* Closureのアドレスをセットしてから、自由変数の値をストア *)
-      let env' = M.add_list (List.map fst bindings) env in
-      let (set_addr, store_fv) = (* コードを挿入する関数たち *)
-	List.fold_left
-	  (fun (set_addr, store_fv) ->
-	    fun ((x, t), { Closure.entry = l; Closure.actual_fv = ys }) ->
-	      let (offset, store_fv) =
-		expand
-		  (List.map (fun y -> (y, M.find y env')) ys)
-		  (4, store_fv)
-		  (fun y offset store_fv ->
-		    fun e0 ->
-		      store_fv
-			(seq(StDF(y, x, C(offset)),
-			     e0)))
-		  (fun y _ offset store_fv ->
-		    fun e0 ->
-		      store_fv
-			(seq(St(y, x, C(offset)),
-			     e0))) in
-	      ((fun e0 ->
-		set_addr
-		  (Let((x, t), Mov(reg_hp),
-		       Let((reg_hp, Type.Int), Add(reg_hp, C(align offset)),
-			   e0)))),
-	       let z = Id.genid "l" in
-	       (fun e0 ->
-		 store_fv
-		   (Let((z, Type.Int), SetL(l),
-			seq(St(z, x, C(0)),
-			    e0))))))
-	  ((fun e0 -> e0), (fun e0 -> e0))
-	  bindings in
-      set_addr (store_fv (g env' e2))
+      let e2' = g (M.add x t env) e2 in
+      let offset, store_fv =
+	expand
+	  (List.map (fun y -> (y, M.find y env)) ys)
+	  (4, e2')
+	  (fun y offset store_fv ->
+	    seq(StDF(y, x, C(offset)),
+		store_fv))
+	  (fun y _ offset store_fv ->
+	    seq(St(y, x, C(offset)),
+		store_fv)) in
+      Let((x, t), Mov(reg_hp),
+	  Let((reg_hp, Type.Int), Add(reg_hp, C(align offset)),
+	      let z = Id.genid "l" in
+	      Let((z, Type.Int), SetL(l),
+		  seq(St(z, x, C(0)),
+		      store_fv))))
   | Closure.AppCls(x, ys) ->
       let (int, float) = separate (List.map (fun y -> (y, M.find y env)) ys) in
       Ans(CallCls(x, int, float))

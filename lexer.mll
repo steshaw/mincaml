@@ -66,8 +66,6 @@ rule token = parse
     { IN }
 | "rec"
     { REC }
-| "and"
-    { AND }
 | ','
     { COMMA }
 | '_'
