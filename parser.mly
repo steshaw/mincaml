@@ -88,11 +88,11 @@ exp: /* ∞Ï»Ã§Œº∞ (caml2html: parser_exp) */
 | exp EQUAL exp
     { Eq($1, $3) }
 | exp LESS_GREATER exp
-    { NEq($1, $3) }
+    { Not(Eq($1, $3)) }
 | exp LESS exp
-    { Lt($1, $3) }
+    { Not(LE($3, $1)) }
 | exp GREATER exp
-    { Lt($3, $1) }
+    { Not(LE($1, $3)) }
 | exp LESS_EQUAL exp
     { LE($1, $3) }
 | exp GREATER_EQUAL exp
