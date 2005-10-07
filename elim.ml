@@ -12,14 +12,12 @@ let rec f = function (* 不要定義削除ルーチン本体 (caml2html: elim_f) *)
   | Let((x, t), e1, e2) -> (* letの場合 (caml2html: elim_let) *)
       let e1' = f e1 in
       let e2' = f e2 in
-      let live = fv e2' in
-      if effect e1' || S.mem x live then Let((x, t), e1', e2') else
+      if effect e1' || S.mem x (fv e2') then Let((x, t), e1', e2') else
       (Format.eprintf "eliminating variable %s@." x;
        e2')
   | LetRec({ name = (x, t); args = yts; body = e1 }, e2) -> (* let recの場合 (caml2html: elim_letrec) *)
       let e2' = f e2 in
-      let live = fv e2' in
-      if S.mem x live then
+      if S.mem x (fv e2') then
 	LetRec({ name = (x, t); args = yts; body = f e1 }, e2')
       else
 	(Format.eprintf "eliminating function %s@." x;

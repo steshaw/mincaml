@@ -47,7 +47,7 @@ let regs = (* Array.init 16 (fun i -> Printf.sprintf "%%r%d" i) *)
   [| "%i2"; "%i3"; "%i4"; "%i5";
      "%l0"; "%l1"; "%l2"; "%l3"; "%l4"; "%l5"; "%l6"; "%l7";
      "%o0"; "%o1"; "%o2"; "%o3"; "%o4"; "%o5" |]
-let fregs = Array.init 8 (fun i -> Printf.sprintf "%%f%d" (i * 2))
+let fregs = Array.init 16 (fun i -> Printf.sprintf "%%f%d" (i * 2))
 let allregs = List.rev (Array.to_list regs)
 let allfregs = List.rev (Array.to_list fregs)
 let reg_cl = regs.(Array.length regs - 1) (* closure address (caml2html: sparcasm_regcl) *)
@@ -58,8 +58,8 @@ let reg_hp = "%i1" (* heap pointer (caml2html: sparcasm_reghp) *)
 let reg_ra = "%o7" (* return address *)
 let is_reg x = (x.[0] = '%')
 let co_freg_table =
-  let ht = Hashtbl.create 8 in
-  for i = 0 to 7 do
+  let ht = Hashtbl.create 16 in
+  for i = 0 to 16 do
     Hashtbl.add
       ht
       (Printf.sprintf "%%f%d" (i * 2))
