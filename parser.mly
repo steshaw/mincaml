@@ -80,7 +80,9 @@ exp: /* 一般の式 (caml2html: parser_exp) */
     { Not($2) }
 | MINUS exp
     %prec prec_unary_minus
-    { match $2 with Float(f) -> Float(-.f) | e -> Neg(e) }
+    { match $2 with
+    | Float(f) -> Float(-.f) /* -1.23などは型エラーではないので別扱い */
+    | e -> Neg(e) }
 | exp PLUS exp /* 足し算を構文解析するルール (caml2html: parser_add) */
     { Add($1, $3) }
 | exp MINUS exp
