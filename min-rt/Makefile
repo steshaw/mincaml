@@ -31,7 +31,7 @@ min-rt.s: min-rt.ml ../min-caml.opt
 	cat $< >> $<_
 	time ./raytrace < $<_ > $@
 raytrace: raytrace.c
-	gcc -m32 -Wall -O3 raytrace.c -lm -o raytrace
+	g++ -m32 -Wall -O3 raytrace.c -lm -o raytrace
 
 %.GCC.ppm: %.sld RayTrace
 	time ./RayTrace -s -w 768 -h 768 < $< > $@
