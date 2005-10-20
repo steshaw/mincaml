@@ -1,15 +1,15 @@
 # Sumii's Makefile for Min-Caml (for GNU Make)
-
+# 
 # ack.mlなどのテストプログラムをtest/に用意してmake do_testを実行すると、
 # min-camlとocamlでコンパイル・実行した結果を自動で比較します。
-
-default: debug-code top native-code do_test
-clean:: nobackup
 
 RESULT = min-caml
 NCSUFFIX = .opt
 CC = gcc
 CFLAGS = -g -O2 -Wall
+
+default: debug-code top native-code do_test
+clean:: nobackup
 
 # ↓もし実装を改造したら、それに合わせて変える
 SOURCES = float.c type.ml id.ml m.ml s.ml \
@@ -30,7 +30,7 @@ do_test: $(TESTS:%=test/%.cmp)
 .PRECIOUS: test/%.s test/% test/%.res test/%.ans test/%.cmp
 TRASH = $(TESTS:%=test/%.s) $(TESTS:%=test/%) $(TESTS:%=test/%.res) $(TESTS:%=test/%.ans) $(TESTS:%=test/%.cmp)
 
-test/%.s: debug-code test/%.ml
+test/%.s: debug-code test/%.ml # [X] debug-codeはファイルではないので、何度でも実行されてしまう!
 	./$(RESULT) test/$*
 test/%: test/%.s libmincaml.s stub.c
 	$(CC) $(CFLAGS) $^ -lm -o $@
