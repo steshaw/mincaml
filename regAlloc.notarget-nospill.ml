@@ -58,16 +58,8 @@ let rec g dest cont regenv = function (* 命令列のレジスタ割り当て (caml2html: re
 and g'_and_restore dest cont regenv exp = (* 使用される変数をスタックからレジスタへRestore (caml2html: regalloc_unspill) *)
   try g' dest cont regenv exp
   with NoReg(x, t) ->
-    (* Format.eprintf "unspilling %s@." x; *)
-    let cont' = Let(dest, exp, cont) in
-    let all =
-      match t with
-      | Type.Unit -> assert false
-      | Type.Float -> allfregs
-      | _ -> allregs in
-    let r = alloc cont' regenv all x in
-    let (e1', regenv1) = g'_and_restore dest cont (add x r regenv) exp in
-    (Let((r, t), Restore(x), e1'), regenv1)
+    ((* Format.eprintf "restoring %s@." x; *)
+     g dest cont regenv (Let((x, t), Restore(x), Ans(exp))))
 and g' dest cont regenv = function (* 各命令のレジスタ割り当て (caml2html: regalloc_gprime) *)
   | Nop | Set _ | SetL _ | Comment _ | Restore _ as exp -> (Ans(exp), regenv)
   | Mov(x) -> (Ans(Mov(find x Type.Int regenv)), regenv)
