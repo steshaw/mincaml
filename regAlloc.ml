@@ -190,7 +190,7 @@ and g'_if dest cont regenv exp constr e1 e2 = (* ifのレジスタ割り当て (caml2html
       (fv cont) in
   match
     List.filter
-      (fun x -> not (is_reg x) && not (M.mem x regenv') && x <> fst dest)
+      (fun x -> not (is_reg x) && x <> fst dest && not (M.mem x regenv'))
       (fv cont)
   with [] -> NoSpill(Ans(constr e1' e2'), regenv')
   | xs -> insert_forget xs exp (snd dest) (* そうでない変数は分岐以前にセーブ *)

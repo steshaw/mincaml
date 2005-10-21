@@ -146,10 +146,6 @@ and g'_if dest cont regenv exp constr e1 e2 = (* if¤Î¥ì¥¸¥¹¥¿³ä¤êÅö¤Æ (caml2html
      (fv cont),
    regenv')
 and g'_call dest cont regenv exp constr ys zs = (* ´Ø¿ô¸Æ¤Ó½Ð¤·¤Î¥ì¥¸¥¹¥¿³ä¤êÅö¤Æ (caml2html: regalloc_call) *)
-  let xs =
-    List.filter (* ¥»¡¼¥Ö¤¹¤Ù¤­¥ì¥¸¥¹¥¿ÊÑ¿ô¤òÃµ¤¹ *)
-      (fun x -> not (is_reg x) && x <> fst dest)
-      (fv cont) in
   (List.fold_left
      (fun e x ->
        if is_reg x || x = fst dest || not (M.mem x regenv) then e else
@@ -157,7 +153,7 @@ and g'_call dest cont regenv exp constr ys zs = (* ´Ø¿ô¸Æ¤Ó½Ð¤·¤Î¥ì¥¸¥¹¥¿³ä¤êÅö¤
      (Ans(constr
 	    (List.map (fun y -> find y Type.Int regenv) ys)
 	    (List.map (fun z -> find z Type.Float regenv) zs)))
-     xs,
+     (fv cont),
    M.empty)
 
 let h { name = Id.L(x); args = ys; fargs = zs; body = e; ret = t } = (* ´Ø¿ô¤Î¥ì¥¸¥¹¥¿³ä¤êÅö¤Æ (caml2html: regalloc_h) *)
