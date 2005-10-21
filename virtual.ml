@@ -106,15 +106,16 @@ let rec g env = function (* 式の仮想マシンコード生成 (caml2html: virtual_g) *)
 	  Let((reg_hp, Type.Int), Add(reg_hp, C(align offset)),
 	      store))
   | Closure.LetTuple(xts, y, e2) ->
+      let s = Closure.fv e2 in
       let (offset, load) =
 	expand
 	  xts
 	  (0, g (M.add_list xts env) e2)
 	  (fun x offset load ->
-	    if not (S.mem x (Closure.fv e2)) then load else (* [XX] a little ad hoc optimization *)
+	    if not (S.mem x s) then load else (* [XX] a little ad hoc optimization *)
 	    fletd(x, LdDF(y, C(offset)), load))
 	  (fun x t offset load ->
-	    if not (S.mem x (Closure.fv e2)) then load else (* [XX] a little ad hoc optimization *)
+	    if not (S.mem x s) then load else (* [XX] a little ad hoc optimization *)
 	    Let((x, t), Ld(y, C(offset)), load)) in
       load
   | Closure.Get(x, y) -> (* 配列の読み出し (caml2html: virtual_get) *)

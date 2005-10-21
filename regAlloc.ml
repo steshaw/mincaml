@@ -241,7 +241,7 @@ let h { name = Id.L(x); args = ys; fargs = zs; body = e; ret = t } = (* 関数のレ
     | Type.Unit -> Id.gentmp Type.Unit
     | Type.Float -> fregs.(0)
     | _ -> regs.(0) in
-  let (e', regenv') = g_repeat (a, t) (Ans(Nop)) regenv e in
+  let (e', regenv') = g_repeat (a, t) (Ans(Mov(a))) regenv e in
   { name = Id.L(x); args = arg_regs; fargs = farg_regs; body = e'; ret = t }
 
 let f (Prog(data, fundefs, e)) = (* プログラム全体のレジスタ割り当て (caml2html: regalloc_f) *)
