@@ -143,18 +143,7 @@ and g'_and_unspill dest cont regenv exp = (* »ÈÍÑ¤µ¤ì¤ëÊÑ¿ô¤ò¥¹¥¿¥Ã¥¯¤«¤é¥ì¥¸¥¹¥
   try g' dest cont regenv exp
   with NoReg(x, t) ->
     ((* Format.eprintf "unspilling %s@." x; *)
-     let cont' = Let(dest, exp, cont) in
-     let all =
-       match t with
-       | Type.Unit -> assert false
-       | Type.Float -> allfregs
-       | _ -> allregs in
-     match alloc_or_spill dest cont' regenv all x with
-     | Spill(z) -> ToSpill(Forget(z, Ans(exp)), [z])
-     | Alloc(r) ->
-	 match g'_and_unspill dest cont (add x r regenv) exp with
-	 | ToSpill(e1, zs) -> ToSpill(e1, zs)
-	 | NoSpill(e1', regenv1) -> NoSpill(Let((r, t), Restore(x), e1'), regenv1))
+     g dest cont regenv (Let((x, t), Restore(x), Ans(exp))))
 and g' dest cont regenv = function (* ³ÆÌ¿Îá¤Î¥ì¥¸¥¹¥¿³ä¤êÅö¤Æ (caml2html: regalloc_gprime) *)
   | Nop | Set _ | SetL _ | Comment _ | Restore _ as exp -> NoSpill(Ans(exp), regenv)
   | Mov(x) -> NoSpill(Ans(Mov(find x Type.Int regenv)), regenv)
