@@ -1,8 +1,13 @@
 open SparcAsm
 
-let rec alloc cont regenv all x =
+let rec alloc cont regenv x t =
   (* allocate a register or spill a variable *)
   assert (not (M.mem x regenv));
+  let all =
+    match t with
+    | Type.Unit -> ["%g0"] (* dummy *)
+    | Type.Float -> allfregs
+    | _ -> allregs in
   if all = ["%g0"] then "%g0" else (* [XX] ad hoc optimization *)
   if is_reg x then x else
   let free = fv cont in
@@ -46,12 +51,7 @@ let rec g dest cont regenv = function (* 命令列のレジスタ割り当て (caml2html: re
       assert (not (M.mem x regenv));
       let cont' = concat e dest cont in
       let (e1', regenv1) = g'_and_restore xt cont' regenv exp in
-      let all =
-	match t with
-	| Type.Unit -> ["%g0"] (* dummy *)
-	| Type.Float -> allfregs
-	| _ -> allregs in
-      let r = alloc cont' regenv1 all x in
+      let r = alloc cont' regenv1 x t in
       let (e2', regenv2) = g dest cont (add x r regenv1) e in
       (concat e1' (r, t) e2', regenv2)
   | Forget(x, e) -> assert false

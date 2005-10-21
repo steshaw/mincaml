@@ -40,9 +40,14 @@ and target_args src all n = function (* auxiliary function for Call *)
 type alloc_result = (* allocにおいてspillingがあったかどうかを表すデータ型 *)
   | Alloc of Id.t (* allocated register *)
   | Spill of Id.t (* spilled variable *)
-let rec alloc dest cont regenv all x =
+let rec alloc dest cont regenv x t =
   (* allocate a register or spill a variable *)
   assert (not (M.mem x regenv));
+  let all =
+    match t with
+    | Type.Unit -> ["%g0"] (* dummy *)
+    | Type.Float -> allfregs
+    | _ -> allregs in
   if all = ["%g0"] then Alloc("%g0") else (* [XX] ad hoc optimization *)
   if is_reg x then Alloc(x) else
   let free = fv cont in
@@ -115,12 +120,7 @@ let rec g dest cont regenv = function (* 命令列のレジスタ割り当て (caml2html: re
       (match g'_and_restore xt cont' regenv exp with
       | ToSpill(e1, ys) -> ToSpill(concat e1 xt e, ys)
       | NoSpill(e1', regenv1) ->
-	  let all =
-	    match t with
-	    | Type.Unit -> ["%g0"] (* dummy *)
-	    | Type.Float -> allfregs
-	    | _ -> allregs in
-	  (match alloc dest cont' regenv1 all x with
+	  (match alloc dest cont' regenv1 x t with
 	  | Spill(y) -> ToSpill(Let(xt, exp, Forget(y, e)), [y])
 	  | Alloc(r) ->
 	      match g dest cont (add x r regenv1) e with
