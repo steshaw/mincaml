@@ -128,23 +128,23 @@ and g' oc = function (* 各命令のアセンブリ生成 (caml2html: emit_gprime) *)
       Printf.fprintf oc "\tfcmpd\t%s, %s\n" x y;
       Printf.fprintf oc "\tnop\n";
       g'_tail_if oc e1 e2 "fble" "fbg"
-  | dest, IfEq(x, y', e1, e2) ->
+  | NonTail(z), IfEq(x, y', e1, e2) ->
       Printf.fprintf oc "\tcmp\t%s, %s\n" x (pp_id_or_imm y');
-      g'_non_tail_if oc dest e1 e2 "be" "bne"
-  | dest, IfLE(x, y', e1, e2) ->
+      g'_non_tail_if oc (NonTail(z)) e1 e2 "be" "bne"
+  | NonTail(z), IfLE(x, y', e1, e2) ->
       Printf.fprintf oc "\tcmp\t%s, %s\n" x (pp_id_or_imm y');
-      g'_non_tail_if oc dest e1 e2 "ble" "bg"
-  | dest, IfGE(x, y', e1, e2) ->
+      g'_non_tail_if oc (NonTail(z)) e1 e2 "ble" "bg"
+  | NonTail(z), IfGE(x, y', e1, e2) ->
       Printf.fprintf oc "\tcmp\t%s, %s\n" x (pp_id_or_imm y');
-      g'_non_tail_if oc dest e1 e2 "bge" "bl"
-  | dest, IfFEq(x, y, e1, e2) ->
+      g'_non_tail_if oc (NonTail(z)) e1 e2 "bge" "bl"
+  | NonTail(z), IfFEq(x, y, e1, e2) ->
       Printf.fprintf oc "\tfcmpd\t%s, %s\n" x y;
       Printf.fprintf oc "\tnop\n";
-      g'_non_tail_if oc dest e1 e2 "fbe" "fbne"
-  | dest, IfFLE(x, y, e1, e2) ->
+      g'_non_tail_if oc (NonTail(z)) e1 e2 "fbe" "fbne"
+  | NonTail(z), IfFLE(x, y, e1, e2) ->
       Printf.fprintf oc "\tfcmpd\t%s, %s\n" x y;
       Printf.fprintf oc "\tnop\n";
-      g'_non_tail_if oc dest e1 e2 "fble" "fbg"
+      g'_non_tail_if oc (NonTail(z)) e1 e2 "fble" "fbg"
   (* 関数呼び出しの仮想命令の実装 (caml2html: emit_call) *)
   | Tail, CallCls(x, ys, zs) -> (* 末尾呼び出し (caml2html: emit_tailcall) *)
       g'_args oc [(x, reg_cl)] ys zs;
