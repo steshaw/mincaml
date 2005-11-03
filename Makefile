@@ -7,7 +7,6 @@ RESULT = min-caml
 NCSUFFIX = .opt
 CC = gcc
 CFLAGS = -g -O2 -Wall
-OCAMLFLAGS = -w Ae
 
 default: debug-code top native-code do_test
 clean:: nobackup
