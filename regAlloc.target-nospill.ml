@@ -38,7 +38,7 @@ and target_args src all n = function (* auxiliary function for Call *)
   | _ :: ys -> target_args src all (n + 1) ys
 
 let rec alloc dest cont regenv x t =
-  (* allocate a register or spill a variable *)
+  (* allocate a register or fail *)
   assert (not (M.mem x regenv));
   let all =
     match t with

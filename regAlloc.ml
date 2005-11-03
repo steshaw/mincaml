@@ -40,7 +40,7 @@ and target_args src all n = function (* auxiliary function for Call *)
 type alloc_result = (* allocにおいてspillingがあったかどうかを表すデータ型 *)
   | Alloc of Id.t (* allocated register *)
   | Spill of Id.t (* spilled variable *)
-let rec alloc_or_spill dest cont regenv x t =
+let rec alloc dest cont regenv x t =
   (* allocate a register or spill a variable *)
   assert (not (M.mem x regenv));
   let all =
@@ -79,7 +79,7 @@ let rec alloc_or_spill dest cont regenv x t =
     Format.eprintf "spilling %s from %s@." y (M.find y regenv);
     Spill(y)
 
-(* auxiliary function for g and g'_and_unspill *)
+(* auxiliary function for g and g'_and_restore *)
 let add x r regenv =
   if is_reg x then (assert (x = r); regenv) else
   M.add x r regenv
@@ -113,14 +113,14 @@ let insert_forget xs exp t =
   ToSpill(Let((a, t), exp, forget_list xs (Ans(m))), xs)
 
 let rec g dest cont regenv = function (* 命令列のレジスタ割り当て (caml2html: regalloc_g) *)
-  | Ans(exp) -> g'_and_unspill dest cont regenv exp
+  | Ans(exp) -> g'_and_restore dest cont regenv exp
   | Let((x, t) as xt, exp, e) ->
       assert (not (M.mem x regenv));
       let cont' = concat e dest cont in
-      (match g'_and_unspill xt cont' regenv exp with
+      (match g'_and_restore xt cont' regenv exp with
       | ToSpill(e1, ys) -> ToSpill(concat e1 xt e, ys)
       | NoSpill(e1', regenv1) ->
-	  (match alloc_or_spill dest cont' regenv1 x t with
+	  (match alloc dest cont' regenv1 x t with
 	  | Spill(y) -> ToSpill(Let(xt, exp, Forget(y, e)), [y])
 	  | Alloc(r) ->
 	      match g dest cont (add x r regenv1) e with
@@ -139,10 +139,10 @@ let rec g dest cont regenv = function (* 命令列のレジスタ割り当て (caml2html: re
 	  | [] -> g dest cont regenv x_forgotten
 	  | ys_left -> ToSpill(x_forgotten, ys_left))
       | NoSpill(e1', regenv1) -> NoSpill(e1', regenv1))
-and g'_and_unspill dest cont regenv exp = (* 使用される変数をスタックからレジスタへRestore (caml2html: regalloc_unspill) *)
+and g'_and_restore dest cont regenv exp = (* 使用される変数をスタックからレジスタへRestore (caml2html: regalloc_unspill) *)
   try g' dest cont regenv exp
   with NoReg(x, t) ->
-    ((* Format.eprintf "unspilling %s@." x; *)
+    ((* Format.eprintf "restoring %s@." x; *)
      g dest cont regenv (Let((x, t), Restore(x), Ans(exp))))
 and g' dest cont regenv = function (* 各命令のレジスタ割り当て (caml2html: regalloc_gprime) *)
   | Nop | Set _ | SetL _ | Comment _ | Restore _ as exp -> NoSpill(Ans(exp), regenv)
