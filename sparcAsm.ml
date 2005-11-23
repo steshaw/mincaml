@@ -59,7 +59,7 @@ let reg_ra = "%o7" (* return address *)
 let is_reg x = (x.[0] = '%')
 let co_freg_table =
   let ht = Hashtbl.create 16 in
-  for i = 0 to 16 do
+  for i = 0 to 15 do
     Hashtbl.add
       ht
       (Printf.sprintf "%%f%d" (i * 2))
