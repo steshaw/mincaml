@@ -21,7 +21,8 @@ simm13.mli simm13.ml regAlloc.mli regAlloc.ml emit.mli emit.ml \
 main.mli main.ml
 
 # ↓テストプログラムが増えたら、これも増やす
-TESTS = print sum-tail gcd sum fib ack even-odd adder funcomp cls-rec cls-bug \
+TESTS = print sum-tail gcd sum fib ack even-odd \
+adder funcomp cls-rec cls-bug cls-bug2 \
 shuffle spill spill2 join-stack join-stack2 join-stack3 join-reg join-reg2 \
 non-tail-if non-tail-if2 \
 float inprod inprod-rec inprod-loop matmul matmul-flat

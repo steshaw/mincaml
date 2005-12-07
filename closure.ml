@@ -69,7 +69,7 @@ let rec g env known = function (* クロージャ変換ルーチン本体 (caml2html: closure
       let known' = S.add x known in
       let e1' = g (M.add_list yts env') known' e1 in
       (* 本当に自由変数がなかったか、変換結果e1'を確認する *)
-      let zs = S.diff (fv e1') (S.add x (S.of_list (List.map fst yts))) in
+      let zs = S.diff (fv e1') (S.of_list (List.map fst yts)) in
       let known', e1' =
 	if S.is_empty zs then known', e1' else
 	(* 駄目だったら状態(toplevelの値)を戻して、クロージャ変換をやり直す *)
