@@ -103,10 +103,12 @@ let rec g dest cont regenv = function (* 命令列のレジスタ割り当て (caml2html: re
       let (e1', regenv1) = g'_and_restore xt cont' regenv exp in
       (match alloc dest cont' regenv1 x t with
       | Spill(y) ->
-	  let r = M.find y regenv in
-	  let r1 = M.find y regenv1 in
-	  let (e2', regenv2) = g dest cont (add x r1 (M.remove y regenv1)) e in
-	  (seq(Save(r, y), concat e1' (r, t) e2'), regenv2)
+	  let r = M.find y regenv1 in
+	  let (e2', regenv2) = g dest cont (add x r (M.remove y regenv1)) e in
+	  let save =
+	    try Save(M.find y regenv, y)
+	    with Not_found -> Nop in	    
+	  (seq(save, concat e1' (r, t) e2'), regenv2)
       | Alloc(r) ->
 	  let (e2', regenv2) = g dest cont (add x r regenv1) e in
 	  (concat e1' (r, t) e2', regenv2))
