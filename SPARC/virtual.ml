@@ -1,8 +1,8 @@
 (* translation into SPARC assembly with infinite number of virtual registers *)
 
-open SparcAsm
+open Asm
 
-let data = ref [] (* 浮動小数の定数テーブル (caml2html: virtual_data) *)
+let data = ref [] (* 浮動小数点数の定数テーブル (caml2html: virtual_data) *)
 
 let classify xts ini addf addi =
   List.fold_left
@@ -63,7 +63,7 @@ let rec g env = function (* 式の仮想マシンコード生成 (caml2html: virtual_g) *)
       (match M.find x env with
       | Type.Bool | Type.Int -> Ans(IfLE(x, V(y), g env e1, g env e2))
       | Type.Float -> Ans(IfFLE(x, y, g env e1, g env e2))
-      | _ -> failwith "inequality supported only for bool, int and float")
+      | _ -> failwith "inequality supported only for bool, int, and float")
   | Closure.Let((x, t1), e1, e2) ->
       let e1' = g env e1 in
       let e2' = g (M.add x t1 env) e2 in

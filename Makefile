@@ -16,8 +16,8 @@ SOURCES = float.c type.ml id.ml m.ml s.ml \
 syntax.ml parser.mly lexer.mll typing.mli typing.ml kNormal.mli kNormal.ml \
 alpha.mli alpha.ml beta.mli beta.ml assoc.mli assoc.ml \
 inline.mli inline.ml constFold.mli constFold.ml elim.mli elim.ml \
-closure.mli closure.ml sparcAsm.mli sparcAsm.ml virtual.mli virtual.ml \
-simm13.mli simm13.ml regAlloc.mli regAlloc.ml emit.mli emit.ml \
+closure.mli closure.ml asm.mli asm.ml virtual.mli virtual.ml \
+simm.mli simm.ml regAlloc.mli regAlloc.ml emit.mli emit.ml \
 main.mli main.ml
 
 # ↓テストプログラムが増えたら、これも増やす
@@ -47,8 +47,8 @@ min-caml.html: main.mli main.ml id.ml m.ml s.ml \
 		syntax.ml type.ml parser.mly lexer.mll typing.mli typing.ml kNormal.mli kNormal.ml \
 		alpha.mli alpha.ml beta.mli beta.ml assoc.mli assoc.ml \
 		inline.mli inline.ml constFold.mli constFold.ml elim.mli elim.ml \
-		closure.mli closure.ml sparcAsm.mli sparcAsm.ml virtual.mli virtual.ml \
-		simm13.mli simm13.ml regAlloc.mli regAlloc.ml emit.mli emit.ml		
+		closure.mli closure.ml asm.mli asm.ml virtual.mli virtual.ml \
+		simm.mli simm.ml regAlloc.mli regAlloc.ml emit.mli emit.ml		
 	caml2html -o min-caml.html $^
 	sed 's/.*<\/title>/MinCaml Source Code<\/title>/g' < min-caml.html > min-caml.tmp.html
 	mv min-caml.tmp.html min-caml.html

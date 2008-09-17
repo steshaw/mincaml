@@ -1,1 +1,1 @@
-val f : Closure.prog -> SparcAsm.prog
+val f : Closure.prog -> Asm.prog

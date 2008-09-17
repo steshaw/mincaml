@@ -1,4 +1,4 @@
-open SparcAsm
+open Asm
 
 (* for register coalescing *)
 (* [XXX] Callがあったら、そこから先は無意味というか逆効果なので追わない。
@@ -31,7 +31,6 @@ and target src dest = function (* register targeting (caml2html: regalloc_target
       if c1 then true, rs1 else
       let c2, rs2 = target src dest e in
       c2, rs1 @ rs2
-  | Forget(_, e) -> target src dest e
 and target_args src all n = function (* auxiliary function for Call *)
   | [] -> []
   | y :: ys when src = y -> all.(n) :: target_args src all (n + 1) ys
@@ -84,10 +83,6 @@ let add x r regenv =
   if is_reg x then (assert (x = r); regenv) else
   M.add x r regenv
 
-type g_result = (* gやg'においてspillingがあったかどうかを表すデータ型 (caml2html: regalloc_result) *)
-  | NoSpill of t * Id.t M.t (* new regenv *)
-  | ToSpill of t * Id.t list (* spilled variables *)
-
 (* auxiliary functions for g' *)
 exception NoReg of Id.t * Type.t
 let find x t regenv =
@@ -98,69 +93,46 @@ let find' x' regenv =
   match x' with
   | V(x) -> V(find x Type.Int regenv)
   | c -> c
-let forget_list xs e =
-  List.fold_left
-    (fun e x -> Forget(x, e))
-    e
-    xs
-let insert_forget xs exp t =
-  let a = Id.gentmp t in
-  let m =
-    match t with
-    | Type.Unit -> Nop
-    | Type.Float -> FMovD(a)
-    | _ -> Mov(a) in
-  ToSpill(Let((a, t), exp, forget_list xs (Ans(m))), xs)
 
 let rec g dest cont regenv = function (* 命令列のレジスタ割り当て (caml2html: regalloc_g) *)
   | Ans(exp) -> g'_and_restore dest cont regenv exp
   | Let((x, t) as xt, exp, e) ->
       assert (not (M.mem x regenv));
       let cont' = concat e dest cont in
-      (match g'_and_restore xt cont' regenv exp with
-      | ToSpill(e1, ys) -> ToSpill(concat e1 xt e, ys)
-      | NoSpill(e1', regenv1) ->
-	  (match alloc dest cont' regenv1 x t with
-	  | Spill(y) -> ToSpill(Let(xt, exp, Forget(y, e)), [y])
-	  | Alloc(r) ->
-	      match g dest cont (add x r regenv1) e with
-	      | ToSpill(e2, ys) when List.mem x ys ->
-		  let x_saved = Let(xt, exp, seq(Save(x, x), e2)) in
-		  (match List.filter (fun y -> y <> x) ys with
-		  | [] -> g dest cont regenv x_saved
-		  | ys_left -> ToSpill(x_saved, ys_left))
-	      | ToSpill(e2, ys) -> ToSpill(Let(xt, exp, e2), ys)
-	      | NoSpill(e2', regenv2) -> NoSpill(concat e1' (r, t) e2', regenv2)))
-  | Forget(x, e) ->
-      (match g dest cont (M.remove x regenv) e with
-      | ToSpill(e1, ys) ->
-	  let x_forgotten = Forget(x, e1) in
-	  (match List.filter (fun y -> y <> x) ys with
-	  | [] -> g dest cont regenv x_forgotten
-	  | ys_left -> ToSpill(x_forgotten, ys_left))
-      | NoSpill(e1', regenv1) -> NoSpill(e1', regenv1))
+      let (e1', regenv1) = g'_and_restore xt cont' regenv exp in
+      (match alloc dest cont' regenv1 x t with
+      | Spill(y) ->
+	  let r = M.find y regenv1 in
+	  let (e2', regenv2) = g dest cont (add x r (M.remove y regenv1)) e in
+	  let save =
+	    try Save(M.find y regenv, y)
+	    with Not_found -> Nop in	    
+	  (seq(save, concat e1' (r, t) e2'), regenv2)
+      | Alloc(r) ->
+	  let (e2', regenv2) = g dest cont (add x r regenv1) e in
+	  (concat e1' (r, t) e2', regenv2))
 and g'_and_restore dest cont regenv exp = (* 使用される変数をスタックからレジスタへRestore (caml2html: regalloc_unspill) *)
   try g' dest cont regenv exp
   with NoReg(x, t) ->
     ((* Format.eprintf "restoring %s@." x; *)
      g dest cont regenv (Let((x, t), Restore(x), Ans(exp))))
 and g' dest cont regenv = function (* 各命令のレジスタ割り当て (caml2html: regalloc_gprime) *)
-  | Nop | Set _ | SetL _ | Comment _ | Restore _ as exp -> NoSpill(Ans(exp), regenv)
-  | Mov(x) -> NoSpill(Ans(Mov(find x Type.Int regenv)), regenv)
-  | Neg(x) -> NoSpill(Ans(Neg(find x Type.Int regenv)), regenv)
-  | Add(x, y') -> NoSpill(Ans(Add(find x Type.Int regenv, find' y' regenv)), regenv)
-  | Sub(x, y') -> NoSpill(Ans(Sub(find x Type.Int regenv, find' y' regenv)), regenv)
-  | SLL(x, y') -> NoSpill(Ans(SLL(find x Type.Int regenv, find' y' regenv)), regenv)
-  | Ld(x, y') -> NoSpill(Ans(Ld(find x Type.Int regenv, find' y' regenv)), regenv)
-  | St(x, y, z') -> NoSpill(Ans(St(find x Type.Int regenv, find y Type.Int regenv, find' z' regenv)), regenv)
-  | FMovD(x) -> NoSpill(Ans(FMovD(find x Type.Float regenv)), regenv)
-  | FNegD(x) -> NoSpill(Ans(FNegD(find x Type.Float regenv)), regenv)
-  | FAddD(x, y) -> NoSpill(Ans(FAddD(find x Type.Float regenv, find y Type.Float regenv)), regenv)
-  | FSubD(x, y) -> NoSpill(Ans(FSubD(find x Type.Float regenv, find y Type.Float regenv)), regenv)
-  | FMulD(x, y) -> NoSpill(Ans(FMulD(find x Type.Float regenv, find y Type.Float regenv)), regenv)
-  | FDivD(x, y) -> NoSpill(Ans(FDivD(find x Type.Float regenv, find y Type.Float regenv)), regenv)
-  | LdDF(x, y') -> NoSpill(Ans(LdDF(find x Type.Int regenv, find' y' regenv)), regenv)
-  | StDF(x, y, z') -> NoSpill(Ans(StDF(find x Type.Float regenv, find y Type.Int regenv, find' z' regenv)), regenv)
+  | Nop | Set _ | SetL _ | Comment _ | Restore _ as exp -> (Ans(exp), regenv)
+  | Mov(x) -> (Ans(Mov(find x Type.Int regenv)), regenv)
+  | Neg(x) -> (Ans(Neg(find x Type.Int regenv)), regenv)
+  | Add(x, y') -> (Ans(Add(find x Type.Int regenv, find' y' regenv)), regenv)
+  | Sub(x, y') -> (Ans(Sub(find x Type.Int regenv, find' y' regenv)), regenv)
+  | SLL(x, y') -> (Ans(SLL(find x Type.Int regenv, find' y' regenv)), regenv)
+  | Ld(x, y') -> (Ans(Ld(find x Type.Int regenv, find' y' regenv)), regenv)
+  | St(x, y, z') -> (Ans(St(find x Type.Int regenv, find y Type.Int regenv, find' z' regenv)), regenv)
+  | FMovD(x) -> (Ans(FMovD(find x Type.Float regenv)), regenv)
+  | FNegD(x) -> (Ans(FNegD(find x Type.Float regenv)), regenv)
+  | FAddD(x, y) -> (Ans(FAddD(find x Type.Float regenv, find y Type.Float regenv)), regenv)
+  | FSubD(x, y) -> (Ans(FSubD(find x Type.Float regenv, find y Type.Float regenv)), regenv)
+  | FMulD(x, y) -> (Ans(FMulD(find x Type.Float regenv, find y Type.Float regenv)), regenv)
+  | FDivD(x, y) -> (Ans(FDivD(find x Type.Float regenv, find y Type.Float regenv)), regenv)
+  | LdDF(x, y') -> (Ans(LdDF(find x Type.Int regenv, find' y' regenv)), regenv)
+  | StDF(x, y, z') -> (Ans(StDF(find x Type.Float regenv, find y Type.Int regenv, find' z' regenv)), regenv)
   | IfEq(x, y', e1, e2) as exp -> g'_if dest cont regenv exp (fun e1' e2' -> IfEq(find x Type.Int regenv, find' y' regenv, e1', e2')) e1 e2
   | IfLE(x, y', e1, e2) as exp -> g'_if dest cont regenv exp (fun e1' e2' -> IfLE(find x Type.Int regenv, find' y' regenv, e1', e2')) e1 e2
   | IfGE(x, y', e1, e2) as exp -> g'_if dest cont regenv exp (fun e1' e2' -> IfGE(find x Type.Int regenv, find' y' regenv, e1', e2')) e1 e2
@@ -168,14 +140,10 @@ and g' dest cont regenv = function (* 各命令のレジスタ割り当て (caml2html: regal
   | IfFLE(x, y, e1, e2) as exp -> g'_if dest cont regenv exp (fun e1' e2' -> IfFLE(find x Type.Float regenv, find y Type.Float regenv, e1', e2')) e1 e2
   | CallCls(x, ys, zs) as exp -> g'_call dest cont regenv exp (fun ys zs -> CallCls(find x Type.Int regenv, ys, zs)) ys zs
   | CallDir(l, ys, zs) as exp -> g'_call dest cont regenv exp (fun ys zs -> CallDir(l, ys, zs)) ys zs
-  | Save(x, y) ->
-      assert (x = y);
-      assert (not (is_reg x));
-      try NoSpill(Ans(Save(M.find x regenv, x)), regenv)
-      with Not_found -> NoSpill(Ans(Nop), regenv) (* must have already been saved *)
+  | Save(x, y) -> assert false
 and g'_if dest cont regenv exp constr e1 e2 = (* ifのレジスタ割り当て (caml2html: regalloc_if) *)
-  let (e1', regenv1) = g_repeat dest cont regenv e1 in
-  let (e2', regenv2) = g_repeat dest cont regenv e2 in
+  let (e1', regenv1) = g dest cont regenv e1 in
+  let (e2', regenv2) = g dest cont regenv e2 in
   let regenv' = (* 両方に共通のレジスタ変数だけ利用 *)
     List.fold_left
       (fun regenv' x ->
@@ -188,31 +156,23 @@ and g'_if dest cont regenv exp constr e1 e2 = (* ifのレジスタ割り当て (caml2html
         with Not_found -> regenv')
       M.empty
       (fv cont) in
-  match
-    List.filter
-      (fun x -> not (is_reg x) && x <> fst dest && not (M.mem x regenv'))
-      (fv cont)
-  with [] -> NoSpill(Ans(constr e1' e2'), regenv')
-  | xs -> insert_forget xs exp (snd dest) (* そうでない変数は分岐以前にセーブ *)
+  (List.fold_left
+     (fun e x ->
+       if x = fst dest || not (M.mem x regenv) || M.mem x regenv' then e else
+       seq(Save(M.find x regenv, x), e)) (* そうでない変数は分岐直前にセーブ *)
+     (Ans(constr e1' e2'))
+     (fv cont),
+   regenv')
 and g'_call dest cont regenv exp constr ys zs = (* 関数呼び出しのレジスタ割り当て (caml2html: regalloc_call) *)
-  match
-    List.filter (* セーブすべきレジスタ変数を探す *)
-      (fun x -> not (is_reg x) && x <> fst dest)
-      (fv cont)
-  with [] -> NoSpill(Ans(constr
-			   (List.map (fun y -> find y Type.Int regenv) ys)
-			   (List.map (fun z -> find z Type.Float regenv) zs)),
-		     M.empty)
-  | xs -> insert_forget xs exp (snd dest)
-and g_repeat dest cont regenv e = (* Spillがなくなるまでgを繰り返す (caml2html: regalloc_repeat) *)
-    match g dest cont regenv e with
-    | NoSpill(e', regenv') -> (e', regenv')
-    | ToSpill(e, xs) ->
-	g_repeat dest cont regenv
-	  (List.fold_left
-	     (fun e x -> seq(Save(x, x), e))
-	     e
-	     xs)
+  (List.fold_left
+     (fun e x ->
+       if x = fst dest || not (M.mem x regenv) then e else
+       seq(Save(M.find x regenv, x), e))
+     (Ans(constr
+	    (List.map (fun y -> find y Type.Int regenv) ys)
+	    (List.map (fun z -> find z Type.Float regenv) zs)))
+     (fv cont),
+   M.empty)
 
 let h { name = Id.L(x); args = ys; fargs = zs; body = e; ret = t } = (* 関数のレジスタ割り当て (caml2html: regalloc_h) *)
   let regenv = M.add x reg_cl M.empty in
@@ -241,11 +201,11 @@ let h { name = Id.L(x); args = ys; fargs = zs; body = e; ret = t } = (* 関数のレ
     | Type.Unit -> Id.gentmp Type.Unit
     | Type.Float -> fregs.(0)
     | _ -> regs.(0) in
-  let (e', regenv') = g_repeat (a, t) (Ans(Mov(a))) regenv e in
+  let (e', regenv') = g (a, t) (Ans(Mov(a))) regenv e in
   { name = Id.L(x); args = arg_regs; fargs = farg_regs; body = e'; ret = t }
 
 let f (Prog(data, fundefs, e)) = (* プログラム全体のレジスタ割り当て (caml2html: regalloc_f) *)
   Format.eprintf "register allocation: may take some time (up to a few minutes, depending on the size of functions)@.";
   let fundefs' = List.map h fundefs in
-  let e', regenv' = g_repeat (Id.gentmp Type.Unit, Type.Unit) (Ans(Nop)) M.empty e in
+  let e', regenv' = g (Id.gentmp Type.Unit, Type.Unit) (Ans(Nop)) M.empty e in
   Prog(data, fundefs', e')

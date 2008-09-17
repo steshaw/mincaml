@@ -1,4 +1,4 @@
-open SparcAsm
+open Asm
 
 external gethi : float -> int32 = "gethi"
 external getlo : float -> int32 = "getlo"
@@ -49,7 +49,6 @@ let rec g oc = function (* 命令列のアセンブリ生成 (caml2html: emit_g) *)
   | dest, Let((x, t), exp, e) ->
       g' oc (NonTail(x), exp);
       g oc (dest, e)
-  | _, Forget _ -> assert false
 and g' oc = function (* 各命令のアセンブリ生成 (caml2html: emit_gprime) *)
   (* 末尾でなかったら計算結果をdestにセット (caml2html: emit_nontail) *)
   | NonTail(_), Nop -> ()

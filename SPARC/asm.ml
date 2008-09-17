@@ -4,7 +4,6 @@ type id_or_imm = V of Id.t | C of int
 type t = (* 命令の列 (caml2html: sparcasm_t) *)
   | Ans of exp
   | Let of (Id.t * Type.t) * exp * t
-  | Forget of Id.t * t (* Spillされた変数を、自由変数の計算から除外するための仮想命令 (caml2html: sparcasm_forget) *)
 and exp = (* 一つ一つの命令に対応する式 (caml2html: sparcasm_exp) *)
   | Nop
   | Set of int
@@ -37,7 +36,7 @@ and exp = (* 一つ一つの命令に対応する式 (caml2html: sparcasm_exp) *)
   | Save of Id.t * Id.t (* レジスタ変数の値をスタック変数へ保存 (caml2html: sparcasm_save) *)
   | Restore of Id.t (* スタック変数から値を復元 (caml2html: sparcasm_restore) *)
 type fundef = { name : Id.l; args : Id.t list; fargs : Id.t list; body : t; ret : Type.t }
-(* プログラム全体 = 浮動小数定数テーブル + トップレベル関数 + メインの式 (caml2html: sparcasm_prog) *)
+(* プログラム全体 = 浮動小数点数テーブル + トップレベル関数 + メインの式 (caml2html: sparcasm_prog) *)
 type prog = Prog of (Id.l * float) list * fundef list * t
 
 let fletd(x, e1, e2) = Let((x, Type.Float), e1, e2)
@@ -76,30 +75,25 @@ let rec remove_and_uniq xs = function
 
 (* free variables in the order of use (for spilling) (caml2html: sparcasm_fv) *)
 let fv_id_or_imm = function V(x) -> [x] | _ -> []
-let rec fv_exp cont = function
-  | Nop | Set(_) | SetL(_) | Comment(_) | Restore(_) -> cont
-  | Mov(x) | Neg(x) | FMovD(x) | FNegD(x) | Save(x, _) -> x :: cont
-  | Add(x, y') | Sub(x, y') | SLL(x, y') | Ld(x, y') | LdDF(x, y') -> x :: fv_id_or_imm y' @ cont
-  | St(x, y, z') | StDF(x, y, z') -> x :: y :: fv_id_or_imm z' @ cont
-  | FAddD(x, y) | FSubD(x, y) | FMulD(x, y) | FDivD(x, y) -> x :: y :: cont
-  | IfEq(x, y', e1, e2) | IfLE(x, y', e1, e2) | IfGE(x, y', e1, e2) -> x :: fv_id_or_imm y' @ remove_and_uniq S.empty (fv cont e1 @ fv cont e2) (* uniq here just for efficiency *)
-  | IfFEq(x, y, e1, e2) | IfFLE(x, y, e1, e2) -> x :: y :: remove_and_uniq S.empty (fv cont e1 @ fv cont e2) (* uniq here just for efficiency *)
-  | CallCls(x, ys, zs) -> x :: ys @ zs @ cont
-  | CallDir(_, ys, zs) -> ys @ zs @ cont
-and fv cont = function
-  | Ans(exp) -> fv_exp cont exp
+let rec fv_exp = function
+  | Nop | Set(_) | SetL(_) | Comment(_) | Restore(_) -> []
+  | Mov(x) | Neg(x) | FMovD(x) | FNegD(x) | Save(x, _) -> [x]
+  | Add(x, y') | Sub(x, y') | SLL(x, y') | Ld(x, y') | LdDF(x, y') -> x :: fv_id_or_imm y'
+  | St(x, y, z') | StDF(x, y, z') -> x :: y :: fv_id_or_imm z'
+  | FAddD(x, y) | FSubD(x, y) | FMulD(x, y) | FDivD(x, y) -> [x; y]
+  | IfEq(x, y', e1, e2) | IfLE(x, y', e1, e2) | IfGE(x, y', e1, e2) -> x :: fv_id_or_imm y' @ remove_and_uniq S.empty (fv e1 @ fv e2) (* uniq here just for efficiency *)
+  | IfFEq(x, y, e1, e2) | IfFLE(x, y, e1, e2) -> x :: y :: remove_and_uniq S.empty (fv e1 @ fv e2) (* uniq here just for efficiency *)
+  | CallCls(x, ys, zs) -> x :: ys @ zs
+  | CallDir(_, ys, zs) -> ys @ zs
+and fv = function
+  | Ans(exp) -> fv_exp exp
   | Let((x, t), exp, e) ->
-      let cont' = remove_and_uniq (S.singleton x) (fv cont e) in
-      fv_exp cont' exp
-  | Forget(x, e) -> remove_and_uniq (S.singleton x) (fv cont e) (* Spillされた変数は、自由変数の計算から除外 (caml2html: sparcasm_exclude) *)
-    (* (if y = z then (forget x; ...) else (forget x; ...)); x + x
-       のような場合のために、継続の自由変数contを引数とする *)
-let fv e = remove_and_uniq S.empty (fv [] e)
+      fv_exp exp @ remove_and_uniq (S.singleton x) (fv e)
+let fv e = remove_and_uniq S.empty (fv e)
 
 let rec concat e1 xt e2 =
   match e1 with
   | Ans(exp) -> Let(xt, exp, e2)
   | Let(yt, exp, e1') -> Let(yt, exp, concat e1' xt e2)
-  | Forget(y, e1') -> Forget(y, concat e1' xt e2)
 
 let align i = (if i mod 8 = 0 then i else i + 4)

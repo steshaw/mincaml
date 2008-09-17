@@ -1,1 +1,1 @@
-val f : out_channel -> SparcAsm.prog -> unit
+val f : out_channel -> Asm.prog -> unit

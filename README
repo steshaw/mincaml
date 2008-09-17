@@ -1,0 +1,9 @@
+[2008/9/17]
+
+- PowerPC is now supported (in addition to SPARC), thanks to
+  Ms. Masuko and Prof. asai in Ochanomizu University.  You _must_
+  execute either ./to_ppc or ./to_sparc _before_ make.
+
+- The register allocator now uses a simpler algorithm (earlyspill) by
+  default.  Other files (latespill, nospill, notarget, ...) have been
+  removed.
