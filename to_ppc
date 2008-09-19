@@ -1,5 +1,5 @@
 #
-ln -sf PowerPC/*.ml PowerPC/libmincaml.s .
+ln -sf PowerPC/{*.ml,{i},libmincaml.s} .
 cd shootout; ln -sf PowerPC/Makefile .
 cd ../bytemark; ln -sf PowerPC/Makefile .
 cd ../min-rt; ln -sf PowerPC/globals.s .

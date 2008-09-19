@@ -1,5 +1,5 @@
 #
-ln -sf SPARC/*.ml SPARC/libmincaml.s .
+ln -sf SPARC/{*.ml{,i},libmincaml.s} .
 cd shootout; ln -sf SPARC/Makefile .
 cd ../bytemark; ln -sf SPARC/Makefile .
 cd ../min-rt; ln -sf SPARC/globals.s .
