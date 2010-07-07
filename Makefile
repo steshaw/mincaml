@@ -8,7 +8,13 @@ NCSUFFIX = .opt
 CC = gcc
 CFLAGS = -g -O2 -Wall
 
-default: debug-code top native-code do_test
+default: debug-code top $(RESULT) do_test
+## [自分（住井）用の注]
+## ・makeコマンドはdebug-codeでmin-camlが作られることを知らない(?)ので、
+##   $(RESULT)を入れておかないとdo_testで「min-camlがない」というエラーになる
+## ・OCamlMakefileではdebug-codeとnative-codeのそれぞれで
+##   .mliがコンパイルされてしまうので、両方ともdefault:の右辺に入れると
+##   再make時に（.mliが変更されているので）.mlも再コンパイルされる
 clean:: nobackup
 
 # ↓もし実装を改造したら、それに合わせて変える
@@ -32,7 +38,7 @@ do_test: $(TESTS:%=test/%.cmp)
 .PRECIOUS: test/%.s test/% test/%.res test/%.ans test/%.cmp
 TRASH = $(TESTS:%=test/%.s) $(TESTS:%=test/%) $(TESTS:%=test/%.res) $(TESTS:%=test/%.ans) $(TESTS:%=test/%.cmp)
 
-test/%.s: debug-code test/%.ml # [X] debug-codeはファイルではないので、何度でも実行されてしまう!
+test/%.s: $(RESULT) test/%.ml
 	./$(RESULT) test/$*
 test/%: test/%.s libmincaml.s stub.c
 	$(CC) $(CFLAGS) $^ -lm -o $@
