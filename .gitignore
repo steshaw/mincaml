@@ -12,6 +12,8 @@ lexer.ml
 parser.ml
 parser.mli
 
+test/*.s
+
 asm.ml
 asm.mli
 bytemark/Makefile
