@@ -29,7 +29,8 @@ min_caml_print_byte:
 	nop
 .global min_caml_prerr_int
 min_caml_prerr_int:
-	set	__iob+32, %o0
+/*	set	__iob+32, %o0     */
+	set	stderr, %o0
 	set	format_int, %o1
 	mov	%i2, %o2
 	st	%o7, [%i0]
@@ -41,7 +42,8 @@ min_caml_prerr_int:
 .global min_caml_prerr_byte
 min_caml_prerr_byte:
 	mov	%i2, %o0
-	set	__iob+32, %o1
+/*	set	__iob+32, %o1     */
+	set	stderr, %o1
 	st	%o7, [%i0]
 	call	fputc
 	nop
@@ -50,7 +52,8 @@ min_caml_prerr_byte:
 	nop
 .global min_caml_prerr_float
 min_caml_prerr_float:
-	set	__iob+32, %o0
+/*	set	__iob+32, %o0     */
+	set	stderr, %o0
 	set	format_float, %o1
 	std	%f0, [%i0]
 	ldd	[%i0], %o2
